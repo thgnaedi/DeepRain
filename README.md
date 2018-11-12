@@ -2,6 +2,8 @@
 
 Kurzzeit Regenvorhersage mittels Deep Learning
 
+[Shared Google docs](https://docs.google.com/document/d/1xwsyT74GWWcA-JNZtwY09n3DMxLq5F9YuU9aXGJ4tQo/edit#heading=h.m9qflz7xndsy)
+
 #### Teilnehmer: 
 
 Etienne, Merle, Patrick, Thomas, Tim
