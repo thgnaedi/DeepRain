@@ -1,3 +1,4 @@
+import os.path
 from ftplib import FTP
 
 host_protocol = "ftp://"
@@ -7,9 +8,12 @@ local_directory = "./"
 
 
 def download_with_new_connection(ftp, filename):
-    print("Downloading: " + ftp.pwd() + filename)
-    with open(filename, 'wb') as f:
-        ftp.retrbinary('RETR ' + filename, f.write)
+    if os.path.isfile(filename):
+        print("File " + filename + " already downloaded!")
+    else:
+        print("Downloading: " + ftp.pwd() + filename)
+        with open(filename, 'wb') as f:
+            ftp.retrbinary('RETR ' + filename, f.write)
 
 
 def download_files(ftp, file_list):
