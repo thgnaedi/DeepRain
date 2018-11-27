@@ -1,5 +1,7 @@
 *.ipynb
 **.ipynb_checkpoints
+*.idea
+
 
 *.tar.gz
 
