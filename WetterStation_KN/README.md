@@ -27,7 +27,7 @@ Genauere erläuterungen der Spaltennamen gibt es unter ```ftp://ftp-cdc.dwd.de/p
 | ------------- |:-------------:| -----|
 | STATIONS_ID | - | ID der Station |
 | MESS_DATUM  | - |   Datum der Messung YYYYMMDDHHMM |
-| QN | - |  - |
+| QN | - |  Qualitäts Niveau (0-16) |
 | RS_01 | NIEDERSCHLAGSHOEHE |  Niederschlagshoehe 1min |
 | RS_IND_01 | NIEDERSCHLAG_IND |  Niederschlagsindikator 1min |
 
