@@ -63,3 +63,21 @@ Die Aktuellen Daten werden mit dem [Python-Script](https://github.com/thgnaedi/D
 * Einige Monate sind weit daneben
 * Gemmesener Extremwert ```30.05.2018 19:16 2.7``` ist laut [Regenradar](https://kachelmannwetter.com/de/regenradar/konstanz/20180530-1715z.html) nicht möglich, Fehlmessungen in Daten!
 vgl. [Textauszug](https://github.com/thgnaedi/DeepRain/blob/DataUnderstanding/WetterStation_KN/snipet.md) aus .txt File
+
+
+### Historische Textdateien:
+Die Historischen Daten sind Monatlich als Textdatei gespeichert. Im Vergleich mit den historischen Daten fallen neue Spalten im Header auf, diese sind aber "ungenutzt" bzw. über alle (geprüft auf Jahr 2017) einträge identisch. Diese sind: QN, RTH_01 und RWH_01.
+
+Die Messwerte wurden wie auch zuvor Monatsweise zusammenaddiert und mit den Historischen Daten von [wetterkontor.de](https://www.wetterkontor.de/de/wetter/deutschland/monatswerte.asp?y=2018&m=10) verglichen, Ergebnis siehe Abbildung:
+![=)](https://github.com/thgnaedi/DeepRain/blob/master/WetterStation_KN/result_2017.JPG)
+
+Extremwerte wurden folgende gefunden:
+```
+08.07.2017 15:36 3.02
+14.07.2017 14:56 2.81
+02.08.2017 01:13 2.66
+02.08.2017 01:14 4.4
+02.08.2017 01:15 4.25
+18.08.2017 17:30 2.52
+```
+diese gilt es noch mit dem Regenradar zu vergleichen.
