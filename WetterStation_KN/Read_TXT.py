@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 
 
 # returns date as String YYYYMMDDHHMM and rainfall as float32
-def get_data(line):
+def get_data(line, dateIndex=1, rainfallIndex=3):
     a = line.split(";")
-    return (a[1], np.float32(a[3]))
+    return (a[dateIndex], np.float32(a[rainfallIndex]))
 
 
 # change representation of String from .txt file
@@ -60,11 +60,7 @@ def gen_statistic(path, bins=300, show=False):
         print("{}:\t{}\t{:1.2f}\t{:1.2f}".format(i, rainsum_reference[i], rainsum_month[i], rel_err))
     return
 
-
-# Path to local copy
-PATH = "produkt_ein_min_rr_20180101_20181125_02712"
-gen_statistic(PATH + ".txt")  # resultat zwei werte > 2.50
-
-# ToDo: sind regenmengen Plausibel ? wie viel hat es an dem Tag/Uhrzeit geregnet ? evtl lässt sich einheit ableiten
-# 30.05.2018 19:16 2.7
-# 11.06.2018 14:44 2.78
+if __name__ == '__main__':
+    # Path to local copy
+    PATH = "produkt_ein_min_rr_20180101_20181125_02712"
+    gen_statistic(PATH + ".txt")  # resultat zwei werte > 2.50
