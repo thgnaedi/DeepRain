@@ -1,7 +1,7 @@
 import numpy as np
 import WetterStation_KN.Read_TXT as rtxt
 
-def read_historical_txt_file(path, return_all=False, showPeaks=True):
+def read_historical_txt_file(path, return_all=False, showPeaks=True, scan=False):
     assert path.__contains__("02712")               # check ID is Konstanz!
     rainsum_month = np.zeros(12, dtype=np.float32)  # Monthly rainfall
     all_data = []                                   # each measurement
@@ -26,6 +26,8 @@ def read_historical_txt_file(path, return_all=False, showPeaks=True):
                 date = datum
         if value > 2.50 and showPeaks:
             print(rtxt.convert_date_pretty(datum), value)
+        if scan:
+            scan_for_irregularidades(line)
 
     fp.close()
     if return_all:
@@ -52,6 +54,15 @@ def vis_statistic_month(all_data, n_rain, max_value, date, month_id, rainsum_ref
         print(" {} \t{}\t{:1.2f}\t{:1.2f}".format(str(i).zfill(2), rainsum_reference, np_data.sum(), rel_err))
     return
 
+def scan_for_irregularidades(line,):
+    a = line.split(";")
+    output=""
+    if(a[3] != '    3'):
+        output += "QN != 3 "
+    if(a[5] != '  -999' or a[6] != '  -999'):
+        output += "RWH || RTH != -999"
+    if output != "":
+        print(output, line)
 
 if __name__ == '__main__':
     #Placeholder for month and day
@@ -60,6 +71,6 @@ if __name__ == '__main__':
 
     #ToDo regenreferenz einbauen:
     for i in range(1,13):
-        rsm, all_data, max_date, max_value, n_rain= read_historical_txt_file(filename.format(str(i).zfill(2), str(i).zfill(2), lastDayOfMonth[i-1])+".txt", True, showPeaks=False)
+        rsm, all_data, max_date, max_value, n_rain= read_historical_txt_file(filename.format(str(i).zfill(2), str(i).zfill(2), lastDayOfMonth[i-1])+".txt", True, showPeaks=False, scan=True)
         vis_statistic_month(all_data, n_rain, max_value, max_date, month_id=i, rainsum_reference=10.0, showDetails=False, showHeader=(i==1))
 
