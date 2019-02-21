@@ -2,11 +2,15 @@
 # ENABLE ENVIRONMENT FIRST!
 # Environment Access via Anaconda Navigator
 
+# Breitengrad von Konstanz: 47.6779496
+# Längengrad von Konstanz: 9.1732384
+
 import os
 import wradlib as wrl
 import numpy as np
 import matplotlib.pyplot as pl
 import warnings
+import csv, fileinput
 
 
 def read_radolan(radfile):
@@ -48,25 +52,53 @@ def plot_radolan_png(data, attrs, grid, clabel=None, pathToSave='Unnamed'):
     pl.savefig(os.environ["WRADLIB_DATA"] + '/' + pathToSave + '.png', bbox_inches='tight')
 
 
-# Mask an array where equal to a given value.
-# data = np.ma.masked_equal(data, -9999)
+def find_min_max_values(min_max_values):
+    minimum = 255
+    maximum = 0
+
+    for value in min_max_values:
+        if value["min"] < minimum:
+            minimum = value["min"]
+        if value["max"] > maximum:
+            maximum = value["max"]
+    return minimum, maximum
 
 
-# Bild als GIF speichern
-# Maximum aus allen Daten rausfiltern
-# Daten ansehen um geeigneten Maßstab zu finden
-# Quantisierung
-# Breitengrad von Konstanz: 47.6779496
-# Längengrad von Konstanz: 9.1732384
+def query_metadata_file(filename):
+    with open(filename, 'r') as infile:
+        reader = csv.reader(infile, delimiter=",", quotechar='"')
+        minimum = 999999999
+        maximum = 0
+        for row in reader:
+            if len(row) == 0:
+                continue
+            if int(row[1]) < minimum:
+                minimum = int(row[1])
+            if int(row[2]) > maximum:
+                maximum = int(row[2])
+
+    return minimum, maximum
 
 
-def find_min_max_values(data, minValues, maxValues):
-    minValues.append(np.min(data))
-    maxValues.append(np.max(data))
+def update_metadata_file(filename, new_data_set):
+    with open(filename, 'a') as outfile:
+        writer = csv.writer(outfile, delimiter=",")
+        writer.writerow(new_data_set)
+
+
+def clean_csv(filename):
+    seen = set()
+    for line in fileinput.FileInput(filename, inplace=1):
+        if line in seen:
+            continue
+        seen.add(line)
+        print(line)
 
 
 if __name__ == '__main__':
-    print("Hello from main script")
+    metadata_file_name = "radolan_metadata.csv"
+    # { "filename" : {"min":1, "max":245}, "file2": {"min":2, "max":250}, ... }
+
     # Parameters: xStart, xEnd, yStart, yEnd (used to crop the images to a certain size)
     # Maybe also use real coordinates to specify area
 
@@ -77,21 +109,19 @@ if __name__ == '__main__':
     # so that only new datasets need to be processed twice.
 
     warnings.filterwarnings('ignore')
+
     # Path to DATA location (Change to match Crwaler )
     os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/TEST"
 
-    # Grid Germany
-    # National Composites (R-, S- and W-series) <- USED
+    # Grid Germany (National Composites (R-, S- and W-series) <- USED)
     radolan_grid_xy = wrl.georef.get_radolan_grid(900, 900)
-    # Extended Grid
-    # As used in  European Composites
+    # Extended Grid (As used in  European Composites)
     radolan_egrid_xy = wrl.georef.get_radolan_grid(1500, 1400)
+
     # Grid Germany+d
-    # See
     radolan_wgrid_xy = wrl.georef.get_radolan_grid(1100, 900)
 
-    minValues = []
-    maxValues = []
+    minMaxValues = {}
 
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
@@ -99,7 +129,7 @@ if __name__ == '__main__':
                 continue
             data, attrs = read_radolan(file)
             data = np.ma.masked_equal(data, -9999)
-            find_min_max_values(data, minValues, maxValues)
             plot_radolan_png(data, attrs, radolan_grid_xy, clabel='mm * h-1', pathToSave=file)
-    print(np.mean(minValues))
-    print(np.mean(maxValues))
+
+            overallMinValue, overallMaxValue = find_min_max_values(minMaxValues)
+            # ToDo: write metadata file
