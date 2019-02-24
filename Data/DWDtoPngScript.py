@@ -49,7 +49,7 @@ def plot_radolan_png(data, attrs, grid, clabel=None, pathToSave='Unnamed'):
     pl.axis('off')
     pl.xlim((x[0, 0], x[-1, -1]))
     pl.ylim((y[0, 0], y[-1, -1]))
-    pl.savefig(os.environ["WRADLIB_DATA"] + '/' + pathToSave + '.png', bbox_inches='tight')
+    pl.savefig(os.environ["WRADLIB_DATA"] + '/' + pathToSave + '_scaled.png', bbox_inches='tight')
 
 
 def min_max_from_array(data):
