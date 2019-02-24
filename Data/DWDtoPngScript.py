@@ -52,16 +52,23 @@ def plot_radolan_png(data, attrs, grid, clabel=None, pathToSave='Unnamed'):
     pl.savefig(os.environ["WRADLIB_DATA"] + '/' + pathToSave + '.png', bbox_inches='tight')
 
 
-def find_min_max_values(min_max_values):
-    minimum = 255
-    maximum = 0
+def min_max_from_array(data):
+    mini = 99999999999
+    maxi = 0
+    for value in data:
+        if value > maxi:
+            maxi = value
+        if value < mini:
+            mini = value
+    return mini, maxi
 
-    for value in min_max_values:
-        if value["min"] < minimum:
-            minimum = value["min"]
-        if value["max"] > maximum:
-            maximum = value["max"]
-    return minimum, maximum
+
+# Array-Like, minimum of all data, max of all data, bit depth of data-/image-type
+def normalize(data, absolute_min, absolute_max, bitdepth=255):
+    factor = bitdepth/absolute_max
+    data -= absolute_min
+    data *= factor
+    return data
 
 
 def query_metadata_file(filename):
@@ -121,15 +128,26 @@ if __name__ == '__main__':
     # Grid Germany+d
     radolan_wgrid_xy = wrl.georef.get_radolan_grid(1100, 900)
 
-    minMaxValues = {}
-
+    # First pass: get min and max for all radolan files
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
             if '.png' in file:
                 continue
             data, attrs = read_radolan(file)
             data = np.ma.masked_equal(data, -9999)
-            plot_radolan_png(data, attrs, radolan_grid_xy, clabel='mm * h-1', pathToSave=file)
 
-            overallMinValue, overallMaxValue = find_min_max_values(minMaxValues)
-            # ToDo: write metadata file
+            current_min, current_max = min_max_from_array(data)
+            update_metadata_file(metadata_file_name, [file, current_min, current_max])
+
+    clean_csv(metadata_file_name)  # Removes duplicate entries
+
+    # ToDo: 2nd pass - save scaled images with generated metadata
+    abs_min, abs_max = query_metadata_file(metadata_file_name)
+    for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
+        for file in files:
+            if '.png' in file:
+                continue
+            data, attrs = read_radolan(file)
+            # Scale
+            data = normalize(data, abs_min, abs_max)
+            plot_radolan_png(data, attrs, radolan_grid_xy, clabel='mm * h-1', pathToSave=file)
