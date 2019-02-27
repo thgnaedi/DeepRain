@@ -3,14 +3,15 @@
 # Environment Access via Anaconda Navigator
 
 # Breitengrad von Konstanz: 47.6779496
-# Längengrad von Konstanz: 9.1732384
+# Laengengrad von Konstanz: 9.1732384
 
 import os
 import wradlib as wrl
 import numpy as np
-import matplotlib.pyplot as pl
 import warnings
-import csv, fileinput
+import csv
+import fileinput
+from PIL import Image
 
 
 def read_radolan(radfile):
@@ -18,54 +19,42 @@ def read_radolan(radfile):
     return wrl.io.read_radolan_composite(radfile)
 
 
-def plot_radolan(data, attrs, grid, clabel=None):
-    fig = pl.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, aspect='equal')
-    x = grid[:, :, 0]
-    y = grid[:, :, 1]
-    pm = ax.pcolormesh(x, y, data, cmap='viridis')
-    cb = fig.colorbar(pm, shrink=0.75)
-    cb.set_label(clabel)
-    pl.xlabel("x [km]")
-    pl.ylabel("y [km]")
-    pl.title('{0} Product\n{1}'.format(attrs['producttype'],
-                                       attrs['datetime'].isoformat()))
-    pl.xlim((x[0, 0], x[-1, -1]))
-    pl.ylim((y[0, 0], y[-1, -1]))
-    pl.grid(color='r')
+def save_png_grayscale_16bit(image_data, filename):
+    # Convert to 16 bit depth
+    image_data_8bit = image_data.astype(np.uint8)
 
+    print("Type of scaled array: ")
+    print(type(image_data))
+    print("Shape of scaled array: ")
+    print(image_data.shape)
+    print()
+    print("Type of type-converted array: ")
+    print(type(image_data_8bit))
+    print("Shape of type-converted array: ")
+    print(image_data_8bit.shape)
 
-def plot_radolan_png(data, attrs, grid, clabel=None, pathToSave='Unnamed'):
-    fig = pl.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, aspect='equal')
-    x = grid[:, :, 0]
-    y = grid[:, :, 1]
-
-    data = data[200:800, 200:850]
-    x = x[200:800, 200:850]
-    y = y[200:800, 200:850]
-
-    pm = ax.pcolormesh(x, y, data, cmap='viridis')
-    pl.axis('off')
-    pl.xlim((x[0, 0], x[-1, -1]))
-    pl.ylim((y[0, 0], y[-1, -1]))
-    pl.savefig(os.environ["WRADLIB_DATA"] + '/' + pathToSave + '_scaled.png', bbox_inches='tight')
+    # Save
+    full_filename = test_path + '/' + filename + ".png"
+    outimage = Image.fromarray(image_data_8bit)
+    outimage.save(full_filename)
+    #scipy.misc.imsave(image_data_16bit, full_filename)
 
 
 def min_max_from_array(data):
     mini = 99999999999
     maxi = 0
-    for value in data:
-        if value > maxi:
-            maxi = value
-        if value < mini:
-            mini = value
+    for array in data:
+        for value in array:
+            if value > maxi:
+                maxi = value
+            if value < mini:
+                mini = value
     return mini, maxi
 
 
 # Array-Like, minimum of all data, max of all data, bit depth of data-/image-type
-def normalize(data, absolute_min, absolute_max, bitdepth=255):
-    factor = bitdepth/absolute_max
+def normalize(data, absolute_min, absolute_max, bit_width=255):
+    factor = bit_width/absolute_max
     data -= absolute_min
     data *= factor
     return data
@@ -79,10 +68,10 @@ def query_metadata_file(filename):
         for row in reader:
             if len(row) == 0:
                 continue
-            if int(row[1]) < minimum:
-                minimum = int(row[1])
-            if int(row[2]) > maximum:
-                maximum = int(row[2])
+            if float(row[1]) < minimum:
+                minimum = float(row[1])
+            if float(row[2]) > maximum:
+                maximum = float(row[2])
 
     return minimum, maximum
 
@@ -117,16 +106,11 @@ if __name__ == '__main__':
 
     warnings.filterwarnings('ignore')
 
+    #test_path = "C:\\Users\\Eti\\git\\DeepRain\\Data\\data"
+
     # Path to DATA location (Change to match Crwaler )
     os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/TEST"
-
-    # Grid Germany (National Composites (R-, S- and W-series) <- USED)
-    radolan_grid_xy = wrl.georef.get_radolan_grid(900, 900)
-    # Extended Grid (As used in  European Composites)
-    radolan_egrid_xy = wrl.georef.get_radolan_grid(1500, 1400)
-
-    # Grid Germany+d
-    radolan_wgrid_xy = wrl.georef.get_radolan_grid(1100, 900)
+    #os.environ["WRADLIB_DATA"] = test_path
 
     # First pass: get min and max for all radolan files
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
@@ -141,7 +125,7 @@ if __name__ == '__main__':
 
     clean_csv(metadata_file_name)  # Removes duplicate entries
 
-    # ToDo: 2nd pass - save scaled images with generated metadata
+    # 2nd pass - save scaled images with generated metadata
     abs_min, abs_max = query_metadata_file(metadata_file_name)
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
@@ -150,4 +134,4 @@ if __name__ == '__main__':
             data, attrs = read_radolan(file)
             # Scale
             data = normalize(data, abs_min, abs_max)
-            plot_radolan_png(data, attrs, radolan_grid_xy, clabel='mm * h-1', pathToSave=file)
+            save_png_grayscale_16bit(data, "scaled_" + file)
