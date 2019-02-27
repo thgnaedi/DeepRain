@@ -89,7 +89,7 @@ def clean_csv(filename):
         print(line)
 
 
-if __name__ == '__main__':
+def main():
     metadata_file_name = "radolan_metadata.csv"
     # { "filename" : {"min":1, "max":245}, "file2": {"min":2, "max":250}, ... }
 
@@ -133,3 +133,7 @@ if __name__ == '__main__':
             # Scale
             data = normalize(data, abs_min, abs_max)
             save_png_grayscale_16bit(data, "scaled_" + file)
+
+
+if __name__ == '__main__':
+    main()
