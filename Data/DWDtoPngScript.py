@@ -11,7 +11,7 @@ import numpy as np
 import warnings
 import csv
 import fileinput
-from PIL import Image
+import scipy.misc
 
 
 def read_radolan(radfile):
@@ -35,9 +35,7 @@ def save_png_grayscale_16bit(image_data, filename):
 
     # Save
     full_filename = filename + ".png"
-    outimage = Image.fromarray(image_data_8bit)
-    outimage.save(full_filename)
-    #scipy.misc.imsave(image_data_16bit, full_filename)
+    scipy.misc.imsave(full_filename, image_data_8bit)
 
 
 def min_max_from_array(data):
