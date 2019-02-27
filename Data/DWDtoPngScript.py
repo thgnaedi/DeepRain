@@ -34,7 +34,7 @@ def save_png_grayscale_16bit(image_data, filename):
     print(image_data_8bit.shape)
 
     # Save
-    full_filename = test_path + '/' + filename + ".png"
+    full_filename = filename + ".png"
     outimage = Image.fromarray(image_data_8bit)
     outimage.save(full_filename)
     #scipy.misc.imsave(image_data_16bit, full_filename)
