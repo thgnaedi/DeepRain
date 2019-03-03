@@ -23,18 +23,8 @@ def save_png_grayscale_16bit(image_data, filename):
     # Convert to 16 bit depth
     image_data_8bit = image_data.astype(np.uint8)
 
-    print("Type of scaled array: ")
-    print(type(image_data))
-    print("Shape of scaled array: ")
-    print(image_data.shape)
-    print()
-    print("Type of type-converted array: ")
-    print(type(image_data_8bit))
-    print("Shape of type-converted array: ")
-    print(image_data_8bit.shape)
-
     # Save
-    full_filename = filename + ".png"
+    full_filename = os.environ["WRADLIB_DATA"] + filename + ".png"
     scipy.misc.imsave(full_filename, image_data_8bit)
 
 
