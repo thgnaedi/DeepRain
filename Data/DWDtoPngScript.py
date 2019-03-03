@@ -48,6 +48,15 @@ def normalize(data, absolute_min, absolute_max, bit_width=255):
     return data
 
 
+def query_files_with_metadata(filename):
+    filenames = []
+    with open(filename, 'r') as infile:
+        reader = csv.reader(infile, delimiter=",", quotechar='"')
+        for row in reader:
+            filenames.append(row[0])
+    return filenames
+
+
 def query_metadata_file(filename):
     with open(filename, 'r') as infile:
         reader = csv.reader(infile, delimiter=",", quotechar='"')
@@ -100,10 +109,14 @@ def main():
     os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/TEST"
     #os.environ["WRADLIB_DATA"] = test_path
 
+    already_parsed_files = query_files_with_metadata(metadata_file_name)
+
     # First pass: get min and max for all radolan files
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
             if '.png' in file:
+                continue
+            if file in already_parsed_files:
                 continue
             data, attrs = read_radolan(file)
             data = np.ma.masked_equal(data, -9999)
