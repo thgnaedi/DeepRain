@@ -1,7 +1,70 @@
 import matplotlib.pyplot as plt
 import cv2
 import numpy as np
+import os
+import glob
+import re
 
+class Data_converter():
+    def __init__(self, path, max_num_samples, n_data, n_label, start_img=None, sachenzumZuschneiden=None):
+        assert  os.path.exists(path)
+        if start_img is not None:
+            assert os.path.exists(start_img)
+        assert n_data > 0 and n_label > 0
+        self.path = path
+        self.max_num_samples = max_num_samples
+        self.n_data = n_data
+        self.n_label = n_label
+        #ToDo:
+        self.subimg = ((100, 100), (200, 200))
+        self.resize_shape = (60, 60)
+
+        self.collect_images()
+        self.create_images()
+
+        print("data", self.all_samples[0][0].shape, "label", self.all_samples[0][1].shape)
+        return
+
+    def collect_images(self):
+        self.all_images = []
+        path = self.path+"*.png"
+        for image_path in glob.glob(path):
+            self.all_images.append(image_path)
+        self.all_images.sort()  # Sortieren
+        #ToDo: pattern ersetzen durch regexp
+        pattern = "raa01-rw_10000"
+        while len(self.all_images) > 0 and pattern not in self.all_images[0]:
+            del self.all_images[0]
+        while len(self.all_images) > 0 and pattern not in self.all_images[-1]:
+            del self.all_images[-1]
+        #ToDo: jetzt schauen ob Zeitstempel alle passen, sonst fehlerhafte rauslöschen
+        #       Abhängig von n_data und n_label müssen entsprechende anzahl Elemente passen.
+        return
+
+    def create_images(self):
+        min_n = self.n_data+self.n_label
+        self.all_samples = []
+        while len(self.all_images) >= min_n:
+            data = None
+            label = None
+            for i in range(self.n_data):
+                current = self.all_images.pop(0)
+                current = open_one_img(path=current, _subimg=self.subimg, _resize_shape=self.resize_shape, raiseError=True)
+                if data is None:
+                    data = np.atleast_3d(current)
+                else:
+                    data = np.dstack((data, current))
+            for i in range(self.n_label):
+                current = self.all_images.pop(0)
+                current = open_one_img(path=current, _subimg=self.subimg, _resize_shape=self.resize_shape, raiseError=True)
+                if label is None:
+                    label = np.atleast_3d(current)
+                else:
+                    label = np.dstack((label, current))
+            one_sample = (data, label)
+            self.all_samples.append(one_sample)
+
+        return
 
 def open_2D_img(path):
     img = cv2.imread(path)
@@ -94,18 +157,22 @@ def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_
     return scaled
 
 
-
-if __name__ == '__main__':
-
+def usage():
     path = "raa01-rw_10000-0506301650-dwd---bin.gz.png"
     print("lese Bild:", path)
 
     # Einfaches einlesen eines Bildes:
     OriginalBild = open_one_img(path)
     # Auswählen eines Ausschnittes (zb. region 200x200 Pixel um Konstanz):
-    Ausschnitt = open_one_img(path, _subimg=((100,100),(200,200)))
+    Ausschnitt = open_one_img(path, _subimg=((100, 100), (200, 200)))
     # Skalierter output -> output-Bildgröße = 60x60
     Skaliert = open_one_img(path, _resize_shape=60)
     # alles in einem, mit show_result -> öffnet Plot, welcher die einzelnen Schritte zeigt
-    Demo = open_one_img(path, _subimg=((100,100),(200,200)), _resize_shape=(60,60), raiseError=True, show_result=True)
+    Demo = open_one_img(path, _subimg=((100, 100), (200, 200)), _resize_shape=(60, 60), raiseError=True,
+                        show_result=True)
+
+
+if __name__ == '__main__':
+    path = ".\\"
+    Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None)
 
