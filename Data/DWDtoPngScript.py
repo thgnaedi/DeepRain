@@ -15,7 +15,7 @@ import scipy.misc
 
 
 def read_radolan(radfile):
-    radfile = wrl.util.get_wradlib_data_file('' + radfile)
+    radfile = wrl.util.get_wradlib_data_file(radfile)
     return wrl.io.read_radolan_composite(radfile)
 
 
@@ -132,10 +132,10 @@ def main():
         for file in files:
             if '.png' in file:
                 continue
-            data, attrs = read_radolan(file)
+            data, attrs = read_radolan(subdir + '/' + file)
             # Scale
             data = normalize(data, abs_min, abs_max)
-            save_png_grayscale_16bit(data, "scaled_" + file)
+            save_png_grayscale_16bit(data, os.environ["WRADLIB_DATA"] + '/' + "scaled_" + file)
 
 
 if __name__ == '__main__':
