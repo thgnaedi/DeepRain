@@ -19,7 +19,7 @@ def read_radolan(radfile):
     return wrl.io.read_radolan_composite(radfile)
 
 
-def save_png_grayscale_16bit(image_data, filename):
+def save_png_grayscale_8bit(image_data, filename):
     # Convert to 16 bit depth
     image_data_8bit = image_data.astype(np.uint8)
 
@@ -135,7 +135,7 @@ def main():
             data, attrs = read_radolan(subdir + '/' + file)
             # Scale
             data = normalize(data, abs_min, abs_max)
-            save_png_grayscale_16bit(data, subdir + '/' + "scaled_" + file)
+            save_png_grayscale_8bit(data, subdir + '/' + "scaled_" + file)
 
 
 if __name__ == '__main__':
