@@ -16,7 +16,6 @@ class Data_converter():
         self.max_num_samples = max_num_samples
         self.n_data = n_data
         self.n_label = n_label
-        #ToDo:
         if subimg_startpos is None or subimg_shape is None:
             self.subimg = None
         else:
@@ -29,8 +28,26 @@ class Data_converter():
         self.all_images = self.collect_images()
         self.create_images()
 
+        self.id = 0 #id for .get_next()
+
         print("data", self.all_samples[0][0].shape, "label", self.all_samples[0][1].shape)
         return
+
+    def get_next(self):
+        tmp = self.all_images[self.id]
+        self.id += 1
+        if len(self.all_images > self.id):
+            self.id = 0
+        return tmp
+
+    def get_item_at(self, i):
+        return self.all_images[i]
+
+    def get_number_samples(self):
+        return len(self.all_images)
+
+    def _info(self):
+        return "DWD Radarbilder"    #ToDo: shape len usw.
 
     def collect_images(self):
         all_images = []
@@ -90,6 +107,8 @@ class Data_converter():
                     label = np.dstack((label, current))
             one_sample = (data, label)
             self.all_samples.append(one_sample)
+            if len(self.all_samples) == self.max_num_samples:
+                break
 
         return
 
@@ -222,4 +241,4 @@ def usage():
 if __name__ == '__main__':
     path = ".\\"
     Data_converter(path=path, max_num_samples=2, n_data=1, n_label=1, start_img=None, subimg_startpos=(100,200), subimg_shape=(100,100), output_shape=50)
-    
+
