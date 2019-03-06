@@ -66,7 +66,8 @@ def query_files_with_metadata(filename):
     with open(filename, 'r') as infile:
         reader = csv.reader(infile, delimiter=",", quotechar='"')
         for row in reader:
-            filenames.append(row[0])
+            if len(row) > 0:
+                filenames.append(row[0])
     return filenames
 
 
