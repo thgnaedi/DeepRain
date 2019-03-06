@@ -36,9 +36,9 @@ def read_radolan(radfile):
 
 def save_png_grayscale_8bit(image_data, filename):
     image_data_8bit = image_data.astype(np.uint8)
-    full_filename = os.environ["WRADLIB_DATA"] + filename + ".png"
-    logger.info("Saved image file: " + full_filename)
+    full_filename = filename + ".png"
     scipy.misc.imsave(full_filename, image_data_8bit)
+    logger.info("Saved image file: " + full_filename)
 
 
 def min_max_from_array(data):
@@ -139,15 +139,18 @@ def main():
     abs_min, abs_max = query_metadata_file(metadata_file_name)
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
+            image_file_path = subdir + '/' + "scaled_" + file
             if '.png' in file:
                 logger.info("Skipping png (" + str(counter)+'/'+str(len(files))+")")
                 counter += 1
                 continue
+            if os.path.isfile(image_file_path + ".png"):
+                continue
             data, attrs = read_radolan(subdir + '/' + file)
             # Scale
             data = normalize(data, abs_min, abs_max)
-            logger.info("Normalized file: " + subdir + '/' + file)
-            save_png_grayscale_8bit(data, subdir + '/' + "scaled_" + file + " (" + str(counter)+'/'+str(len(files))+")")
+            logger.info("Normalized file: " + image_file_path + " (" + str(counter)+'/'+str(len(files))+")")
+            save_png_grayscale_8bit(data, image_file_path)
             counter += 1
 
 
