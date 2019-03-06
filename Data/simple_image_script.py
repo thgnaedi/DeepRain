@@ -43,10 +43,10 @@ class Data_converter():
         return tmp
 
     def get_item_at(self, i):
-        return self.all_images[i]
+        return self.all_samples[i]
 
     def get_number_samples(self):
-        return len(self.all_images)
+        return len(self.all_samples)
 
     def _info(self):
         return "DWD Radarbilder"  # ToDo: shape len usw.
