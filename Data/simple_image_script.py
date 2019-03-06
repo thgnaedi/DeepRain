@@ -36,9 +36,9 @@ class Data_converter():
         return
 
     def get_next(self):
-        tmp = self.all_images[self.id]
+        tmp = self.all_samples[self.id]
         self.id += 1
-        if len(self.all_images > self.id):
+        if len(self.all_samples) > self.id:
             self.id = 0
         return tmp
 
