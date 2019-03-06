@@ -118,7 +118,7 @@ def main():
                 continue
             if file in already_parsed_files:
                 continue
-            data, attrs = read_radolan(file)
+            data, attrs = read_radolan(subdir + '/' + file)
             data = np.ma.masked_equal(data, -9999)
 
             current_min, current_max = min_max_from_array(data)
@@ -135,7 +135,7 @@ def main():
             data, attrs = read_radolan(subdir + '/' + file)
             # Scale
             data = normalize(data, abs_min, abs_max)
-            save_png_grayscale_16bit(data, os.environ["WRADLIB_DATA"] + '/' + "scaled_" + file)
+            save_png_grayscale_16bit(data, subdir + '/' + "scaled_" + file)
 
 
 if __name__ == '__main__':
