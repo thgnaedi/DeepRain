@@ -66,7 +66,8 @@ class Data_converter():
         legals = []
         first_d = None
         next_d = None
-        datecomp = Date_Comperator(pre=".\\raa01-rw_10000-",post="-dwd---bin.gz.png")
+        datecomp = Date_Comperator(pre=self.path+"raa01-rw_10000-",post="-dwd---bin.gz.png")
+        print("habe durchsucht", self.path, "gefunden:", len(all_images))
         for i in all_images:
             first_d = next_d
             next_d = i
@@ -115,6 +116,7 @@ class Data_converter():
 
 class Date_Comperator():
     def __init__(self, pre, post, timediff=100):
+        print("comperator erstellt mit", pre, " && ", post)
         self.pre=pre
         self.post=post
         self.diff = timediff
@@ -240,5 +242,6 @@ def usage():
 
 if __name__ == '__main__':
     path = ".\\"
+    path = "C:\\temp\\loeschen\\"
     Data_converter(path=path, max_num_samples=2, n_data=1, n_label=1, start_img=None, subimg_startpos=(100,200), subimg_shape=(100,100), output_shape=50)
 
