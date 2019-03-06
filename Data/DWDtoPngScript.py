@@ -123,12 +123,17 @@ def main():
     already_parsed_files = query_files_with_metadata(metadata_file_name)
 
     # First pass: get min and max for all radolan files
+    counter = 0
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
             if '.png' in file:
+                logger.info("Skipping png (" + str(counter)+'/'+str(len(files)))
+                counter += 1
                 continue
             if file in already_parsed_files:
-                logger.info("Metadata already present for file: " + subdir + '/' + file)
+                logger.info("Metadata already present for file: " + subdir + '/' + file
+                            + "(" + str(counter)+'/'+str(len(files)))
+                counter += 1
                 continue
             data, attrs = read_radolan(subdir + '/' + file)
             data = np.ma.masked_equal(data, -9999)
@@ -136,22 +141,27 @@ def main():
             current_min, current_max = min_max_from_array(data)
             logger.info("Computed metadata from file: " + subdir + '/' + file)
             update_metadata_file(metadata_file_name, [file, current_min, current_max])
-            logger.info("Wrote metadata for file: " + subdir + '/' + file)
+            logger.info("Wrote metadata for file: " + subdir + '/' + file + "(" + str(counter)+'/'+str(len(files)))
+            counter += 1
 
     clean_csv(metadata_file_name)  # Removes duplicate entries
     logger.info("Cleaned metadata file: " + metadata_file_name)
 
     # 2nd pass - save scaled images with generated metadata
+    counter = 0
     abs_min, abs_max = query_metadata_file(metadata_file_name)
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
             if '.png' in file:
+                logger.info("Skipping png (" + str(counter)+'/'+str(len(files)))
+                counter += 1
                 continue
             data, attrs = read_radolan(subdir + '/' + file)
             # Scale
             data = normalize(data, abs_min, abs_max)
             logger.info("Normalized file: " + subdir + '/' + file)
-            save_png_grayscale_8bit(data, subdir + '/' + "scaled_" + file)
+            save_png_grayscale_8bit(data, subdir + '/' + "scaled_" + file + "(" + str(counter)+'/'+str(len(files)))
+            counter += 1
 
 
 if __name__ == '__main__':
