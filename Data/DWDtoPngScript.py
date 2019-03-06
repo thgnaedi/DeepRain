@@ -132,7 +132,7 @@ def main():
                 continue
             if file in already_parsed_files:
                 logger.info("Metadata already present for file: " + subdir + '/' + file
-                            + "(" + str(counter)+'/'+str(len(files)))
+                            + " (" + str(counter)+'/'+str(len(files))+")")
                 counter += 1
                 continue
             data, attrs = read_radolan(subdir + '/' + file)
@@ -141,7 +141,7 @@ def main():
             current_min, current_max = min_max_from_array(data)
             logger.info("Computed metadata from file: " + subdir + '/' + file)
             update_metadata_file(metadata_file_name, [file, current_min, current_max])
-            logger.info("Wrote metadata for file: " + subdir + '/' + file + "(" + str(counter)+'/'+str(len(files)))
+            logger.info("Wrote metadata for file: " + subdir + '/' + file + " (" + str(counter)+'/'+str(len(files))+")")
             counter += 1
 
     clean_csv(metadata_file_name)  # Removes duplicate entries
@@ -153,14 +153,14 @@ def main():
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
             if '.png' in file:
-                logger.info("Skipping png (" + str(counter)+'/'+str(len(files)))
+                logger.info("Skipping png (" + str(counter)+'/'+str(len(files))+")")
                 counter += 1
                 continue
             data, attrs = read_radolan(subdir + '/' + file)
             # Scale
             data = normalize(data, abs_min, abs_max)
             logger.info("Normalized file: " + subdir + '/' + file)
-            save_png_grayscale_8bit(data, subdir + '/' + "scaled_" + file + "(" + str(counter)+'/'+str(len(files)))
+            save_png_grayscale_8bit(data, subdir + '/' + "scaled_" + file + " (" + str(counter)+'/'+str(len(files))+")")
             counter += 1
 
 
