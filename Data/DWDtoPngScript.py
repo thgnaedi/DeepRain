@@ -12,6 +12,18 @@ import warnings
 import csv
 import fileinput
 import scipy.misc
+import logging
+
+logger = logging.getLogger("DWD to PNG (script)")
+logger.setLevel(logging.INFO)
+
+file_handler = logging.FileHandler("dwd-to-png.log")
+file_handler.setLevel(logging.INFO)
+logger.addHandler(file_handler)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+logger.addHandler(stream_handler)
 
 
 def read_radolan(radfile):
@@ -20,11 +32,9 @@ def read_radolan(radfile):
 
 
 def save_png_grayscale_8bit(image_data, filename):
-    # Convert to 16 bit depth
     image_data_8bit = image_data.astype(np.uint8)
-
-    # Save
     full_filename = os.environ["WRADLIB_DATA"] + filename + ".png"
+    logger.info("Saved image file: " + full_filename)
     scipy.misc.imsave(full_filename, image_data_8bit)
 
 
@@ -90,6 +100,7 @@ def clean_csv(filename):
 
 def main():
     metadata_file_name = "radolan_metadata.csv"
+
     # { "filename" : {"min":1, "max":245}, "file2": {"min":2, "max":250}, ... }
 
     # Parameters: xStart, xEnd, yStart, yEnd (used to crop the images to a certain size)
@@ -117,14 +128,18 @@ def main():
             if '.png' in file:
                 continue
             if file in already_parsed_files:
+                logger.info("Metadata already present for file: " + subdir + '/' + file)
                 continue
             data, attrs = read_radolan(subdir + '/' + file)
             data = np.ma.masked_equal(data, -9999)
 
             current_min, current_max = min_max_from_array(data)
+            logger.info("Computed metadata from file: " + subdir + '/' + file)
             update_metadata_file(metadata_file_name, [file, current_min, current_max])
+            logger.info("Wrote metadata for file: " + subdir + '/' + file)
 
     clean_csv(metadata_file_name)  # Removes duplicate entries
+    logger.info("Cleaned metadata file: " + metadata_file_name)
 
     # 2nd pass - save scaled images with generated metadata
     abs_min, abs_max = query_metadata_file(metadata_file_name)
@@ -135,6 +150,7 @@ def main():
             data, attrs = read_radolan(subdir + '/' + file)
             # Scale
             data = normalize(data, abs_min, abs_max)
+            logger.info("Normalized file: " + subdir + '/' + file)
             save_png_grayscale_8bit(data, subdir + '/' + "scaled_" + file)
 
 
