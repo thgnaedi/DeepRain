@@ -1,9 +1,12 @@
 # https://docs.wradlib.org/en/stable/installation.html
-# ENABLE ENVIRONMENT FIRST!
-# Environment Access via Anaconda Navigator
-
 # Breitengrad von Konstanz: 47.6779496
 # Laengengrad von Konstanz: 9.1732384
+
+# Computes a series of PNGs for the radolan datasets.
+# Needs a 2-pass process, to determine MIN and MAX values in the first run,
+# and generate normalized images in the second pass.
+# The metadata (MIN/MAX, etc.) will be saved in a separate file,
+# so that only new datasets need to be processed twice.
 
 import os
 import wradlib as wrl
@@ -100,26 +103,10 @@ def clean_csv(filename):
 
 def main():
     metadata_file_name = "radolan_metadata.csv"
-
-    # { "filename" : {"min":1, "max":245}, "file2": {"min":2, "max":250}, ... }
-
-    # Parameters: xStart, xEnd, yStart, yEnd (used to crop the images to a certain size)
-    # Maybe also use real coordinates to specify area
-
-    # Computes a series of PNGs for the radolan datasets.
-    # Needs a 2-pass process, to determine MIN and MAX values in the first run,
-    # and generate normalized images in the second pass.
-    # The metadata (MIN/MAX, etc.) will be saved in a separate file,
-    # so that only new datasets need to be processed twice.
-
     warnings.filterwarnings('ignore')
-
-    #test_path = "C:\\Users\\Eti\\git\\DeepRain\\Data\\data"
 
     # Path to DATA location (Change to match Crwaler )
     os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/TEST"
-    #os.environ["WRADLIB_DATA"] = test_path
-
     already_parsed_files = query_files_with_metadata(metadata_file_name)
 
     # First pass: get min and max for all radolan files
@@ -127,7 +114,7 @@ def main():
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         for file in files:
             if '.png' in file:
-                logger.info("Skipping png (" + str(counter)+'/'+str(len(files)))
+                logger.info("Skipping png (" + str(counter)+'/'+str(len(files))+")")
                 counter += 1
                 continue
             if file in already_parsed_files:
