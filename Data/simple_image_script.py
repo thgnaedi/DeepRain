@@ -16,6 +16,7 @@ class Data_converter():
             raise NotImplementedError("Path is okay, but functionality not implemented yet!")
         assert n_data > 0 and n_label > 0
         self.path = path
+        self.silent = silent
         self.max_num_samples = max_num_samples
         self.n_data = n_data
         self.n_label = n_label
@@ -32,8 +33,7 @@ class Data_converter():
         self.create_images()
 
         self.id = 0  # id for .get_next()
-        self.silent = silent
-        if not silent:
+        if not self.silent:
             print("data", self.all_samples[0][0].shape, "label", self.all_samples[0][1].shape)
         return
 
@@ -106,7 +106,7 @@ class Data_converter():
             for i in range(self.n_label):
                 current = self.all_images.pop(0)
                 current = open_one_img(path=current, _subimg=self.subimg, _resize_shape=self.resize_shape,
-                                       raiseError=True)
+                                       raiseError=True, silent=self.silent)
                 if label is None:
                     label = np.atleast_3d(current)
                 else:
@@ -256,5 +256,5 @@ def usage():
 if __name__ == '__main__':
     path = "C:\\temp\\loeschen\\"
     dc = Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None, subimg_startpos=(100, 200),
-                        subimg_shape=(100, 100), output_shape=50)
+                        subimg_shape=(100, 100), output_shape=50, silent=True)
     dc.save_object("einObjekt", "nur ein TestObjekt mit wenigen Samples")
