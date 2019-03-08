@@ -9,7 +9,7 @@ import sample_bundle as sb
 
 class Data_converter():
     def __init__(self, path, max_num_samples, n_data, n_label, start_img=None, subimg_startpos=None, subimg_shape=None,
-                 output_shape=None):
+                 output_shape=None, silent=False):
         assert os.path.exists(path)
         if start_img is not None:
             assert os.path.exists(start_img)
@@ -32,8 +32,9 @@ class Data_converter():
         self.create_images()
 
         self.id = 0  # id for .get_next()
-
-        print("data", self.all_samples[0][0].shape, "label", self.all_samples[0][1].shape)
+        self.silent = silent
+        if not silent:
+            print("data", self.all_samples[0][0].shape, "label", self.all_samples[0][1].shape)
         return
 
     def get_next(self):
@@ -97,7 +98,7 @@ class Data_converter():
             for i in range(self.n_data):
                 current = self.all_images.pop(0)
                 current = open_one_img(path=current, _subimg=self.subimg, _resize_shape=self.resize_shape,
-                                       raiseError=True)
+                                       raiseError=True, silent=self.silent)
                 if data is None:
                     data = np.atleast_3d(current)
                 else:
@@ -143,13 +144,15 @@ class Date_Comperator():
             return False
 
 
-def open_2D_img(path):
+def open_2D_img(path, silent=False):
     img = cv2.imread(path)
     if img is None:
-        print("Datei nicht vorhanden")
+        if not silent:
+            print("Datei nicht vorhanden")
         return None
     if len(img.shape) > 2:
-        print("Eingelesenes Bild hat zu hohe Dimension (wird gekürzt auf 2D)")
+        if not silent:
+            print("Eingelesenes Bild hat zu hohe Dimension (wird gekürzt auf 2D)")
         img = img[:, :, 0]
     return img
 
@@ -210,8 +213,8 @@ def list_to_set(imgList, n_input, n_output):
     return (x, y)
 
 
-def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False):
-    img2D = open_2D_img(path)
+def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False):
+    img2D = open_2D_img(path, silent)
     if _subimg is None:
         img2D_sub = img2D
     else:
