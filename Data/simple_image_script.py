@@ -3,7 +3,8 @@ import cv2
 import numpy as np
 import os
 import glob
-import re
+import pickle
+import sample_bundle as sb
 
 
 class Data_converter():
@@ -58,7 +59,7 @@ class Data_converter():
             all_images.append(image_path)
         all_images.sort()  # Sortieren
         # ToDo: pattern ersetzen durch regexp
-        pattern = "raa01-rw_10000"
+        pattern = "scaled_raa01-rw_10000"
         while len(all_images) > 0 and pattern not in all_images[0]:
             del all_images[0]
         while len(all_images) > 0 and pattern not in all_images[-1]:
@@ -68,7 +69,7 @@ class Data_converter():
         legals = []
         first_d = None
         next_d = None
-        datecomp = Date_Comperator(pre=self.path + "raa01-rw_10000-", post="-dwd---bin.gz.png")
+        datecomp = Date_Comperator(pre=self.path + "scaled_raa01-rw_10000-", post="-dwd---bin.gz.png")
         for i in all_images:
             first_d = next_d
             next_d = i
@@ -115,6 +116,12 @@ class Data_converter():
                 break
 
         return
+
+    def save_object(self, filename, details=""):
+        filename += ".sb"
+        obj = sb.Sample_Bundle(self.subimg, self.resize_shape, self.all_samples, details=details)
+        with open(filename, 'wb') as output:  # Overwrites any existing file.
+            pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 
 class Date_Comperator():
@@ -244,7 +251,7 @@ def usage():
 
 
 if __name__ == '__main__':
-    path = ".\\"
     path = "C:\\temp\\loeschen\\"
-    Data_converter(path=path, max_num_samples=2, n_data=1, n_label=1, start_img=None, subimg_startpos=(100, 200),
-                   subimg_shape=(100, 100), output_shape=50)
+    dc = Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None, subimg_startpos=(100, 200),
+                        subimg_shape=(100, 100), output_shape=50)
+    dc.save_object("einObjekt", "nur ein TestObjekt mit wenigen Samples")
