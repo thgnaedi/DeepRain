@@ -38,4 +38,3 @@ def load_Sample_Bundle(path):
 if __name__ == '__main__':
     sb = load_Sample_Bundle("einObjekt")
     print(sb.info())
-    print(sb.details)
