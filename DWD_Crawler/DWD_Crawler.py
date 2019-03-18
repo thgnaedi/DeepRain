@@ -5,7 +5,7 @@ import glob
 import gzip
 import shutil
 import tarfile
-
+import os
 
 host_protocol = "ftp://"
 host_url = "ftp-cdc.dwd.de"
@@ -14,8 +14,8 @@ local_directory = "./"
 
 
 def gunzip(file_path, output_path):
-    with gzip.open(file_path, "rb") as comressed, open(output_path, "wb") as file_out:
-        shutil.copyfileobj(comressed, file_out)
+    with gzip.open(file_path, "rb") as compressed, open(output_path, "wb") as file_out:
+        shutil.copyfileobj(compressed, file_out)
 
 
 def uncompress_monthly(tar_file_path, destination):
@@ -26,7 +26,10 @@ def uncompress_monthly(tar_file_path, destination):
 def uncompress_monthly_all(source_path, destination_path):
     os.chdir(source_path)
     for file in glob.glob("*.tar.gz"):
-        uncompress_monthly(file, destination_path)
+        subdir = destination_path + '/' + file
+        if not os.path.exists(subdir):
+            os.makedirs(subdir)
+        uncompress_monthly(file, subdir)
 
 
 def download_with_new_connection(ftp, filename):
