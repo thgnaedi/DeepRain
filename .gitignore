@@ -1,7 +1,7 @@
 **.ipynb_checkpoints
 *.idea
 
-
+*.log
 *.tar.gz
 =======
 .idea/
