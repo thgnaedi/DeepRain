@@ -17,6 +17,12 @@ import fileinput
 import scipy.misc
 import logging
 
+from multiprocessing import Pool
+
+
+counter_files = 0
+total_files = 0
+
 logger = logging.getLogger("DWD to PNG (script)")
 logger.setLevel(logging.INFO)
 
@@ -27,6 +33,19 @@ logger.addHandler(file_handler)
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
 logger.addHandler(stream_handler)
+
+
+def get_metadata_for_file(path_to_file):
+    # ToDo: Split filename and path
+    file = os.path.basename(path_to_file)
+    path = os.path.dirname(path_to_file)
+
+    data, attrs = read_radolan(path + '/' + file)
+    data = np.ma.masked_equal(data, -9999)
+    current_min, current_max = min_max_from_array(data)
+    logger.info("Computed metadata from file: " + path + '/' + file)
+    logger.info("Wrote metadata for file: " + path + '/' + file + " (" + str(counter_files)+'/'+str(total_files)+")")
+    return [file, current_min, current_max]
 
 
 def read_radolan(radfile):
@@ -87,10 +106,17 @@ def query_metadata_file(filename):
     return minimum, maximum
 
 
-def update_metadata_file(filename, new_data_set):
+def update_metadata_file(filename, new_row_entry):
     with open(filename, 'a') as outfile:
         writer = csv.writer(outfile, delimiter=",")
-        writer.writerow(new_data_set)
+        writer.writerow(new_row_entry)
+
+
+def update_metadata_file_multiple_entries(filename, new_row_entries_list):
+    with open(filename, 'a') as outfile:
+        writer = csv.writer(outfile, delimiter=",")
+        for row in new_row_entries_list:
+            writer.writerow(row)
 
 
 def clean_csv(filename):
@@ -103,34 +129,38 @@ def clean_csv(filename):
 
 
 def main():
+    global counter_files, total_files
     metadata_file_name = "radolan_metadata.csv"
     warnings.filterwarnings('ignore')
 
     # Path to DATA location (Change to match Crwaler )
-    os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/TEST"
+    os.environ["WRADLIB_DATA"] = r"C:\Users\Eti\PycharmProjects\DeepRain\Data\test"
     already_parsed_files = query_files_with_metadata(metadata_file_name)
 
     # First pass: get min and max for all radolan files
-    counter = 0
+    files_to_be_parsed = []
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
+        total_files += len(files)
         for file in files:
             if '.png' in file:
-                logger.info("Skipping png (" + str(counter)+'/'+str(len(files))+")")
-                counter += 1
+                logger.info("Skipping png (" + str(counter_files)+'/'+str(len(files))+")")
+                counter_files += 1
                 continue
             if file in already_parsed_files:
                 logger.info("Metadata already present for file: " + subdir + '/' + file
-                            + " (" + str(counter)+'/'+str(len(files))+")")
-                counter += 1
+                            + " (" + str(counter_files)+'/'+str(len(files))+")")
+                counter_files += 1
                 continue
-            data, attrs = read_radolan(subdir + '/' + file)
-            data = np.ma.masked_equal(data, -9999)
 
-            current_min, current_max = min_max_from_array(data)
-            logger.info("Computed metadata from file: " + subdir + '/' + file)
-            update_metadata_file(metadata_file_name, [file, current_min, current_max])
-            logger.info("Wrote metadata for file: " + subdir + '/' + file + " (" + str(counter)+'/'+str(len(files))+")")
-            counter += 1
+            # Add filenames to be parsed to list
+            files_to_be_parsed.append(subdir + '/' + file)
+
+    # Start Pool
+    with Pool(5) as p:
+        result_list = p.map(get_metadata_for_file, files_to_be_parsed)
+
+    # Write all metadata to file
+    update_metadata_file_multiple_entries(metadata_file_name, result_list)
 
     clean_csv(metadata_file_name)  # Removes duplicate entries
     logger.info("Cleaned metadata file: " + metadata_file_name)
