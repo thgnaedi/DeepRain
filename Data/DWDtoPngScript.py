@@ -36,6 +36,7 @@ logger.addHandler(stream_handler)
 
 
 def get_metadata_for_file(path_to_file):
+    global counter_files
     # ToDo: Split filename and path
     file = os.path.basename(path_to_file)
     path = os.path.dirname(path_to_file)
@@ -43,8 +44,8 @@ def get_metadata_for_file(path_to_file):
     data, attrs = read_radolan(path + '/' + file)
     data = np.ma.masked_equal(data, -9999)
     current_min, current_max = min_max_from_array(data)
-    logger.info("Computed metadata from file: " + path + '/' + file)
-    logger.info("Wrote metadata for file: " + path + '/' + file + " (" + str(counter_files)+'/'+str(total_files)+")")
+    counter_files += 1
+    logger.info("Computed metadata for file: " + path + '/' + file + " (" + str(counter_files)+'/'+str(total_files)+")")
     return [file, current_min, current_max]
 
 
@@ -134,7 +135,7 @@ def main():
     warnings.filterwarnings('ignore')
 
     # Path to DATA location (Change to match Crwaler )
-    os.environ["WRADLIB_DATA"] = r"C:\Users\Eti\PycharmProjects\DeepRain\Data\test"
+    os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/2018"
     already_parsed_files = query_files_with_metadata(metadata_file_name)
 
     # First pass: get min and max for all radolan files
@@ -147,16 +148,15 @@ def main():
                 counter_files += 1
                 continue
             if file in already_parsed_files:
-                logger.info("Metadata already present for file: " + subdir + '/' + file
-                            + " (" + str(counter_files)+'/'+str(len(files))+")")
                 counter_files += 1
                 continue
 
             # Add filenames to be parsed to list
             files_to_be_parsed.append(subdir + '/' + file)
 
+    print("Files to parse: " + str(len(files_to_be_parsed)))
     # Start Pool
-    with Pool(5) as p:
+    with Pool(8) as p:
         result_list = p.map(get_metadata_for_file, files_to_be_parsed)
 
     # Write all metadata to file
