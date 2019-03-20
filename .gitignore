@@ -1,9 +1,17 @@
 **.ipynb_checkpoints
 *.idea
 
+*.png
+*.jpg
+*.jpeg
+*.bmp
+
 *.log
 *.csv
-*.tar.gz
+
+*.zip
+*.bz2
+*.gz
 =======
 .idea/
 
