@@ -70,7 +70,7 @@ class Data_converter():
         legals = []
         first_d = None
         next_d = None
-        datecomp = Date_Comperator(pre=self.path + "scaled_raa01-rw_10000-", post="-dwd---bin.gz.png")
+        datecomp = Date_Comperator(pre=self.path + "scaled_raa01-rw_10000-", post="-dwd---bin.png")
         for i in all_images:
             first_d = next_d
             next_d = i
@@ -140,7 +140,7 @@ class Date_Comperator():
             time2 = int(time2)
             return time == time2 - self.diff
         except:
-            raise ValueError("There are problems converting img name to timestamp!")
+            raise ValueError("There are problems converting img name to timestamp!",self.pre, self.post)
             return False
 
 
