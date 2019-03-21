@@ -30,7 +30,7 @@ def get_statistic(path, max_num_samples):
 
     # einige Parameter haben default werte, angegeben werden muss auf jedenfall:
     # path, max_num_samples, n_data, n_label
-    dc = sis.Data_converter(path, max_num_samples, n_data, n_label, start_img, subimg_startpos, subimg_shape, output_shape)
+    dc = sis.Data_converter(path, max_num_samples, n_data, n_label, start_img, subimg_startpos, subimg_shape, output_shape, silent=True)
 
 
     all_results = []
