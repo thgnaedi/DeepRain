@@ -6,11 +6,40 @@ import gzip
 import shutil
 import tarfile
 import os
+import requests
 
 host_protocol = "ftp://"
 host_url = "ftp-cdc.dwd.de"
 host_directory = "pub/CDC/grids_germany/hourly/radolan/historical/bin/"
 local_directory = "./"
+
+minutely_host_protocol = "https://"
+minutely_host_url = "opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/"
+minutely_range_begin = 2001
+minutely_range_end = 2018
+minutely_filename_prefix = "YW2017.002_"
+minutely_filename_end = ".tar"
+
+
+def daily_uncompress(archive_directory, target_directory):
+    os.chdir(archive_directory)
+    for file in glob.glob("*.tar"):
+        uncompress_tarfile(archive_directory + '/' + file, target_directory)
+
+
+def daily_download_years(target_directory):
+    for year in range(minutely_range_begin, minutely_range_end):
+        daily_download_months(year, target_directory)
+
+
+def daily_download_months(year, target_directory):
+    for month in range(1, 12):
+        daily_filename = minutely_filename_prefix + str(year) + str(month) + minutely_filename_end
+        url_complete = minutely_host_protocol + minutely_host_url + str(year) + '/' + daily_filename
+        r = requests.get(url_complete)
+        r.raw.decode_content = True
+        with open(target_directory + daily_filename, 'wb') as file:
+            shutil.copyfileobj(r.raw, file)
 
 
 def gunzip(file_path, output_path):
@@ -18,7 +47,7 @@ def gunzip(file_path, output_path):
         shutil.copyfileobj(compressed, file_out)
 
 
-def uncompress_monthly(tar_file_path, destination):
+def uncompress_tarfile(tar_file_path, destination):
     file = tarfile.open(tar_file_path, "r:gz")
     file.extractall(destination)
 
@@ -29,7 +58,7 @@ def uncompress_monthly_all(source_path, destination_path):
         subdir = destination_path + '/' + file
         if not os.path.exists(subdir):
             os.makedirs(subdir)
-        uncompress_monthly(file, subdir)
+        uncompress_tarfile(file, subdir)
 
 
 def download_with_new_connection(ftp, filename):
@@ -70,45 +99,76 @@ def ftp_dir_year(ftp, directory_file_list):
             ftp.cwd("..")
 
 
-def main(download_dir="./", out_directory="./", download=True, unpack=True):
-    print("Hello From Main!!!")
-    print("Downloading to: " + download_dir)
-    print("Unzipping to: " + out_directory)
+def main(download_dir="./", out_directory="./", download=True, unpack=True, minutely=True):
+    print("Downloads are at: " + download_dir)
+    print("Uncompressing to: " + out_directory)
+
+    print("Doing: ")
+
     if download:
-        os.chdir(download_dir)
-        ftp_session = FTP(host_url)
-        ftp_session.login()
-        ftp_dir_year(ftp_session, ftp_dir(ftp_session, host_directory))
-        ftp_session.close()
+        if not minutely:
+            print("Downloading hourly files")
+            os.chdir(download_dir)
+            ftp_session = FTP(host_url)
+            ftp_session.login()
+            ftp_dir_year(ftp_session, ftp_dir(ftp_session, host_directory))
+            ftp_session.close()
+        else:
+            print("Downloading minutely files")
+            daily_download_years(download_dir)
 
     if unpack:
-        uncompress_monthly_all(download_dir, out_directory)
+        if not minutely:
+            print("Uncompressing hourly files")
+            uncompress_monthly_all(download_dir, out_directory)
+        else:
+            print("Uncompressing minutely files")
+            daily_uncompress(download_dir, out_directory)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Downloads and extracts radio data from DWD ftp server")
-    parser.add_argument("-z", "--downloadDir",   dest="down_directory", help="Target directory for downloads.")
-    parser.add_argument("-o", "--outputDir",     dest="out_directory", help="Target directory for binary files.")
-    parser.add_argument("-d", "--download-only", dest="downloadOnly",  help="Download only, do not unpack.", action="store_true")
-    parser.add_argument("-u", "--unpack-only",   dest="unpackOnly",    help="Only unpack, do not download.", action="store_true")
+    parser.add_argument("-z", "--downloadDir",
+                        dest="down_directory",
+                        help="Target directory for downloads.")
+    parser.add_argument("-o", "--outputDir",
+                        dest="out_directory",
+                        help="Target directory for binary files.")
+    parser.add_argument("-d", "--download-only",
+                        dest="downloadOnly",
+                        help="Download only, do not unpack.",
+                        action="store_true")
+    parser.add_argument("-u", "--unpack-only",
+                        dest="unpackOnly",
+                        help="Only unpack, do not download.",
+                        action="store_true")
+    parser.add_argument("-m", "--minutely",
+                        dest="minutely",
+                        help="Download files containing data for every 5 minutes, instead of hourly data",
+                        action="store_true")
+
     print("All Arguments initialized")
 
     args = parser.parse_args()
     print("Parsed arguments:")
-    print("down_directory: " + "None" if args.down_directory is None else args.down_directory)
-    print("out_directory: "  + "None" if args.out_directory is None else args.out_directory)
-    print("downloadOnly: "   + "True" if args.downloadOnly else "False")
-    print("unpackOnly: "     + "True" if args.unpackOnly else "False")
+    print("downloadOnly: ")
+    print("True" if args.downloadOnly else "False")
+    print("unpackOnly: ")
+    print("True" if args.unpackOnly else "False")
+    print("hourly files: ")
+    print("True" if not args.minutely else "False")
+    print("5 minutely files: ")
+    print("True" if args.minutely else "False")
 
     down_dir = "./" if args.down_directory is None else args.down_directory
     out_dir = "./" if args.out_directory is None else args.out_directory
 
     if args.downloadOnly and args.unpackOnly:
         print("Arguments contradict each other!!! downloadOnly && unpackOnly")
-    elif args.downloadOnly:
-        main(download_dir=down_dir, out_directory=out_dir, download=True, unpack=False)
-    elif args.unpackOnly:
-        main(download_dir=down_dir, out_directory=out_dir, download=False, unpack=True)
     else:
-        main(download_dir=down_dir, out_directory=out_dir, download=True, unpack=True)
-    print("Returned from main()")
+        main(download_dir=down_dir,
+             out_directory=out_dir,
+             download=not args.unpackOnly,
+             unpack=not args.downloadOnly,
+             minutely=args.minutely)
+    print("Crawler finished!")
