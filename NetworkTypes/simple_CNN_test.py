@@ -5,9 +5,14 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+from keras.models import load_model
 
 N_INPUTS = 5
 input_shape = (N_INPUTS, 100, 100) #Channels First!
+
+# ToDo: Netz abspeichern nach Trainieren, damit es auf VM laufen kann
+# ToDo: Abgespeichertes Netz laden und auswerten
+# ToDo: Gridsearch, sinnvolle Parameter finden, bisher ergebnis super schlecht =C
 
 def generate_Dataset(n_train, n_test):
     xtrain = []
@@ -43,19 +48,26 @@ model.compile(loss=keras.losses.mean_squared_error,
               metrics=['accuracy'])
 
 # Trainieren
-x_train, y_train, x_test, y_test = generate_Dataset(n_train=1000, n_test=100)
+x_train, y_train, x_test, y_test = generate_Dataset(n_train=10000, n_test=1000)
 batch_size = 100
-epochs = 2
+epochs = 10
 model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
 
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
-data, label = generate_one_sample((100,100), N_INPUTS, schrittweite=10, pad=2)
-prediction = model.predict(np.expand_dims(data,axis=0))
+model.save('01_CNN_simple.h5')  # creates a HDF5 file 'my_model.h5'
+del model  # deletes the existing model
+
+# returns a compiled model
+# identical to the previous one
+#model = load_model('my_model.h5')
+
+#data, label = generate_one_sample((100,100), N_INPUTS, schrittweite=10, pad=2)
+#prediction = model.predict(np.expand_dims(data,axis=0))
 #plot_6_images(data, label)
 
-eval_output(output=prediction, label=label)
+#eval_output(output=prediction, label=label)
 
 
