@@ -35,15 +35,15 @@ def generate_one_sample(_dim, n_input, schrittweite=2, pad=5):
     samplelist=[]
     for i in range(n):
         tmp = img[0:dim[0],schrittweite*i:schrittweite*i+dim[1]]
-        tmp = add_padding_border(tmp, pad_value=0, size=pad)
         if i == n_input:
             label = tmp
         else:
+            tmp = add_padding_border(tmp, pad_value=0, size=pad)
             samplelist.append(tmp)
     return np.array(samplelist), label
 
 def plot_6_images(data, label):
-    f, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3, sharex='col', sharey='row')
+    f, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3)
     f.suptitle('Data and Labels')
     ax1.imshow(data[0])
     ax2.imshow(data[1])
@@ -51,6 +51,20 @@ def plot_6_images(data, label):
     ax4.imshow(data[3])
     ax5.imshow(data[4])
     ax6.imshow(label)
+    plt.show()
+    return
+
+def eval_output(output, label):
+    if output.shape[0] == 1:
+        output = output.reshape(label.shape)
+
+    f, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    ax1.imshow(output, vmin=0, vmax=1)
+    ax1.set_title("prediction")
+    ax2.imshow(label, vmin=0, vmax=1)
+    ax2.set_title("label")
+    ax3.imshow(label-output)
+    ax3.set_title("diff")
     plt.show()
     return
 
