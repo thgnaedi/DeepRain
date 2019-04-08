@@ -34,8 +34,9 @@ def daily_download_years(target_directory):
 
 def daily_download_months(year, target_directory):
     for month in range(1, 12):
-        daily_filename = minutely_filename_prefix + str(year) + str(month) + minutely_filename_end
+        daily_filename = minutely_filename_prefix + str(year) + str(month).zfill(2) + minutely_filename_end
         url_complete = minutely_host_protocol + minutely_host_url + str(year) + '/' + daily_filename
+        print("Downloading: " + url_complete)
         r = requests.get(url_complete)
         r.raw.decode_content = True
         with open(target_directory + daily_filename, 'wb') as file:
@@ -48,6 +49,11 @@ def gunzip(file_path, output_path):
 
 
 def uncompress_tarfile(tar_file_path, destination):
+    file = tarfile.open(tar_file_path, "r|")
+    file.extractall(destination)
+
+
+def uncompress_targzfile(tar_file_path, destination):
     file = tarfile.open(tar_file_path, "r:gz")
     file.extractall(destination)
 
@@ -58,7 +64,7 @@ def uncompress_monthly_all(source_path, destination_path):
         subdir = destination_path + '/' + file
         if not os.path.exists(subdir):
             os.makedirs(subdir)
-        uncompress_tarfile(file, subdir)
+        uncompress_targzfile(file, subdir)
 
 
 def download_with_new_connection(ftp, filename):
