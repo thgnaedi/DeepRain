@@ -31,7 +31,7 @@ def daily_uncompress(archive_directory, target_directory):
     # Move to tmp directory and uncompress archives to target
     os.chdir(temp_dir_name)
     print("Uncompressing .tar.gz files in " + os.getcwd())
-    for file in glob.glob(".tar.gz"):
+    for file in glob.glob("*.tar.gz"):
         uncompress_targzfile(file, target_directory)
 
 
