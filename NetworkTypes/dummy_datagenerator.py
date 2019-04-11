@@ -26,7 +26,7 @@ def add_padding_border(array, pad_value=0, size=2):
 
 #nur rechtsbewegung beachtet!
 #noch keine schrittweite/speed einstellbar!
-def generate_one_sample(_dim, n_input, schrittweite=2, pad=5):
+def generate_one_sample(_dim, n_input, schrittweite=2, pad=5, channelsLast=False):
     internPAD = 5
     n = n_input+1
     dim = (_dim[0]-2*pad, _dim[1]-2*pad)
@@ -40,7 +40,13 @@ def generate_one_sample(_dim, n_input, schrittweite=2, pad=5):
         else:
             tmp = add_padding_border(tmp, pad_value=0, size=pad)
             samplelist.append(tmp)
-    return np.array(samplelist), label
+    input_data = np.array(samplelist)
+
+    if channelsLast:
+        input_data = input_data.swapaxes(0,1)
+        input_data = input_data.swapaxes(1,2)
+
+    return input_data, label
 
 def plot_6_images(data, label):
     f, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3)

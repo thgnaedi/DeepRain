@@ -15,29 +15,30 @@ input_shape = (N_INPUTS, 100, 100) #Channels First!
 # ToDo: Abgespeichertes Netz laden und auswerten
 # ToDo: Gridsearch, sinnvolle Parameter finden, bisher ergebnis super schlecht =C
 
-def generate_Dataset(n_train, n_test, diffToLabel=2):
+def generate_Dataset(n_train, n_test, diffToLabel=2, channelsLast=False):
     xtrain = []
     ytrain = []
     for i in range(n_train):
-        data, label = generate_one_sample((100,100), N_INPUTS, schrittweite=10, pad=diffToLabel)
+        data, label = generate_one_sample((100,100), N_INPUTS, schrittweite=10, pad=diffToLabel, channelsLast=channelsLast)
         xtrain.append(data)
         ytrain.append(label.flatten())
     xtest = []
     ytest = []
     for i in range(n_test):
-        data, label = generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel)
+        data, label = generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel, channelsLast=channelsLast)
         xtest.append(data)
         ytest.append(label.flatten())
     return np.array(xtrain), np.array(ytrain), np.array(xtest), np.array(ytest)
 
 
-def train_model(model, diffToLabel=2, batch_size=100, epochs = 4, savename=None, n_train=4000):
-    x_train, y_train, x_test, y_test = generate_Dataset(n_train=n_train, n_test=100, diffToLabel=diffToLabel)
+def train_model(model, diffToLabel=2, batch_size=100, epochs = 4, savename=None, n_train=4000, channelsLast=False):
+    x_train, y_train, x_test, y_test = generate_Dataset(n_train=n_train, n_test=100, diffToLabel=diffToLabel, channelsLast=channelsLast)
     model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
 
     score = model.evaluate(x_test, y_test, verbose=0)
-    print('Test loss:', score[0])
-    print('Test accuracy:', score[1])
+    print("score:",score)
+    #print('Test loss:', score[0])
+    #print('Test accuracy:', score[1])
     if savename is not None:
         model.save(savename+'.h5')  # creates a HDF5 file 'my_model.h5'
         #del model  # deletes the existing model
@@ -69,13 +70,14 @@ def eval_all():
 
 
 if __name__ == '__main__':
-    #eval_all()
-    model = networkBox.get_deeper_net(input_shape=input_shape, loss=keras.losses.mean_squared_error)
-    #model = networkBox.get_simple_net(input_shape, kernels=32, kernel_size1=(5,5), kernel_size2=(5,5), loss=keras.losses.kullback_leibler_divergence)
-    #model = load_model("03_CNN_simple_5x5_5x5_2epoch"+'.h5')
-    train_model(model, diffToLabel=5, epochs=2, savename="06_CNN_deeper_2epoch_10k", n_train=10000)
+    bool_Train = True
+    #Train:
+    if bool_Train:
+        model = networkBox.get_deeper_net(input_shape=input_shape, loss=keras.losses.mean_squared_error)
+        train_model(model, diffToLabel=5, epochs=2, savename="tmp", n_train=100, channelsLast=False)
 
-    eval_all()
+    else:
+        eval_all()
 
 
 # KullbackLeiberDivergenz liefert negative Werte bei Lossfunktion, ergebniss?
