@@ -22,9 +22,17 @@ minutely_filename_end = ".tar"
 
 
 def daily_uncompress(archive_directory, target_directory):
+    temp_dir_name = "tmp"
     os.chdir(archive_directory)
+    os.mkdir(temp_dir_name)
     for file in glob.glob("*.tar"):
-        uncompress_tarfile(archive_directory + '/' + file, target_directory)
+        uncompress_tarfile(archive_directory + '/' + file, "./" + temp_dir_name)
+
+    # Move to tmp directory and uncompress archives to target
+    os.chdir(temp_dir_name)
+    print("Uncompressing .tar.gz files in " + os.getcwd())
+    for file in glob.glob("*.tar.gz"):
+        uncompress_targzfile(file, target_directory)
 
 
 def daily_download_years(target_directory):
@@ -157,13 +165,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print("Parsed arguments:")
-    print("downloadOnly: ")
+    print("downloadOnly: ", end='', flush=True)
     print("True" if args.downloadOnly else "False")
-    print("unpackOnly: ")
+    print("unpackOnly: ", end='', flush=True)
     print("True" if args.unpackOnly else "False")
-    print("hourly files: ")
+    print("hourly files: ", end='', flush=True)
     print("True" if not args.minutely else "False")
-    print("5 minutely files: ")
+    print("5 minutely files: ", end='', flush=True)
     print("True" if args.minutely else "False")
 
     down_dir = "./" if args.down_directory is None else args.down_directory
