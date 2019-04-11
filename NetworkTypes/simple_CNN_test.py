@@ -1,4 +1,5 @@
 from dummy_datagenerator import generate_one_sample, plot_6_images, eval_output
+import networkBox
 import numpy as np
 import keras
 from keras.models import Sequential
@@ -14,60 +15,71 @@ input_shape = (N_INPUTS, 100, 100) #Channels First!
 # ToDo: Abgespeichertes Netz laden und auswerten
 # ToDo: Gridsearch, sinnvolle Parameter finden, bisher ergebnis super schlecht =C
 
-def generate_Dataset(n_train, n_test):
+def generate_Dataset(n_train, n_test, diffToLabel=2):
     xtrain = []
     ytrain = []
     for i in range(n_train):
-        data, label = generate_one_sample((100,100), N_INPUTS, schrittweite=10, pad=2)
+        data, label = generate_one_sample((100,100), N_INPUTS, schrittweite=10, pad=diffToLabel)
         xtrain.append(data)
         ytrain.append(label.flatten())
     xtest = []
     ytest = []
     for i in range(n_test):
-        data, label = generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=2)
+        data, label = generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel)
         xtest.append(data)
         ytest.append(label.flatten())
     return np.array(xtrain), np.array(ytrain), np.array(xtest), np.array(ytest)
 
 
-## Netz erstellen
-model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),
-                 activation='relu',
-                 input_shape=input_shape, data_format='channels_first'))
-#input("1)"+str(model.output_shape))
-model.add(Dropout(0.05))
-#input("2)"+str(model.output_shape))
-model.add(Conv2D(1, (3, 3), activation='relu', input_shape=(32,98,98), data_format='channels_first'))
-#input("3)"+str(model.output_shape))
-model.add(Flatten(data_format='channels_first'))
-#input("4)"+str(model.output_shape))
+def train_model(model, diffToLabel=2, batch_size=100, epochs = 4, savename=None, n_train=4000):
+    x_train, y_train, x_test, y_test = generate_Dataset(n_train=n_train, n_test=100, diffToLabel=diffToLabel)
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
 
-model.compile(loss=keras.losses.mean_squared_error,
-              optimizer=keras.optimizers.Adadelta(),
-              metrics=['accuracy'])
+    score = model.evaluate(x_test, y_test, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
+    if savename is not None:
+        model.save(savename+'.h5')  # creates a HDF5 file 'my_model.h5'
+        #del model  # deletes the existing model
+    return model
 
-# Trainieren
-x_train, y_train, x_test, y_test = generate_Dataset(n_train=10000, n_test=1000)
-batch_size = 100
-epochs = 10
-model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
 
-score = model.evaluate(x_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+def eval_model(modelname, diffToLabel):
+    model = load_model(modelname+'.h5')
+    data, label = generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel)
+    prediction = model.predict(np.expand_dims(data, axis=0))
+    # plot_6_images(data, label)
+    eval_output(output=prediction, label=label, name=modelname)
+    return
 
-model.save('01_CNN_simple.h5')  # creates a HDF5 file 'my_model.h5'
-del model  # deletes the existing model
 
-# returns a compiled model
-# identical to the previous one
-#model = load_model('my_model.h5')
+def eval_all():
+    simple = ('01_CNN_simple', 2)
+    simple2 = ("03_CNN_simple_5x5_5x5_2epoch", 4)
+    simple3 = ("04_CNN_simple_5x5_5x5_4epoch", 4)
+    simple4 = ("05_CNN_simple_5x5_5x5_2epoch_KLD", 4)
+    deeper = ("02_CNN_deeper_2epoch", 5)  # 0.0229 #Test accuracy: 0.002
+    deeper2 = ("06_CNN_deeper_2epoch_10k", 5)  # ? #Test accuracy: ?
+    all = [simple, simple2, simple3, simple4, deeper, deeper2]
+    for  net in all:
+        eval_model(net[0],net[1])
+    return
 
-#data, label = generate_one_sample((100,100), N_INPUTS, schrittweite=10, pad=2)
-#prediction = model.predict(np.expand_dims(data,axis=0))
-#plot_6_images(data, label)
 
-#eval_output(output=prediction, label=label)
+if __name__ == '__main__':
+    #eval_all()
+    model = networkBox.get_deeper_net(input_shape=input_shape, loss=keras.losses.mean_squared_error)
+    #model = networkBox.get_simple_net(input_shape, kernels=32, kernel_size1=(5,5), kernel_size2=(5,5), loss=keras.losses.kullback_leibler_divergence)
+    #model = load_model("03_CNN_simple_5x5_5x5_2epoch"+'.h5')
+    train_model(model, diffToLabel=5, epochs=2, savename="06_CNN_deeper_2epoch_10k", n_train=10000)
+
+    eval_all()
+
+
+# KullbackLeiberDivergenz liefert negative Werte bei Lossfunktion, ergebniss?
+    # beginn 19241 endEP1  -729 mitte Ep2 -1756 ab dann kaum mehr änderung
+# MSE-Loss liefert eher eine art einheitliches Graubild?!?
+# MSE kann halbwegs vernünftige Ergebnisse liefern, vielleicht mal mit Batchnorm versuchen
+# Deutlich mehr Trainingssamples erstellen (wäre toll wenn vm wieder Keras kann)
 
 
