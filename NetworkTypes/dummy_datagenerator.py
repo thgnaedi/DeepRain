@@ -54,7 +54,7 @@ def plot_6_images(data, label):
     plt.show()
     return
 
-def eval_output(output, label):
+def eval_output(output, label, name=""):
     if output.shape[0] == 1:
         output = output.reshape(label.shape)
 
@@ -63,8 +63,10 @@ def eval_output(output, label):
     ax1.set_title("prediction")
     ax2.imshow(label, vmin=0, vmax=1)
     ax2.set_title("label")
-    ax3.imshow(label-output)
+    ax3.imshow(np.abs(label-output), vmin=0, vmax=1)
     ax3.set_title("diff")
+    f.suptitle(name)
+
     plt.show()
     return
 

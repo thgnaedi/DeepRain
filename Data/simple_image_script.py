@@ -9,7 +9,7 @@ import sample_bundle as sb
 
 class Data_converter():
     def __init__(self, path, max_num_samples, n_data, n_label, start_img=None, subimg_startpos=None, subimg_shape=None,
-                 output_shape=None, silent=False):
+                 output_shape=None, silent=False, post="-dwd---bin.png"):
         assert os.path.exists(path)
         if start_img is not None:
             assert os.path.exists(start_img)
@@ -20,6 +20,7 @@ class Data_converter():
         self.max_num_samples = max_num_samples
         self.n_data = n_data
         self.n_label = n_label
+        self.post = post
         if subimg_startpos is None or subimg_shape is None:
             self.subimg = None
         else:
@@ -70,7 +71,7 @@ class Data_converter():
         legals = []
         first_d = None
         next_d = None
-        datecomp = Date_Comperator(pre=self.path + "scaled_raa01-rw_10000-", post="-dwd---bin.png")
+        datecomp = Date_Comperator(pre=self.path + "scaled_raa01-rw_10000-", post=self.post)
         for i in all_images:
             first_d = next_d
             next_d = i
