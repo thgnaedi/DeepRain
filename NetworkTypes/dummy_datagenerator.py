@@ -54,10 +54,12 @@ def plot_6_images(data, label):
     plt.show()
     return
 
-def eval_output(output, label, name=""):
+def eval_output(output, label, name="", rescale=False):
     if output.shape[0] == 1:
         output = output.reshape(label.shape)
-
+    if rescale:
+        output = output / np.max(output)
+        name += " SCALED!"
     f, (ax1, ax2, ax3) = plt.subplots(1, 3)
     ax1.imshow(output, vmin=0, vmax=1)
     ax1.set_title("prediction")

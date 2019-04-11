@@ -44,12 +44,12 @@ def train_model(model, diffToLabel=2, batch_size=100, epochs = 4, savename=None,
     return model
 
 
-def eval_model(modelname, diffToLabel):
+def eval_model(modelname, diffToLabel, rescale=False):
     model = load_model(modelname+'.h5')
     data, label = generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel)
     prediction = model.predict(np.expand_dims(data, axis=0))
     # plot_6_images(data, label)
-    eval_output(output=prediction, label=label, name=modelname)
+    eval_output(output=prediction, label=label, name=modelname, rescale=rescale)
     return
 
 
@@ -59,10 +59,12 @@ def eval_all():
     simple3 = ("04_CNN_simple_5x5_5x5_4epoch", 4)
     simple4 = ("05_CNN_simple_5x5_5x5_2epoch_KLD", 4)
     deeper = ("02_CNN_deeper_2epoch", 5)  # 0.0229 #Test accuracy: 0.002
-    deeper2 = ("06_CNN_deeper_2epoch_10k", 5)  # ? #Test accuracy: ?
+    deeper2 = ("06_CNN_deeper_2epoch_10k", 5)  # 0.0175 #Test accuracy: 0.0
     all = [simple, simple2, simple3, simple4, deeper, deeper2]
     for  net in all:
         eval_model(net[0],net[1])
+
+    eval_model(net[0], net[1], rescale=True)
     return
 
 
