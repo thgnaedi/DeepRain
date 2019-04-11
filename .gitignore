@@ -1,6 +1,5 @@
 */__pycache__/*
 **.ipynb_checkpoints
-*.idea
 
 *.png
 *.jpg
@@ -12,9 +11,10 @@
 *.csv
 *.xml
 
+*---bin
 *.zip
 *.bz2
 *.gz
 =======
 .idea/
-
+*.idea
