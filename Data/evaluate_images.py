@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import os
 
 
-
 def generate_Histogramm(img, plot=False, _print=True):
     hist, _ = np.histogram(img, bins=255, range=(0,254))
     mi = np.amin(img)
@@ -31,7 +30,7 @@ def get_statistic(path, max_num_samples):
     # einige Parameter haben default werte, angegeben werden muss auf jedenfall:
     # path, max_num_samples, n_data, n_label
     dc = sis.Data_converter(path, max_num_samples, n_data, n_label, start_img, subimg_startpos, subimg_shape, output_shape, silent=True)
-
+    print("gefundene Elemente:", dc.get_number_samples())
 
     all_results = []
     for i in range(dc.get_number_samples()):
@@ -41,8 +40,8 @@ def get_statistic(path, max_num_samples):
 
     ## alle ergebnisse gesammelt, jetzt evaluieren
     durchschnitt = np.zeros(255)
-    absmax = 0
-    absmin = 255
+    absmax = -1
+    absmin = 256
     anz = 0
     for e in all_results:
         if absmax < e[2]:
@@ -51,4 +50,9 @@ def get_statistic(path, max_num_samples):
             absmin = e[1]
         durchschnitt=np.add(durchschnitt, e[0])
         anz += 1
+    print(anz, durchschnitt[1])
     return (durchschnitt/anz).astype(int), absmin, absmax
+
+
+if __name__ == '__main__':
+    get_statistic(path="C:\\Users\\TopSecret!\\Documents\\aMSI1\\Teamprojekt\\DeepRain\\Data", max_num_samples=100)
