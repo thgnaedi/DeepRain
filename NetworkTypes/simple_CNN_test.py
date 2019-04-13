@@ -15,11 +15,11 @@ input_shape = (N_INPUTS, 100, 100) #Channels First!
 # ToDo: Abgespeichertes Netz laden und auswerten
 # ToDo: Gridsearch, sinnvolle Parameter finden, bisher ergebnis super schlecht =C
 
-def generate_Dataset(n_train, n_test, diffToLabel=2, channelsLast=False):
+def generate_Dataset(n_train, n_test, diffToLabel=2, channelsLast=False, n_inputs=N_INPUTS):
     xtrain = []
     ytrain = []
     for i in range(n_train):
-        data, label = generate_one_sample((100,100), N_INPUTS, schrittweite=10, pad=diffToLabel, channelsLast=channelsLast)
+        data, label = generate_one_sample((100,100), n_inputs, schrittweite=10, pad=diffToLabel, channelsLast=channelsLast)
         xtrain.append(data)
         ytrain.append(label.flatten())
     xtest = []
@@ -31,8 +31,8 @@ def generate_Dataset(n_train, n_test, diffToLabel=2, channelsLast=False):
     return np.array(xtrain), np.array(ytrain), np.array(xtest), np.array(ytest)
 
 
-def train_model(model, diffToLabel=2, batch_size=100, epochs = 4, savename=None, n_train=4000, channelsLast=False):
-    x_train, y_train, x_test, y_test = generate_Dataset(n_train=n_train, n_test=100, diffToLabel=diffToLabel, channelsLast=channelsLast)
+def train_model(model, diffToLabel=2, batch_size=100, epochs = 4, savename=None, n_train=4000, channelsLast=False, n_inputs=N_INPUTS):
+    x_train, y_train, x_test, y_test = generate_Dataset(n_train=n_train, n_test=100, diffToLabel=diffToLabel, channelsLast=channelsLast, n_inputs=n_inputs)
     model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
 
     score = model.evaluate(x_test, y_test, verbose=0)
