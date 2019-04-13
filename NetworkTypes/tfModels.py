@@ -10,7 +10,7 @@ def network_differentWay(input_shape):
     conv01 = BatchNormalization()(conv01)
     conv01 = Activation('relu')(conv01)
     conv01_pool = MaxPooling2D((3, 3), strides=(3,3))(conv01)
-    print("conv01_pool)",conv01_pool.shape)
+    #print("conv01_pool)",conv01_pool.shape)
 
     up01 = UpSampling2D((3, 3))(conv01_pool)
     up01 = BatchNormalization()(up01)
