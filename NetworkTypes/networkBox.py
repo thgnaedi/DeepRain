@@ -36,7 +36,7 @@ def get_deeper_net(input_shape, dropout=False, loss=keras.losses.mean_squared_er
                      activation='relu',
                      input_shape=input_shape, data_format='channels_first'))
     if dropout:
-        model.add(Dropout(0.05))
+        model.add(Dropout(0.01))
     model.add(Conv2D(1, (3, 3), activation='relu', input_shape=(32, 98, 98), data_format='channels_first'))
     model.add(Flatten(data_format='channels_first'))
 
