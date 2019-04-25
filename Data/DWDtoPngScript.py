@@ -42,7 +42,8 @@ def get_metadata_for_file(path_to_file):
 
     data, attrs = read_radolan(path + '/' + file)
     data = np.ma.masked_equal(data, -9999)
-    current_min, current_max = min_max_from_array(data)
+    current_min = 0
+    current_max = data.max()
     counter_files += 1
     logger.info("Computed metadata for file: " + path + '/' + file + " (" + str(counter_files)+'/'+str(total_files)+")")
     return [file, current_min, current_max]
@@ -81,6 +82,10 @@ def normalize(data, absolute_max):
 
 def query_files_with_metadata(filename):
     filenames = []
+
+    if not os.path.isfile(filename):
+        return filenames
+
     with open(filename, 'r') as infile:
         reader = csv.reader(infile, delimiter=",", quotechar='"')
         for row in reader:
