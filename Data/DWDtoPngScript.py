@@ -135,7 +135,7 @@ def main():
     warnings.filterwarnings('ignore')
 
     # Path to DATA location (Change to match Crwaler )
-    os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/2018"
+    os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/minutely/june"
     already_parsed_files = query_files_with_metadata(metadata_file_name)
 
     # First pass: get min and max for all radolan files
