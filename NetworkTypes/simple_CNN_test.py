@@ -70,7 +70,7 @@ def eval_all():
 
 
 if __name__ == '__main__':
-    bool_Train = True
+    bool_Train = False
     #Train:
     if bool_Train:
         model = networkBox.get_deeper_net(input_shape=input_shape, loss=keras.losses.mean_squared_error)
