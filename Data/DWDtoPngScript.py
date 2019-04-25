@@ -14,7 +14,7 @@ import numpy as np
 import warnings
 import csv
 import fileinput
-import scipy.misc
+import cv2
 import logging
 
 from multiprocessing import Pool
@@ -37,13 +37,13 @@ logger.addHandler(stream_handler)
 
 def get_metadata_for_file(path_to_file):
     global counter_files
-    # ToDo: Split filename and path
     file = os.path.basename(path_to_file)
     path = os.path.dirname(path_to_file)
 
     data, attrs = read_radolan(path + '/' + file)
     data = np.ma.masked_equal(data, -9999)
-    current_min, current_max = min_max_from_array(data)
+    current_min = 0
+    current_max = data.max()
     counter_files += 1
     logger.info("Computed metadata for file: " + path + '/' + file + " (" + str(counter_files)+'/'+str(total_files)+")")
     return [file, current_min, current_max]
@@ -57,7 +57,7 @@ def read_radolan(radfile):
 def save_png_grayscale_8bit(image_data, filename):
     image_data_8bit = image_data.astype(np.uint8)
     full_filename = filename + ".png"
-    scipy.misc.imsave(full_filename, image_data_8bit)
+    cv2.imwrite(full_filename, image_data_8bit)
     logger.info("Saved image file: " + full_filename)
 
 
@@ -73,16 +73,19 @@ def min_max_from_array(data):
     return mini, maxi
 
 
-# Array-Like, minimum of all data, max of all data, bit depth of data-/image-type
-def normalize(data, absolute_min, absolute_max, bit_width=255):
-    factor = bit_width/absolute_max
-    data -= absolute_min
+# Array-Like, max of all data
+def normalize(data, absolute_max):
+    factor = float(255)/absolute_max
     data *= factor
     return data
 
 
 def query_files_with_metadata(filename):
     filenames = []
+
+    if not os.path.isfile(filename):
+        return filenames
+
     with open(filename, 'r') as infile:
         reader = csv.reader(infile, delimiter=",", quotechar='"')
         for row in reader:
@@ -135,7 +138,7 @@ def main():
     warnings.filterwarnings('ignore')
 
     # Path to DATA location (Change to match Crwaler )
-    os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/2018"
+    os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/minutely/june"
     already_parsed_files = query_files_with_metadata(metadata_file_name)
 
     # First pass: get min and max for all radolan files
@@ -178,8 +181,8 @@ def main():
             if os.path.isfile(image_file_path + ".png"):
                 continue
             data, attrs = read_radolan(subdir + '/' + file)
-            # Scale
-            data = normalize(data, abs_min, abs_max)
+
+            data = normalize(data, abs_max)  # Scale
             logger.info("Normalized file: " + image_file_path + " (" + str(counter)+'/'+str(len(files))+")")
             save_png_grayscale_8bit(data, image_file_path)
             counter += 1
