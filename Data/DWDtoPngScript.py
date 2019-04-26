@@ -8,6 +8,7 @@
 # The metadata (MIN/MAX, etc.) will be saved in a separate file,
 # so that only new datasets need to be processed twice.
 
+import argparse
 import os
 import wradlib as wrl
 import numpy as np
@@ -16,8 +17,6 @@ import csv
 import fileinput
 import cv2
 import logging
-
-from multiprocessing import Pool
 
 
 counter_files = 0
@@ -33,6 +32,17 @@ logger.addHandler(file_handler)
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
 logger.addHandler(stream_handler)
+
+
+def get_maximum_for_file(path_to_file):
+    (file, current_min, current_max) = get_metadata_for_file(path_to_file)
+    return current_max
+
+
+def get_maximum_for_file_generator(path_to_file):
+    (file, current_min, current_max) = get_metadata_for_file(path_to_file)
+    yield file
+    yield current_max
 
 
 def get_metadata_for_file(path_to_file):
@@ -59,18 +69,6 @@ def save_png_grayscale_8bit(image_data, filename):
     full_filename = filename + ".png"
     cv2.imwrite(full_filename, image_data_8bit)
     logger.info("Saved image file: " + full_filename)
-
-
-def min_max_from_array(data):
-    mini = 99999999999
-    maxi = 0
-    for array in data:
-        for value in array:
-            if value > maxi:
-                maxi = value
-            if value < mini:
-                mini = value
-    return mini, maxi
 
 
 # Array-Like, max of all data
@@ -110,14 +108,19 @@ def query_metadata_file(filename):
     return minimum, maximum
 
 
-def update_metadata_file(filename, new_row_entry):
-    with open(filename, 'a') as outfile:
+def update_metadata_file(metadata_file_name, new_row_entry):
+    with open(metadata_file_name, 'a') as outfile:
         writer = csv.writer(outfile, delimiter=",")
         writer.writerow(new_row_entry)
 
 
-def update_metadata_file_multiple_entries(filename, new_row_entries_list):
-    with open(filename, 'a') as outfile:
+def update_metadata_file_with_max(metadata_file_name, parsed_file_name, parsed_file_max):
+    values_to_write = [parsed_file_name, 0, parsed_file_max]
+    update_metadata_file(metadata_file_name, values_to_write)
+
+
+def update_metadata_file_multiple_entries(metadata_file_name, new_row_entries_list):
+    with open(metadata_file_name, 'a') as outfile:
         writer = csv.writer(outfile, delimiter=",")
         for row in new_row_entries_list:
             writer.writerow(row)
@@ -137,8 +140,21 @@ def main():
     metadata_file_name = "radolan_metadata.csv"
     warnings.filterwarnings('ignore')
 
-    # Path to DATA location (Change to match Crwaler )
-    os.environ["WRADLIB_DATA"] = r"/data/Radarbilder_DWD/minutely/june"
+    parser = argparse.ArgumentParser(description="Reads radolan files in one directory, scales them and saves them as PNG files in a(nother) directory")
+    parser.add_argument("-i", "--inputDir",
+                        dest="in_directory",
+                        help="Target directory for downloads.")
+    parser.add_argument("-o", "--outputDir",
+                        dest="out_directory",
+                        help="Target directory for binary files.")
+
+    args = parser.parse_args()
+    print("Parsed arguments:")
+    in_dir = "./" if args.in_directory is None else args.down_directory
+    out_dir = "./" if args.out_directory is None else args.out_directory
+
+    # Path to DATA location (Change to match Crwaler)
+    os.environ["WRADLIB_DATA"] = in_dir
     already_parsed_files = query_files_with_metadata(metadata_file_name)
 
     # First pass: get min and max for all radolan files
@@ -148,37 +164,41 @@ def main():
         for file in files:
             if '.png' in file:
                 logger.info("Skipping png (" + str(counter_files)+'/'+str(len(files))+")")
-                counter_files += 1
+                total_files -= 1
                 continue
             if file in already_parsed_files:
-                counter_files += 1
+                total_files -= 1
                 continue
 
             # Add filenames to be parsed to list
             files_to_be_parsed.append(subdir + '/' + file)
 
     print("Files to parse: " + str(len(files_to_be_parsed)))
-    # Start Pool
-    with Pool(8) as p:
-        result_list = p.map(get_metadata_for_file, files_to_be_parsed)
+
+    # Make cool dictionary comprehension
+    max_dict = {name: get_maximum_for_file_generator(name) for name in files_to_be_parsed}
 
     # Write all metadata to file
-    update_metadata_file_multiple_entries(metadata_file_name, result_list)
+    for (file, file_max) in max_dict:
+        update_metadata_file_with_max(metadata_file_name, file, file_max)
 
     clean_csv(metadata_file_name)  # Removes duplicate entries
     logger.info("Cleaned metadata file: " + metadata_file_name)
 
     # 2nd pass - save scaled images with generated metadata
+    total_files = 0
     counter = 0
     abs_min, abs_max = query_metadata_file(metadata_file_name)
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
+        total_files += len(files)
         for file in files:
-            image_file_path = subdir + '/' + "scaled_" + file
+            image_file_path = out_dir + '/' + "scaled_" + file
             if '.png' in file:
                 logger.info("Skipping png (" + str(counter)+'/'+str(len(files))+")")
-                counter += 1
+                total_files -= 1
                 continue
             if os.path.isfile(image_file_path + ".png"):
+                total_files -= 1
                 continue
             data, attrs = read_radolan(subdir + '/' + file)
 
