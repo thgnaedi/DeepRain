@@ -60,7 +60,7 @@ def plot_6_images(data, label):
     plt.show()
     return
 
-def eval_output(output, label, name="", rescale=False):
+def eval_output(output, label, name="", rescale=False, save_img_name=None):
     if output.shape[0] == 1:
         output = output.reshape(label.shape)
     if rescale:
@@ -75,7 +75,10 @@ def eval_output(output, label, name="", rescale=False):
     ax3.set_title("diff")
     f.suptitle(name)
 
-    plt.show()
+    if save_img_name is None:
+        plt.show()
+    else:
+        plt.savefig(save_img_name+".jpg")
     return
 
 if __name__ == '__main__':
