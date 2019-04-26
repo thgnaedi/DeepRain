@@ -24,7 +24,8 @@ minutely_filename_end = ".tar"
 def daily_uncompress(archive_directory, target_directory):
     temp_dir_name = "tmp"
     os.chdir(archive_directory)
-    os.mkdir(temp_dir_name)
+    if not os.path.isdir(temp_dir_name):
+        os.mkdir(temp_dir_name)
     for file in glob.glob("*.tar"):
         uncompress_tarfile(archive_directory + '/' + file, "./" + temp_dir_name)
 
@@ -52,16 +53,19 @@ def daily_download_months(year, target_directory):
 
 
 def gunzip(file_path, output_path):
+    print("Uncompressing gz file: " + file_path)
     with gzip.open(file_path, "rb") as compressed, open(output_path, "wb") as file_out:
         shutil.copyfileobj(compressed, file_out)
 
 
 def uncompress_tarfile(tar_file_path, destination):
+    print("Uncompressing tar file: " + tar_file_path)
     file = tarfile.open(tar_file_path, "r|")
     file.extractall(destination)
 
 
 def uncompress_targzfile(tar_file_path, destination):
+    print("Uncompressing tar.gz file: " + tar_file_path)
     file = tarfile.open(tar_file_path, "r:gz")
     file.extractall(destination)
 
