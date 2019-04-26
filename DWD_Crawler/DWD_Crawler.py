@@ -45,6 +45,9 @@ def daily_download_months(year, target_directory):
     for month in range(1, 12):
         daily_filename = minutely_filename_prefix + str(year) + str(month).zfill(2) + minutely_filename_end
         url_complete = minutely_host_protocol + minutely_host_url + str(year) + '/' + daily_filename
+        if os.path.isfile(target_directory + daily_filename):
+            print("File already downloaded: " + daily_filename)
+            continue
         print("Downloading: " + url_complete)
         r = requests.get(url_complete, verify=False, stream=True)
         r.raw.decode_content = True
