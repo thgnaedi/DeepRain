@@ -2,10 +2,6 @@ from dummy_datagenerator import generate_one_sample, plot_6_images, eval_output
 import networkBox
 import numpy as np
 import keras
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
-from keras import backend as K
 from keras.models import load_model
 
 N_INPUTS = 5
@@ -71,6 +67,7 @@ def eval_all():
 
 if __name__ == '__main__':
     bool_Train = False
+    #eval_model("CNN_deeper_1epoch_25k", 5)
     #Train:
     if bool_Train:
         model = networkBox.get_deeper_net(input_shape=input_shape, loss=keras.losses.mean_squared_error)
