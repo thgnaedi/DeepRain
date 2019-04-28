@@ -15,8 +15,8 @@ local_directory = "./"
 
 minutely_host_protocol = "https://"
 minutely_host_url = "opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/"
-minutely_range_begin = 2001
-minutely_range_end = 2018
+minutely_year_begin = 2001
+minutely_year_end = 2018
 minutely_filename_prefix = "YW2017.002_"
 minutely_filename_end = ".tar"
 
@@ -37,7 +37,7 @@ def daily_uncompress(archive_directory, target_directory):
 
 
 def daily_download_years(target_directory):
-    for year in range(minutely_range_begin, minutely_range_end):
+    for year in range(minutely_year_begin, minutely_year_end):
         daily_download_months(year, target_directory)
 
 
@@ -120,7 +120,7 @@ def ftp_dir_year(ftp, directory_file_list):
             ftp.cwd("..")
 
 
-def main(download_dir="./", out_directory="./", download=True, unpack=True, minutely=True):
+def main(download_dir="./", out_directory="./", download=True, unpack=True, minutely=True, year=None):
     print("Downloads are at: " + download_dir)
     print("Uncompressing to: " + out_directory)
 
@@ -136,7 +136,12 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             ftp_session.close()
         else:
             print("Downloading minutely files")
-            daily_download_years(download_dir)
+            if not year:
+                daily_download_years(download_dir)
+            elif minutely_year_begin <= year <= minutely_year_end:
+                daily_download_months(year, download_dir)
+            else:
+                print("Year not available for download: " + str(year))
 
     if unpack:
         if not minutely:
@@ -167,6 +172,9 @@ if __name__ == "__main__":
                         dest="minutely",
                         help="Download files containing data for every 5 minutes, instead of hourly data",
                         action="store_true")
+    parser.add_argument("-y", "--year",
+                        dest="year",
+                        help="Specify the year to be downloaded. ONLY WORKS with option: -m")
 
     print("All Arguments initialized")
 
@@ -181,15 +189,18 @@ if __name__ == "__main__":
     print("5 minutely files: ", end='', flush=True)
     print("True" if args.minutely else "False")
 
+    print("Download YEAR: " + "ALL" if not args.year else str(args.year))
+
     down_dir = "./" if args.down_directory is None else args.down_directory
     out_dir = "./" if args.out_directory is None else args.out_directory
 
     if args.downloadOnly and args.unpackOnly:
-        print("Arguments contradict each other!!! downloadOnly && unpackOnly")
+        print("YOU wanted me to do nothing!!! downloadOnly AND unpackOnly")
     else:
         main(download_dir=down_dir,
              out_directory=out_dir,
              download=not args.unpackOnly,
              unpack=not args.downloadOnly,
-             minutely=args.minutely)
+             minutely=args.minutely,
+             year=args.year)
     print("Crawler finished!")
