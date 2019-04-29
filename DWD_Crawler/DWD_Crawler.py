@@ -1,5 +1,6 @@
 import argparse
 import os.path
+import shutil
 from ftplib import FTP
 import glob
 import gzip
@@ -21,12 +22,18 @@ minutely_filename_prefix = "YW2017.002_"
 minutely_filename_end = ".tar"
 
 
-def daily_uncompress(archive_directory, target_directory):
+def daily_uncompress(archive_directory, target_directory, year=None):
     temp_dir_name = "tmp"
     os.chdir(archive_directory)
     if not os.path.isdir(temp_dir_name):
         os.mkdir(temp_dir_name)
-    for file in glob.glob("*.tar"):
+
+    if not year:
+        archive_wildcard = minutely_filename_prefix + "*.tar"
+    else:
+        archive_wildcard = minutely_filename_prefix + str(year) + "*.tar"
+
+    for file in glob.glob(archive_wildcard):
         uncompress_tarfile(archive_directory + '/' + file, "./" + temp_dir_name)
 
     # Move to tmp directory and uncompress archives to target
@@ -34,6 +41,9 @@ def daily_uncompress(archive_directory, target_directory):
     print("Uncompressing .tar.gz files in " + os.getcwd())
     for file in glob.glob("*.tar.gz"):
         uncompress_targzfile(file, target_directory)
+    print("Removing temp folder")
+    os.chdir("..")
+    shutil.rmtree(temp_dir_name)
 
 
 def daily_download_years(target_directory):
@@ -135,11 +145,12 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             ftp_dir_year(ftp_session, ftp_dir(ftp_session, host_directory))
             ftp_session.close()
         else:
+            num_year = int(year)
             print("Downloading minutely files")
             if not year:
                 daily_download_years(download_dir)
-            elif minutely_year_begin <= year <= minutely_year_end:
-                daily_download_months(year, download_dir)
+            elif minutely_year_begin <= num_year <= minutely_year_end:
+                daily_download_months(num_year, download_dir)
             else:
                 print("Year not available for download: " + str(year))
 
@@ -149,7 +160,7 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             uncompress_monthly_all(download_dir, out_directory)
         else:
             print("Uncompressing minutely files")
-            daily_uncompress(download_dir, out_directory)
+            daily_uncompress(download_dir, out_directory, year)
 
 
 if __name__ == "__main__":
