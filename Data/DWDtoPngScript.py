@@ -41,7 +41,6 @@ def get_maximum_for_file(path_to_file):
 
 def get_maximum_for_file_generator(path_to_file):
     (file, current_min, current_max) = get_metadata_for_file(path_to_file)
-    yield file
     yield current_max
 
 
@@ -140,7 +139,8 @@ def main():
     metadata_file_name = "radolan_metadata.csv"
     warnings.filterwarnings('ignore')
 
-    parser = argparse.ArgumentParser(description="Reads radolan files in one directory, scales them and saves them as PNG files in a(nother) directory")
+    parser = argparse.ArgumentParser(
+        description="Reads radolan files in one directory, scales them and saves them as PNG files in a directory")
     parser.add_argument("-i", "--inputDir",
                         dest="in_directory",
                         help="Target directory for downloads.")
@@ -150,8 +150,10 @@ def main():
 
     args = parser.parse_args()
     print("Parsed arguments:")
-    in_dir = "./" if args.in_directory is None else args.down_directory
+    in_dir = "./" if args.in_directory is None else args.in_directory
     out_dir = "./" if args.out_directory is None else args.out_directory
+    print("DWD data directory: " + str(in_dir))
+    print("PNG image directory: " + str(out_dir))
 
     # Path to DATA location (Change to match Crwaler)
     os.environ["WRADLIB_DATA"] = in_dir
