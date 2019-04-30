@@ -43,7 +43,7 @@ def daily_uncompress(archive_directory, target_directory, year=None):
         uncompress_targzfile(file, target_directory)
     print("Removing temp folder")
     os.chdir("..")
-    shutil.rmtree(temp_dir_name)
+    shutil.rmtree("./" + temp_dir_name)
 
 
 def daily_download_years(target_directory):

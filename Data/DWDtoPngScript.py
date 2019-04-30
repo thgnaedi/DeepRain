@@ -181,7 +181,7 @@ def main():
     max_dict = {name: get_maximum_for_file_generator(name) for name in files_to_be_parsed}
 
     # Write all metadata to file
-    for (file, file_max) in max_dict:
+    for file, file_max in max_dict.items():
         update_metadata_file_with_max(metadata_file_name, file, file_max)
 
     clean_csv(metadata_file_name)  # Removes duplicate entries
