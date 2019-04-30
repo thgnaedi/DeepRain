@@ -134,6 +134,12 @@ def clean_csv(filename):
         print(line)
 
 
+def get_timestamp_for_bin_filename(bin_file_name):
+    split = bin_file_name.split('-')
+    timestamp = split[2]
+    return timestamp
+
+
 def main():
     global counter_files, total_files
     metadata_file_name = "radolan_metadata.csv"
@@ -194,7 +200,7 @@ def main():
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         total_files += len(files)
         for file in files:
-            image_file_path = out_dir + '/' + "scaled_" + file
+            image_file_path = out_dir + '/' + "scaled_" + get_timestamp_for_bin_filename(file)
             if '.png' in file:
                 logger.info("Skipping png (" + str(counter)+'/'+str(len(files))+")")
                 total_files -= 1
