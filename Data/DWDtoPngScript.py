@@ -39,9 +39,10 @@ def get_maximum_for_file(path_to_file):
     return current_max
 
 
-def get_maximum_for_file_generator(path_to_file):
-    (file, current_min, current_max) = get_metadata_for_file(path_to_file)
-    yield current_max
+def get_maximum_for_file_generator(file_list):
+    for path_to_file in file_list:
+        (file, current_min, current_max) = get_metadata_for_file(path_to_file)
+        yield (file, current_max)
 
 
 def get_metadata_for_file(path_to_file):
@@ -183,11 +184,11 @@ def main():
 
     print("Files to parse: " + str(len(files_to_be_parsed)))
 
-    # Make cool dictionary comprehension
-    max_dict = {name: get_maximum_for_file_generator(name) for name in files_to_be_parsed}
+    # Make cool generator for lazy evaluation!
+    generator = get_maximum_for_file_generator(files_to_be_parsed)
 
     # Write all metadata to file
-    for file, file_max in max_dict.items():
+    for file, file_max in generator:
         update_metadata_file_with_max(metadata_file_name, file, file_max)
 
     clean_csv(metadata_file_name)  # Removes duplicate entries
