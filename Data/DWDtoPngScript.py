@@ -41,8 +41,11 @@ def get_maximum_for_file(path_to_file):
 
 def get_maximum_for_file_generator(file_list):
     for path_to_file in file_list:
-        (file, current_min, current_max) = get_metadata_for_file(path_to_file)
-        yield (file, current_max)
+        try:
+            (file, current_min, current_max) = get_metadata_for_file(path_to_file)
+            yield (file, current_max)
+        except Exception:
+            logger.error("File corrupt: " + path_to_file)
 
 
 def get_metadata_for_file(path_to_file):
@@ -156,11 +159,11 @@ def main():
                         help="Target directory for binary files.")
 
     args = parser.parse_args()
-    print("Parsed arguments:")
+    logger.info("Parsed arguments:")
     in_dir = "./" if args.in_directory is None else args.in_directory
     out_dir = "./" if args.out_directory is None else args.out_directory
-    print("DWD data directory: " + str(in_dir))
-    print("PNG image directory: " + str(out_dir))
+    logger.info("DWD data directory: " + str(in_dir))
+    logger.info("PNG image directory: " + str(out_dir))
 
     # Path to DATA location (Change to match Crwaler)
     os.environ["WRADLIB_DATA"] = in_dir
@@ -182,7 +185,7 @@ def main():
             # Add filenames to be parsed to list
             files_to_be_parsed.append(subdir + '/' + file)
 
-    print("Files to parse: " + str(len(files_to_be_parsed)))
+    logger.info("Files to parse: " + str(len(files_to_be_parsed)))
 
     # Make cool generator for lazy evaluation!
     generator = get_maximum_for_file_generator(files_to_be_parsed)
