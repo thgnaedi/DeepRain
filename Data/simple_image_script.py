@@ -9,7 +9,13 @@ import sample_bundle as sb
 
 class Data_converter():
     def __init__(self, path, max_num_samples, n_data, n_label, start_img=None, subimg_startpos=None, subimg_shape=None,
-                 output_shape=None, silent=False, post="-dwd---bin.png"):
+                 output_shape=None, silent=False, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png"):
+        """
+        start_img       Derzeit nicht verwendet, spaeter sollen nur Bilder nach diesem Zeitpunkt verwendet werden.
+        subimg_startpos tupel mit x,y Koordinate bei welcher der zu generierende Bildausschnitt beginnen soll.
+        subimg_shape    tupel der groeße, welche der Bildausschnitt haben soll.
+        output_shape    groeße, welches das Ausgegebene Bild haben soll. Bildausschnitt wird dann noch skaliert. None, tuple or int
+        """
         assert os.path.exists(path)
         if start_img is not None:
             assert os.path.exists(start_img)
@@ -20,6 +26,7 @@ class Data_converter():
         self.max_num_samples = max_num_samples
         self.n_data = n_data
         self.n_label = n_label
+        self.pre = pre
         self.post = post
         if subimg_startpos is None or subimg_shape is None:
             self.subimg = None
@@ -61,7 +68,7 @@ class Data_converter():
             all_images.append(image_path)
         all_images.sort()  # Sortieren
         # ToDo: pattern ersetzen durch regexp
-        pattern = "scaled_raa01-rw_10000"
+        pattern = self.pre
         while len(all_images) > 0 and pattern not in all_images[0]:
             del all_images[0]
         while len(all_images) > 0 and pattern not in all_images[-1]:
@@ -71,7 +78,7 @@ class Data_converter():
         legals = []
         first_d = None
         next_d = None
-        datecomp = Date_Comperator(pre=self.path + "scaled_raa01-rw_10000-", post=self.post)
+        datecomp = Date_Comperator(pre=self.path + self.pre, post=self.post)
         for i in all_images:
             first_d = next_d
             next_d = i
@@ -127,7 +134,7 @@ class Data_converter():
 
 
 class Date_Comperator():
-    def __init__(self, pre, post, timediff=100):
+    def __init__(self, pre, post, timediff=5):
         self.pre = pre
         self.post = post
         self.diff = timediff
@@ -257,5 +264,6 @@ def usage():
 if __name__ == '__main__':
     path = "C:\\temp\\loeschen\\"
     dc = Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None, subimg_startpos=(100, 200),
-                        subimg_shape=(100, 100), output_shape=50, silent=True)
+                        subimg_shape=(100, 100), output_shape=50, silent=True, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png")
     dc.save_object("einObjekt", "nur ein TestObjekt mit wenigen Samples")
+    print("anzahl Daten, die gesammelt wurden:",dc.get_number_samples())

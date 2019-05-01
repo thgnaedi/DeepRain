@@ -53,6 +53,15 @@ class Sample_Bundle():
             all_b_label.append(np.stack(b_label, axis=axis))
         return all_b_data, all_b_label
 
+    def get_all_data_label(self, channels_Last):
+        data = []
+        label = []
+        for item in self.all_samples:
+            data.append(item[0])
+            label.append(item[1])
+        if channels_Last:
+            return np.array(data), np.array(label)
+        return np.swapaxes(np.array(data),1,3), np.swapaxes(np.array(label),1,3)
 
 def load_Sample_Bundle(path):
     path += ".sb"
@@ -65,11 +74,14 @@ def load_Sample_Bundle(path):
 if __name__ == '__main__':
     sb = load_Sample_Bundle("einObjekt")
     print(sb.info())
+    #duplicate first Sample 10 times, so 11 images are avaliable
     for i in range(10):
         sb.all_samples.append(sb.get_item_at(0))
         sb.all_samples[i+1][0][0][0]=i
-    print(sb.get_item_at(0)[0].shape)
+    print("one sample has shape:",sb.get_item_at(0)[0].shape)
     d,l = sb.get_batch(batchsize=4)
-    print("anz Batches:",len(d))
+    print("anz Batches:",len(d),"mit shape:",d[0].shape,"und label-shape:",l[0].shape)
     print(sb.subimg)
     print(sb.resizeshape)
+    data, label = sb.get_all_data_label(channels_Last=True)
+    print("data:",data.shape, "label",label.shape)
