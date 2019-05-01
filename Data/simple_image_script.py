@@ -221,8 +221,10 @@ def list_to_set(imgList, n_input, n_output):
     return (x, y)
 
 
-def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False):
+def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False, vmax=None):
     img2D = open_2D_img(path, silent)
+    if vmax is None:
+        vmax = 255
     if _subimg is None:
         img2D_sub = img2D
     else:
@@ -240,7 +242,7 @@ def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_
         rows = 1
         for i in range(len(images)):
             fig.add_subplot(rows, columns, i + 1)
-            plt.imshow(images[i], vmin=0, vmax=255, cmap="gray")
+            plt.imshow(images[i], vmin=0, vmax=vmax, cmap="gray")
             plt.title(titles[i])
         plt.show()
     return scaled
