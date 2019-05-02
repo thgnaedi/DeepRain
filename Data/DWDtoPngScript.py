@@ -153,10 +153,10 @@ def main():
         description="Reads radolan files in one directory, scales them and saves them as PNG files in a directory")
     parser.add_argument("-i", "--inputDir",
                         dest="in_directory",
-                        help="Target directory for downloads.")
+                        help="Directory with binary DWD files to be converted.")
     parser.add_argument("-o", "--outputDir",
                         dest="out_directory",
-                        help="Target directory for binary files.")
+                        help="Target directory for PNG files.")
 
     args = parser.parse_args()
     logger.info("Parsed arguments:")
