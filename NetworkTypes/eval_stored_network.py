@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     #tmp()
     #input("Finished")
-    loss1, pred1, data1, label1 = collect_all("Training_De\\CNN_deeper_", "epoch_25k", 20, 1)
+    loss1, pred1, data1, label1 = collect_all("Training_De\\CNN_deeper_", "epoch_25k", 20, 1, , channelsLast=False)
     print("\n###########################\nAb hier bitte kopieren:\n")
     print("l1",loss1)
 
