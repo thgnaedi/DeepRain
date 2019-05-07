@@ -10,6 +10,7 @@ class Sample_Bundle():
         self.all_samples = all_samples
         self.details = details
         self.id = 0
+        self.cleared = -1   # clear threshold
 
     def info(self):
         return "Set Bundle with " + str(len(self.all_samples)) + " Samples " + self.details
@@ -62,6 +63,34 @@ class Sample_Bundle():
         if channels_Last:
             return np.array(data), np.array(label)
         return np.swapaxes(np.array(data),1,3), np.swapaxes(np.array(label),1,3)
+
+    def clear_samples(self, threshold=1):
+        if "cleared" not in locals():   #supports older versions of Objects
+            print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
+            self.cleared = -1
+
+        if threshold <= self.cleared:
+            print("cleared already done with threshold {}".format(self.cleared))
+            return
+        index = 0
+        while(True):
+            a = self.all_samples[index]
+            if np.max(a[0]) < threshold:
+                del self.all_samples[index]
+            else:
+                index += 1
+            if index >= len(self.all_samples):
+                break
+        self.cleared = threshold
+        return
+
+    def save_object(self, filename):
+        filename += ".sb"
+        with open(filename, 'wb') as output:  # Overwrites any existing file.
+            pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
+        print(filename + " saved successfully")
+        return
+
 
 def load_Sample_Bundle(path):
     path += ".sb"
