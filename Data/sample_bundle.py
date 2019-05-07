@@ -13,7 +13,14 @@ class Sample_Bundle():
         self.cleared = -1   # clear threshold
 
     def info(self):
-        return "Set Bundle with " + str(len(self.all_samples)) + " Samples " + self.details
+        info = "Set Bundle with " + str(len(self.all_samples)) + " Samples\n"
+        info += "Subimg selection is: {}, resizeshape is: {}\n".format(self.subimg, self.resizeshape)
+        if hasattr(self, "cleared"):
+            if self.cleared > 0:
+                info += "Samples are cleared, mininal max value per Sample is {}\n".format(self.cleared)
+        if self.details is not "":
+            info += "### Userinfostring:\n"+self.details
+        return  info
 
     def get_next(self):
         tmp = self.all_samples[self.id]
@@ -68,8 +75,7 @@ class Sample_Bundle():
         if not hasattr(self, 'cleared'):   #supports older versions of Objects
             print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
             self.cleared = -1
-            print((locals()))
-        print("cleared is da")
+
         if threshold <= self.cleared:
             print("cleared already done with threshold {}".format(self.cleared))
             return
