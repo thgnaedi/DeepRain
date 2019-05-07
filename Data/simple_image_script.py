@@ -126,11 +126,11 @@ class Data_converter():
 
         return
 
-    def save_object(self, filename, details="", clear=False):
+    def save_object(self, filename, details="", clear=0):
         filename += ".sb"
         obj = sb.Sample_Bundle(self.subimg, self.resize_shape, self.all_samples, details=details)
-        if clear:
-            obj.clear_samples(threshold=1)
+        if clear > 0:
+            obj.clear_samples(threshold=clear)
         with open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
