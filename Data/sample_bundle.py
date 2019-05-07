@@ -65,10 +65,11 @@ class Sample_Bundle():
         return np.swapaxes(np.array(data),1,3), np.swapaxes(np.array(label),1,3)
 
     def clear_samples(self, threshold=1):
-        if "cleared" not in locals():   #supports older versions of Objects
+        if not hasattr(self, 'cleared'):   #supports older versions of Objects
             print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
             self.cleared = -1
-
+            print((locals()))
+        print("cleared is da")
         if threshold <= self.cleared:
             print("cleared already done with threshold {}".format(self.cleared))
             return
