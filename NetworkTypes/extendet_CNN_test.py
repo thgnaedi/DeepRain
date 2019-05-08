@@ -1,55 +1,57 @@
-import tfModels as tfm
+import tfModels as tfM
 import simple_CNN_test as sCNN
 import numpy as np
 import os
 from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
 
-
 N_INPUTS = 5
 input_shape = (100, 100, N_INPUTS)  # Channels Last!
 DIFF_TO_LABEL = 2
 
-def compare_multiple_nets(netlist, seed, diffToLabel=DIFF_TO_LABEL, channelsLast=True, show_GroundTruth=True):
-    np.random.seed(seed)
-    data, label = sCNN.generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel, channelsLast=channelsLast)
+
+def compare_multiple_nets(netlist, eval_seed, diffToLabel=DIFF_TO_LABEL, channelsLast=True, show_GroundTruth=True):
+    np.random.seed(eval_seed)
+    data, label = sCNN.generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel,
+                                           channelsLast=channelsLast)
     predictions = []
-    for model in netlist:
-        assert isinstance(model, str)
-        model = load_model(model)
-        pred = model.predict(np.expand_dims(data, axis=0))
+    for current_model in netlist:
+        assert isinstance(current_model, str)
+        current_model = load_model(current_model)
+        pred = current_model.predict(np.expand_dims(data, axis=0))
         predictions.append(pred.reshape(label.shape))
 
     if show_GroundTruth:
         netlist.append("Label")
         predictions.append(label)
-    f, axes = plt.subplots(2, int((len(predictions)+1)/2.0))
-    multiarray = int((len(predictions)+1)/2.0)
+    f, axes = plt.subplots(2, int((len(predictions) + 1) / 2.0))
+    multiarray = int((len(predictions) + 1) / 2.0)
     for i in range(len(predictions)):
         if multiarray == 1:
             axes[i].imshow(predictions[i], vmin=0, vmax=1, interpolation="none")
             axes[i].set_title(netlist[i])
         else:
-            axes[i%multiarray][int(i/multiarray)].imshow(predictions[i], vmin=0, vmax=1, interpolation="none")
+            axes[i % multiarray][int(i / multiarray)].imshow(predictions[i], vmin=0, vmax=1, interpolation="none")
             axes[i % multiarray][int(i / multiarray)].set_title(netlist[i])
-    f.suptitle("vergleich seed = {}".format(seed))
-    #plt.show()
+    f.suptitle("vergleich seed = {}".format(eval_seed))
+    # plt.show()
     return
+
 
 def load_last_net(nameoffset, _dir=os.getcwd()):
     assert nameoffset is not None
-    last_version=-1
+    last_version = -1
     print("load last state")
     print(_dir)
     for e in os.listdir(_dir):
         if nameoffset in e and ".h5" in e:
             e = e.replace(".h5", "")
-            e = e.replace(nameoffset+"_","")
+            e = e.replace(nameoffset + "_", "")
             n = int(e)
             if n > last_version:
                 last_version = n
 
-    netname = nameoffset+"_"+str(last_version)+".h5"
+    netname = nameoffset + "_" + str(last_version) + ".h5"
     if last_version == -1:
         print("no network found in this Path:", _dir)
         return None, 0
@@ -57,7 +59,9 @@ def load_last_net(nameoffset, _dir=os.getcwd()):
     model = load_model(netname)
     return model, last_version
 
-def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, channelsLast=True, n_inputs=N_INPUTS, use_logfile=True, load_last_state=False):
+
+def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, channelsLast=True, n_inputs=N_INPUTS,
+                        use_logfile=True, load_last_state=False):
     offset = 0
     if load_last_state:
         model, offset = load_last_net(savename)
@@ -65,12 +69,12 @@ def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, cha
             return
     info = "Starte Trainingsphase für {} Epochen".format(n_epoch)
     if offset > 0:
-        info += ", beginne bei Epoche {}, geladenes Netz = {}".format(offset, savename+"_"+str(offset)+".h5")
+        info += ", beginne bei Epoche {}, geladenes Netz = {}".format(offset, savename + "_" + str(offset) + ".h5")
     if savename is not None:
         info += " Zwischenschritte werden gespeichert!"
     print(info)
 
-    tmp = np.random.randint(0,100000)
+    tmp = np.random.randint(0, 100000)
     np.random.seed(13370)
     data, label = sCNN.generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel, channelsLast=True)
     np.random.seed(tmp)
@@ -78,30 +82,100 @@ def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, cha
     for i in range(offset, n_epoch):
         current_name = None
         if savename is not None:
-            current_name = savename+"_"+str(i+1)
-        sCNN.train_model(model, diffToLabel=diffToLabel, epochs=1, savename=current_name, n_train=n_train, channelsLast=channelsLast, n_inputs=n_inputs)
+            current_name = savename + "_" + str(i + 1)
+        sCNN.train_model(model, diffToLabel=diffToLabel, epochs=1, savename=current_name, n_train=n_train,
+                         channelsLast=channelsLast, n_inputs=n_inputs)
         prediction = model.predict(np.expand_dims(data, axis=0))
-        sCNN.eval_output(output=prediction, label=label, name=savename+"_"+str(i+1), rescale=False, save_img_name=savename+"_"+str(i+1))
+        sCNN.eval_output(output=prediction, label=label, name=savename + "_" + str(i + 1), rescale=False,
+                         save_img_name=savename + "_" + str(i + 1))
         if use_logfile:
-            info = "Epoch: "+str(i)+"\tmax: "+str(np.max(prediction))+"\tmin: "+str(np.min(prediction))+"\tsaved as: "+savename+"_"+str(i+1)+"\n"
+            info = "Epoch: " + str(i) + "\tmax: " + str(np.max(prediction)) + "\tmin: " + str(
+                np.min(prediction)) + "\tsaved as: " + savename + "_" + str(i + 1) + "\n"
             print(info)
             log.write(info)
             log.flush()
     log.close()
 
 
-#model = tfm.network_differentWay(input_shape)
-#eval_trainingsphase(model, n_epoch=100, diffToLabel=DIFF_TO_LABEL, n_train=1000, savename="Test_UPsampling", channelsLast=True, n_inputs=N_INPUTS, use_logfile=True, load_last_state=False)
+def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", channelsLast=True,
+                   use_logfile=True, load_last_state=True):
+    offset = 0
+    if load_last_state:
+        _model, offset = load_last_net(savename)
+        if _model is None and model is None:
+            print("No model to train!")
+            return
+        if _model is not None:
+            model = _model
 
-model = tfm.sameshape_CNN(input_shape)
-#eval_trainingsphase(model, n_epoch=100, diffToLabel=DIFF_TO_LABEL, n_train=1000,
-#                    savename="twoUPSamplings", channelsLast=True, n_inputs=N_INPUTS, use_logfile=True, load_last_state=True)
+    samplebundle.normalize()
+    info = "Starte Trainingsphase für {} Epochen".format(n_epoch)
+    if offset > 0:
+        info += ", beginne bei Epoche {}, geladenes Netz = {}".format(offset, savename + "_" + str(offset) + ".h5")
+    if savename is not None:
+        info += " Zwischenschritte werden gespeichert!"
+    print(info)
 
-for seed in [13370, 100, 12345]:
-    compare_multiple_nets(["Net_tinyUNet/twoUpSamplings_100.h5", "Net_with_BNorm/Test_UPsampling_100.h5",
-                           "Net_without_BNorm/Test_UPsampling_100.h5"], seed)
-plt.show()
+    data, label = samplebundle.get_all_data_label(channels_Last=channelsLast, flatten_output=True)
 
-# eval_model("tmp",0)
-# plot_6_images(data, label)
-#sCNN.eval_output(output=prediction, label=label, name="JAJA", rescale=False)
+    n_testsamples = 50
+    x_train, y_train = data[n_testsamples:], label[n_testsamples:]
+    x_test, y_test = data[:n_testsamples], label[:n_testsamples]
+    # print("#####\nlen({})\nshapes:{}, {}".format(len(data), data[0].shape, label[0].shape))
+    # print("daten sind: {}:{}, {}:{}".format(len(x_train), len(y_train), len(x_test), len(y_test)))
+
+    log = open("trainphase.log", "w+")
+    for i in range(offset, n_epoch):
+        current_name = None
+        if savename is not None:
+            current_name = savename + "_" + str(i + 1)
+
+        model.fit(x_train, y_train, batch_size=200, epochs=1, verbose=1, validation_data=(x_test, y_test))
+        score = model.evaluate(x_test, y_test, verbose=0)
+        print("score:", score)
+        # print('Test loss:', score[0])
+        # print('Test accuracy:', score[1])
+        if current_name is not None:
+            model.save(current_name + '.h5')  # creates a HDF5 file 'my_model.h5'
+
+        PREDICTION_IMG_ID = 11  # looks good for 2016
+        prediction = model.predict(np.expand_dims(data[PREDICTION_IMG_ID], axis=0))
+        sCNN.eval_output(output=prediction, label=label[PREDICTION_IMG_ID].reshape((64, 64)),
+                         name=savename + "_" + str(i + 1), rescale=False,
+                         save_img_name=savename + "_" + str(i + 1))
+        if use_logfile:
+            info = "Epoch: " + str(i) + "\tmax: " + str(np.max(prediction)) + "\tmin: " + str(
+                np.min(prediction)) + "\tloss: " + str(score) + "\tsaved as: " + savename + "_" + str(i + 1) + "\n"
+            print(info)
+            log.write(info)
+            log.flush()
+    log.close()
+
+
+# model = tfM.network_differentWay(input_shape)
+# eval_trainingsphase(model, n_epoch=100, diffToLabel=DIFF_TO_LABEL, n_train=1000, savename="Test_UPsampling", channelsLast=True, n_inputs=N_INPUTS, use_logfile=True, load_last_state=False)
+if __name__ == '__main__':
+
+    # model = tfM.sameshape_CNN(input_shape)
+    print("erstelle Netz:")
+    input_shape = (64, 64, 5)  # Channels Last!
+    model = tfM.UNet64(input_shape)
+
+    import sample_bundle
+
+    sb = sample_bundle.load_Sample_Bundle("C:/Users/TopSecret!/Documents/aMSI1/Teamprojekt/DeepRain/Data/RegenTage2016")
+    print(sb.info())
+    train_realdata(model, sb, n_epoch=100, savename="UNet64_2016", channelsLast=True, use_logfile=True,
+                   load_last_state=True)
+
+    # eval_trainingsphase(model, n_epoch=100, diffToLabel=DIFF_TO_LABEL, n_train=1000,
+    #                    savename="twoUPSamplings", channelsLast=True, n_inputs=N_INPUTS, use_logfile=True, load_last_state=True)
+## compare nets on different Seeds:
+    #for seed in [13370, 100, 12345]:
+    #    compare_multiple_nets(["Net_tinyUNet/twoUpSamplings_100.h5", "Net_with_BNorm/Test_UPsampling_100.h5",
+    #                           "Net_without_BNorm/Test_UPsampling_100.h5"], seed)
+    #plt.show()
+
+    # eval_model("tmp",0)
+    # plot_6_images(data, label)
+    # sCNN.eval_output(output=prediction, label=label, name="JAJA", rescale=False)

@@ -5,12 +5,12 @@ import sample_bundle
 
 class Sample_Bundle():
     def __init__(self, subimg, resizeshape, all_samples, details=""):
-        self.subimg = subimg
-        self.resizeshape = resizeshape
-        self.all_samples = all_samples
-        self.details = details
+        self.subimg = subimg    # Subimg selection ((Y,X), (width, height))
+        self.resizeshape = resizeshape  # Tuple or int == outputshape
+        self.all_samples = all_samples  # list of Tuples [(data0, label0), (data1, label1), ...]
+        self.details = details  # Userinput string
         self.id = 0
-        self.cleared = -1   # clear threshold
+        self.cleared = -1       # clear threshold
 
     def info(self):
         info = "Set Bundle with " + str(len(self.all_samples)) + " Samples\n"
@@ -61,12 +61,15 @@ class Sample_Bundle():
             all_b_label.append(np.stack(b_label, axis=axis))
         return all_b_data, all_b_label
 
-    def get_all_data_label(self, channels_Last):
+    def get_all_data_label(self, channels_Last, flatten_output=False):
         data = []
         label = []
         for item in self.all_samples:
             data.append(item[0])
-            label.append(item[1])
+            if flatten_output:
+                label.append(item[1].flatten())
+            else:
+                label.append(item[1])
         if channels_Last:
             return np.array(data), np.array(label)
         return np.swapaxes(np.array(data),1,3), np.swapaxes(np.array(label),1,3)
@@ -89,6 +92,24 @@ class Sample_Bundle():
             if index >= len(self.all_samples):
                 break
         self.cleared = threshold
+        return
+
+    def normalize(self):
+        max_val = 0
+        for i in range(len(self.all_samples)):
+            a = self.all_samples[i]
+            if np.max(a[0]) > max_val: #data
+                max_val = np.max(a[0])
+            if np.max(a[1]) > max_val: #label
+                max_val = np.max(a[1])
+        if max_val == 1:
+            return
+
+        for i in range(len(self.all_samples)):
+            a = self.all_samples[i]
+            normalized = (a[0]/max_val, a[1]/max_val)
+            self.all_samples[i] = normalized
+
         return
 
     def save_object(self, filename):

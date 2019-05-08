@@ -66,7 +66,7 @@ def eval_all():
 
 
 if __name__ == '__main__':
-    bool_Train = False
+    bool_Train = True
     #eval_model("CNN_deeper_1epoch_25k", 5)
     #Train:
     if bool_Train:
