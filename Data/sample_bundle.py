@@ -5,14 +5,22 @@ import sample_bundle
 
 class Sample_Bundle():
     def __init__(self, subimg, resizeshape, all_samples, details=""):
-        self.subimg = subimg
-        self.resizeshape = resizeshape
-        self.all_samples = all_samples
-        self.details = details
+        self.subimg = subimg    # Subimg selection ((Y,X), (width, height))
+        self.resizeshape = resizeshape  # Tuple or int == outputshape
+        self.all_samples = all_samples  # list of Tuples [(data0, label0), (data1, label1), ...]
+        self.details = details  # Userinput string
         self.id = 0
+        self.cleared = -1       # clear threshold
 
     def info(self):
-        return "Set Bundle with " + str(len(self.all_samples)) + " Samples " + self.details
+        info = "Set Bundle with " + str(len(self.all_samples)) + " Samples\n"
+        info += "Subimg selection is: {}, resizeshape is: {}\n".format(self.subimg, self.resizeshape)
+        if hasattr(self, "cleared"):
+            if self.cleared > 0:
+                info += "Samples are cleared, mininal max value per Sample is {}\n".format(self.cleared)
+        if self.details is not "":
+            info += "### Userinfostring:\n"+self.details
+        return  info
 
     def get_next(self):
         tmp = self.all_samples[self.id]
@@ -53,15 +61,64 @@ class Sample_Bundle():
             all_b_label.append(np.stack(b_label, axis=axis))
         return all_b_data, all_b_label
 
-    def get_all_data_label(self, channels_Last):
+    def get_all_data_label(self, channels_Last, flatten_output=False):
         data = []
         label = []
         for item in self.all_samples:
             data.append(item[0])
-            label.append(item[1])
+            if flatten_output:
+                label.append(item[1].flatten())
+            else:
+                label.append(item[1])
         if channels_Last:
             return np.array(data), np.array(label)
         return np.swapaxes(np.array(data),1,3), np.swapaxes(np.array(label),1,3)
+
+    def clear_samples(self, threshold=1):
+        if not hasattr(self, 'cleared'):   #supports older versions of Objects
+            print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
+            self.cleared = -1
+
+        if threshold <= self.cleared:
+            print("cleared already done with threshold {}".format(self.cleared))
+            return
+        index = 0
+        while(True):
+            a = self.all_samples[index]
+            if np.max(a[0]) < threshold:
+                del self.all_samples[index]
+            else:
+                index += 1
+            if index >= len(self.all_samples):
+                break
+        self.cleared = threshold
+        return
+
+    def normalize(self):
+        max_val = 0
+        for i in range(len(self.all_samples)):
+            a = self.all_samples[i]
+            if np.max(a[0]) > max_val: #data
+                max_val = np.max(a[0])
+            if np.max(a[1]) > max_val: #label
+                max_val = np.max(a[1])
+        if max_val == 1:
+            return
+
+        for i in range(len(self.all_samples)):
+            a = self.all_samples[i]
+            normalized = (a[0]/max_val, a[1]/max_val)
+            self.all_samples[i] = normalized
+
+        return
+
+    def save_object(self, filename):
+        filename += ".sb"
+        with open(filename, 'wb') as output:  # Overwrites any existing file.
+            pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
+        print(filename + " saved successfully")
+        return
+
 
 def load_Sample_Bundle(path):
     path += ".sb"
