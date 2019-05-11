@@ -51,11 +51,11 @@ def quick_eval(sb, plotit=False, get_all_max=False):
         return all_max
     return
 
-def display_one_img(samplebundle, img_id, details=None):
+def display_one_img(samplebundle, img_id, details=None, vmax=1):
     samplebundle.normalize()
     data, label = samplebundle.get_all_data_label(channels_Last=False)
     axes = show_sample([data[img_id][0], data[img_id][1], data[img_id][2], data[img_id][3], data[img_id][4],
-                        label[img_id].reshape((64, 64))], vmax=1, return_ax=True)
+                        label[img_id].reshape((64, 64))], vmax=vmax, return_ax=True)
     mses = []
     if details is not None:
         for i in range(len(axes)):
@@ -71,40 +71,42 @@ def display_one_img(samplebundle, img_id, details=None):
     #print("MSE would be:",mses)
     plt.show()
 
-### quick eval soll schnellen überblick liefern
-sb = sample_bundle.load_Sample_Bundle("RegenTage2016")
-quick_eval(sb)
+if __name__ == '__main__':
 
-### anschauliche darstellung von Daten&label aus 2016 (1 Bsp.)
-redl = (([0,63]), ([35,35], "r"))
-orl = (([35,35]), ([0,63], "orange"))
-#display_one_img(sb, 896, [[redl,orl],[redl,orl],[redl,orl],[redl,orl],[redl,orl],[redl,orl]])
+    ### quick eval soll schnellen überblick liefern
+    sb = sample_bundle.load_Sample_Bundle("RegenTage2016")
+    quick_eval(sb)
 
-
-### vergleiche Skalierungsfaktoren von 2016
-print("beginne Auswertung:")
-dataset = ["TestData2016", "TestData2016EDIT", "TestData2016MAL20"]
-for d in dataset:
-    print("\n",d)
-    sb = sample_bundle.load_Sample_Bundle(d)
-    #print(sb.info())
-    all_m = quick_eval(sb, get_all_max=True)
-    plt.figure(d)
-    plt.title(d)
-    plt.hist(all_m, bins=25, log=True)
-
-plt.show()
+    ### anschauliche darstellung von Daten&label aus 2016 (1 Bsp.)
+    redl = (([0,63]), ([35,35], "r"))
+    orl = (([35,35]), ([0,63], "orange"))
+    #display_one_img(sb, 896, [[redl,orl],[redl,orl],[redl,orl],[redl,orl],[redl,orl],[redl,orl]])
 
 
-#for i in range(sb.get_number_samples()):
-#    m = np.max(data[i])
-#    if m < 0.9:
-#        continue
-#    show_sample([data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], label[i].reshape((64,64))], vmax=1, title="id: {} max: {}".format(i, m))
-#    plt.show()
+    ### vergleiche Skalierungsfaktoren von 2016
+    print("beginne Auswertung:")
+    dataset = ["TestData2016", "TestData2016EDIT", "TestData2016MAL20"]
+    for d in dataset:
+        print("\n",d)
+        sb = sample_bundle.load_Sample_Bundle(d)
+        #print(sb.info())
+        all_m = quick_eval(sb, get_all_max=True)
+        plt.figure(d)
+        plt.title(d)
+        plt.hist(all_m, bins=25, log=True)
+
+    plt.show()
 
 
-#sb.clear_samples()
-#input(sb.info())
-#sb.clear_samples()
-#sb.save_object("Sauber")
+    #for i in range(sb.get_number_samples()):
+    #    m = np.max(data[i])
+    #    if m < 0.9:
+    #        continue
+    #    show_sample([data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], label[i].reshape((64,64))], vmax=1, title="id: {} max: {}".format(i, m))
+    #    plt.show()
+
+
+    #sb.clear_samples()
+    #input(sb.info())
+    #sb.clear_samples()
+    #sb.save_object("Sauber")
