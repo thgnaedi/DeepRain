@@ -133,12 +133,10 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
         model.fit(x_train, y_train, batch_size=200, epochs=1, verbose=1, validation_data=(x_test, y_test))
         score = model.evaluate(x_test, y_test, verbose=0)
         print("score:", score)
-        # print('Test loss:', score[0])
-        # print('Test accuracy:', score[1])
         if current_name is not None:
             model.save(current_name + '.h5')  # creates a HDF5 file 'my_model.h5'
 
-        PREDICTION_IMG_ID = 11  # looks good for 2016
+        PREDICTION_IMG_ID = 14  # looks okay for 2016
         prediction = model.predict(np.expand_dims(data[PREDICTION_IMG_ID], axis=0))
         sCNN.eval_output(output=prediction, label=label[PREDICTION_IMG_ID].reshape((64, 64)),
                          name=savename + "_" + str(i + 1), rescale=False,
@@ -159,13 +157,14 @@ if __name__ == '__main__':
     # model = tfM.sameshape_CNN(input_shape)
     print("erstelle Netz:")
     input_shape = (64, 64, 5)  # Channels Last!
-    model = tfM.UNet64(input_shape)
+    #model = tfM.UNet64(input_shape) #erster Test auf reale Daten
+    model = tfM.UNet64_sigmoid_tanh(input_shape)
 
     import sample_bundle
 
     sb = sample_bundle.load_Sample_Bundle("C:/Users/TopSecret!/Documents/aMSI1/Teamprojekt/DeepRain/Data/RegenTage2016")
     print(sb.info())
-    train_realdata(model, sb, n_epoch=100, savename="UNet64_2016", channelsLast=True, use_logfile=True,
+    train_realdata(model, sb, n_epoch=80, savename="UNet64_sigmoid_tanh_2016", channelsLast=True, use_logfile=True,
                    load_last_state=True)
 
     # eval_trainingsphase(model, n_epoch=100, diffToLabel=DIFF_TO_LABEL, n_train=1000,
