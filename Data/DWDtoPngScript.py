@@ -69,6 +69,7 @@ def read_radolan(radfile):
 
 def save_png_grayscale_8bit(image_data, filename):
     image_data_8bit = image_data.astype(np.uint8)
+    image_data_8bit *= 20
     full_filename = filename + ".png"
     cv2.imwrite(full_filename, image_data_8bit)
     logger.info("Saved image file: " + full_filename)
