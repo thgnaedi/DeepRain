@@ -10,6 +10,7 @@ NetworkTypes/*.h5
 NetworkTypes/Net_tinyUNet/
 NetworkTypes/Net_with_BNorm/
 NetworkTypes/Net_without_BNorm/
+NetworkTypes/UNet64*/
 
 *.log
 *.txt
