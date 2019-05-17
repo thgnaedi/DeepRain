@@ -14,6 +14,7 @@ class Sample_Bundle():
 
     def info(self):
         info = "Set Bundle with " + str(len(self.all_samples)) + " Samples\n"
+        info += "Shapes are: input {}, output {}\n".format(self.all_samples[0][0].shape, self.all_samples[0][1].shape)
         info += "Subimg selection is: {}, resizeshape is: {}\n".format(self.subimg, self.resizeshape)
         if hasattr(self, "cleared"):
             if self.cleared > 0:
