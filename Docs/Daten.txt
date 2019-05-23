@@ -1,0 +1,17 @@
+# Daten
+
+## Quelle
+Die Daten, die wir verwenden, stammen vom Deutschen Wetterdienst (ab jezt DWD) und sind Niederschlagsmessungen von Radarstationen. Die Messungen liegen in einer Auflösung von 5 Minuten vor und ergeben den Niederschlag in mm.
+
+
+[DWD Opendata](https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/2016/)
+
+## Preprocessing
+Die Daten liegen in einem Binärformat des DWD vor, aus dem man den Niederschlag (auch für bestimmte Koordinaten) in mm extrahieren kann. Dazu braucht man die Python-Bibliothek "Wradlib". 
+
+Wir rastern den Niederschlag in einer Deutschlandkarte mit einer Auflösung von 1100x900 Pixeln, der Standardauflösung der DWD-Daten.
+
+Danach bestimmen wir das Maximum des Niederschlags (in mm), um die Werte auf einen Bereich spreizen zu können; das Minimum kann als 0 angenommen werden, was keinem Niederschlag entspricht.
+Schlieplich spreizen wir die Werte auf einen Bereich zwischen 0 und 255, damit die Karte in einem (komprimierten) Bildformat mit einer Bittiefe von 8 Bit gespeichert werden kann.
+
+Zum Schluss werden die Werte mit dem Faktor 20 multipliziert; dabei werden die Werte über 255 auf den Maximalwert geclampt. Dadurch verwerfen wir Ausreißer und das Training funktioniert besser.
