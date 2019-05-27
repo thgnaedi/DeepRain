@@ -1,6 +1,5 @@
 import argparse
 import os.path
-import shutil
 from ftplib import FTP
 import glob
 import gzip
@@ -8,6 +7,20 @@ import shutil
 import tarfile
 import os
 import requests
+import logging
+
+
+logger = logging.getLogger("DWD Crawler (script)")
+logger.setLevel(logging.INFO)
+
+file_handler = logging.FileHandler("dwd-crawler.log")
+file_handler.setLevel(logging.INFO)
+logger.addHandler(file_handler)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+logger.addHandler(stream_handler)
+
 
 host_protocol = "ftp://"
 host_url = "ftp-cdc.dwd.de"
@@ -38,10 +51,10 @@ def daily_uncompress(archive_directory, target_directory, year=None):
 
     # Move to tmp directory and uncompress archives to target
     os.chdir(temp_dir_name)
-    print("Uncompressing .tar.gz files in " + os.getcwd())
+    logger.info("Uncompressing .tar.gz files in " + os.getcwd())
     for file in glob.glob("*.tar.gz"):
         uncompress_targzfile(file, target_directory)
-    print("Removing temp folder")
+    logger.info("Removing temp folder")
     os.chdir("..")
     shutil.rmtree("./" + temp_dir_name)
 
@@ -56,9 +69,9 @@ def daily_download_months(year, target_directory):
         daily_filename = minutely_filename_prefix + str(year) + str(month).zfill(2) + minutely_filename_end
         url_complete = minutely_host_protocol + minutely_host_url + str(year) + '/' + daily_filename
         if os.path.isfile(target_directory + daily_filename):
-            print("File already downloaded: " + daily_filename)
+            logger.info("File already downloaded: " + daily_filename)
             continue
-        print("Downloading: " + url_complete)
+        logger.info("Downloading: " + url_complete)
         r = requests.get(url_complete, verify=False, stream=True)
         r.raw.decode_content = True
         with open(target_directory + daily_filename, 'wb') as file:
@@ -66,21 +79,28 @@ def daily_download_months(year, target_directory):
 
 
 def gunzip(file_path, output_path):
-    print("Uncompressing gz file: " + file_path)
+    # ToDo: Test if valid archive
+    logger.info("Uncompressing gz file: " + file_path)
     with gzip.open(file_path, "rb") as compressed, open(output_path, "wb") as file_out:
         shutil.copyfileobj(compressed, file_out)
 
 
 def uncompress_tarfile(tar_file_path, destination):
-    print("Uncompressing tar file: " + tar_file_path)
-    file = tarfile.open(tar_file_path, "r|")
-    file.extractall(destination)
+    if tarfile.is_tarfile(tar_file_path):
+        logger.info("Uncompressing tar file: " + tar_file_path)
+        file = tarfile.open(tar_file_path, "r|")
+        file.extractall(destination)
+    else:
+        logger.error("Error uncompressing tar file: " + tar_file_path)
 
 
 def uncompress_targzfile(tar_file_path, destination):
-    print("Uncompressing tar.gz file: " + tar_file_path)
-    file = tarfile.open(tar_file_path, "r:gz")
-    file.extractall(destination)
+    if tarfile.is_tarfile(tar_file_path):
+        logger.info("Uncompressing tar.gz file: " + tar_file_path)
+        file = tarfile.open(tar_file_path, "r:gz")
+        file.extractall(destination)
+    else:
+        logger.error("Error uncompressing tar.gz file: " + tar_file_path)
 
 
 def uncompress_monthly_all(source_path, destination_path):
@@ -94,9 +114,9 @@ def uncompress_monthly_all(source_path, destination_path):
 
 def download_with_new_connection(ftp, filename):
     if os.path.isfile(filename):
-        print("File " + filename + " already downloaded!")
+        logger.info("File " + filename + " already downloaded!")
     else:
-        print("Downloading: " + ftp.pwd() + filename)
+        logger.info("Downloading: " + ftp.pwd() + filename)
         with open(filename, 'wb') as f:
             ftp.retrbinary('RETR ' + filename, f.write)
 
@@ -131,14 +151,14 @@ def ftp_dir_year(ftp, directory_file_list):
 
 
 def main(download_dir="./", out_directory="./", download=True, unpack=True, minutely=True, year=None):
-    print("Downloads are at: " + download_dir)
-    print("Uncompressing to: " + out_directory)
+    logger.info("Downloads are at: " + download_dir)
+    logger.info("Uncompressing to: " + out_directory)
 
-    print("Doing: ")
+    logger.info("Doing: ")
 
     if download:
         if not minutely:
-            print("Downloading hourly files")
+            logger.info("Downloading hourly files")
             os.chdir(download_dir)
             ftp_session = FTP(host_url)
             ftp_session.login()
@@ -146,13 +166,13 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             ftp_session.close()
         else:
             num_year = int(year)
-            print("Downloading minutely files")
+            logger.info("Downloading minutely files")
             if not year:
                 daily_download_years(download_dir)
             elif minutely_year_begin <= num_year <= minutely_year_end:
                 daily_download_months(num_year, download_dir)
             else:
-                print("Year not available for download: " + str(year))
+                logger.info("Year not available for download: " + str(year))
 
     if unpack:
         if not minutely:
@@ -187,26 +207,26 @@ if __name__ == "__main__":
                         dest="year",
                         help="Specify the year to be downloaded. ONLY WORKS with option: -m")
 
-    print("All Arguments initialized")
+    logger.info("All Arguments initialized")
 
     args = parser.parse_args()
-    print("Parsed arguments:")
-    print("downloadOnly: ", end='', flush=True)
-    print("True" if args.downloadOnly else "False")
-    print("unpackOnly: ", end='', flush=True)
-    print("True" if args.unpackOnly else "False")
-    print("hourly files: ", end='', flush=True)
-    print("True" if not args.minutely else "False")
-    print("5 minutely files: ", end='', flush=True)
-    print("True" if args.minutely else "False")
+    logger.info("Parsed arguments:")
+    logger.info("downloadOnly: ", end='', flush=True)
+    logger.info("True" if args.downloadOnly else "False")
+    logger.info("unpackOnly: ", end='', flush=True)
+    logger.info("True" if args.unpackOnly else "False")
+    logger.info("hourly files: ", end='', flush=True)
+    logger.info("True" if not args.minutely else "False")
+    logger.info("5 minutely files: ", end='', flush=True)
+    logger.info("True" if args.minutely else "False")
 
-    print("Download YEAR: " + "ALL" if not args.year else str(args.year))
+    logger.info("Download YEAR: " + "ALL" if not args.year else str(args.year))
 
     down_dir = "./" if args.down_directory is None else args.down_directory
     out_dir = "./" if args.out_directory is None else args.out_directory
 
     if args.downloadOnly and args.unpackOnly:
-        print("YOU wanted me to do nothing!!! downloadOnly AND unpackOnly")
+        logger.info("YOU wanted me to do nothing!!! downloadOnly AND unpackOnly")
     else:
         main(download_dir=down_dir,
              out_directory=out_dir,
@@ -214,4 +234,4 @@ if __name__ == "__main__":
              unpack=not args.downloadOnly,
              minutely=args.minutely,
              year=args.year)
-    print("Crawler finished!")
+    logger.info("Crawler finished!")
