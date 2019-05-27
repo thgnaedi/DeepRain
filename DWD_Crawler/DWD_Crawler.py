@@ -211,13 +211,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     logger.info("Parsed arguments:")
-    logger.info("downloadOnly: ", end='', flush=True)
+    logger.info("downloadOnly: ")
     logger.info("True" if args.downloadOnly else "False")
-    logger.info("unpackOnly: ", end='', flush=True)
+    logger.info("unpackOnly: ")
     logger.info("True" if args.unpackOnly else "False")
-    logger.info("hourly files: ", end='', flush=True)
+    logger.info("hourly files: ")
     logger.info("True" if not args.minutely else "False")
-    logger.info("5 minutely files: ", end='', flush=True)
+    logger.info("5 minutely files: ")
     logger.info("True" if args.minutely else "False")
 
     logger.info("Download YEAR: " + "ALL" if not args.year else str(args.year))
