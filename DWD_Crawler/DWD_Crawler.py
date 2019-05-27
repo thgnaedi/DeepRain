@@ -72,10 +72,10 @@ def daily_download_months(year, target_directory):
             logger.info("File already downloaded: " + daily_filename)
             continue
         logger.info("Downloading: " + url_complete)
-        r = requests.get(url_complete, verify=False, stream=True)
+        r = requests.get(url_complete, stream=True)
         r.raw.decode_content = True
         with open(target_directory + daily_filename, 'wb') as file:
-            shutil.copyfileobj(r.raw, file)
+            file.write(r.content)
 
 
 def gunzip(file_path, output_path):
