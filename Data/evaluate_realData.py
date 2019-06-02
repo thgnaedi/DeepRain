@@ -2,7 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sample_bundle
 
-
+'''
+Skript zum schnellen Auswerten eines "SampleBundles",
+bewertet Verteilung der Graustufen und stellt histogramm dar.
+Bewertet zusätzlich prozentualen Anteil an sinnvollen Bundles (Daten mit Regen),
+und gibt den Maximalwert aus (optimaler weise 100% und 255).
+'''
 def show_sample(samples, vmax=100, title="one Sample", return_ax=False):
     if len(samples) == 6:
         return __show_sample_6__(samples, vmax, title, return_ax)
