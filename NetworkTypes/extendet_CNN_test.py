@@ -98,7 +98,20 @@ def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, cha
 
 
 def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", channelsLast=True,
-                   use_logfile=True, load_last_state=True):
+                   use_logfile=True, load_last_state=True, n_testsamples=50, prediction_shape = (64, 64), PREDICTION_IMG_ID=14):
+    """
+    Method to train Network on real Data (depending on the given samplebundle)
+    :param model:           NN to train
+    :param samplebundle:    sample bundle object, containing Data&Label as list.
+    :param n_epoch:         number epochs to train
+    :param savename:        name to store network (adding epoch number and .h5 at the end)
+    :param channelsLast:    if true, channels are in the last axis
+    :param use_logfile:     if true, logdetails will be stored in a file.
+    :param load_last_state: if true, last stored network with same name will be loaded
+    :param n_testsamples:   number of testsamples, data = [0:n_testsamples]+[n_testsamples:len(data)]
+    :param PREDICTION_IMG_ID    id of evaluating image
+    :return:                None
+    """
     offset = 0
     if load_last_state:
         _model, offset = load_last_net(savename)
@@ -118,36 +131,32 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
 
     data, label = samplebundle.get_all_data_label(channels_Last=channelsLast, flatten_output=True)
 
-    n_testsamples = 50
     x_train, y_train = data[n_testsamples:], label[n_testsamples:]
     x_test, y_test = data[:n_testsamples], label[:n_testsamples]
-    # print("#####\nlen({})\nshapes:{}, {}".format(len(data), data[0].shape, label[0].shape))
-    # print("daten sind: {}:{}, {}:{}".format(len(x_train), len(y_train), len(x_test), len(y_test)))
 
-    log = open("trainphase.log", "w+")
+    log = open("trainphase.log", "a+")
     for i in range(offset, n_epoch):
         current_name = None
         if savename is not None:
             current_name = savename + "_" + str(i + 1)
 
-        model.fit(x_train, y_train, batch_size=200, epochs=1, verbose=1, validation_data=(x_test, y_test))
-        score = model.evaluate(x_test, y_test, verbose=0)
-        print("score:", score)
+        history = model.fit(x_train, y_train, batch_size=200, epochs=1, verbose=1, validation_data=(x_test, y_test))
+        trainloss = np.mean(np.array(history.history["loss"]))
+        valloss = np.mean(np.array(history.history["val_loss"]))
         if current_name is not None:
             model.save(current_name + '.h5')  # creates a HDF5 file 'my_model.h5'
 
-        PREDICTION_IMG_ID = 14  # looks okay for 2016
         prediction = model.predict(np.expand_dims(data[PREDICTION_IMG_ID], axis=0))
-        sCNN.eval_output(output=prediction, label=label[PREDICTION_IMG_ID].reshape((64, 64)),
+        sCNN.eval_output(output=prediction, label=label[PREDICTION_IMG_ID].reshape(prediction_shape),
                          name=savename + "_" + str(i + 1), rescale=False,
                          save_img_name=savename + "_" + str(i + 1))
         if use_logfile:
-            info = "Epoch: " + str(i) + "\tmax: " + str(np.max(prediction)) + "\tmin: " + str(
-                np.min(prediction)) + "\tloss: " + str(score) + "\tsaved as: " + savename + "_" + str(i + 1) + "\n"
+            info = "Epoch: " + str(i) + "\tmax: " + str(np.max(prediction)) +"/{}".format(np.max(label[PREDICTION_IMG_ID]))+ "\tmin: " + str(np.min(prediction)) +"\tloss: " + str(valloss) + "\ttrain_loss: " + str(trainloss) + "\tsaved as: " + savename + "_" + str(i + 1) + "\n"
             print(info)
             log.write(info)
             log.flush()
     log.close()
+    return
 
 
 # model = tfM.network_differentWay(input_shape)
@@ -158,15 +167,28 @@ if __name__ == '__main__':
     print("erstelle Netz:")
     input_shape = (64, 64, 5)  # Channels Last!
     #model = tfM.UNet64(input_shape) #erster Test auf reale Daten
-    model = tfM.UNet64_sigmoid_tanh(input_shape)
 
     import sample_bundle
 
-    sb = sample_bundle.load_Sample_Bundle("C:/Users/TopSecret!/Documents/aMSI1/Teamprojekt/DeepRain/Data/RegenTage2016")
-    print(sb.info())
-    train_realdata(model, sb, n_epoch=80, savename="UNet64_sigmoid_tanh_2016", channelsLast=True, use_logfile=True,
-                   load_last_state=True)
+## UNet to predict 1 timestep (5min)
+    #model = tfM.UNet64_sigmoid_tanh(input_shape)
+    #sb = sample_bundle.load_Sample_Bundle("C:/Users/TopSecret!/Documents/aMSI1/Teamprojekt/DeepRain/Data/RegenTage2016")
+    #print(sb.info())
+    #train_realdata(model, sb, n_epoch=80, savename="UNet64_sigmoid_tanh_2016", channelsLast=True, use_logfile=True,
+    #               load_last_state=True)
+## UNet to predict 2 timesteps (10min)
 
+
+    # zwei Zeitschritte:
+    #model = tfM.UNet64x2(input_shape)
+    #sb = sample_bundle.load_Sample_Bundle("C:/Users/TopSecret!/Documents/aMSI1/Teamprojekt/DeepRain/Data/RegenTage2016_5_2")
+    #ein Zeitschritt
+    model = tfM.UNet64(input_shape=(64, 64, 5))
+    sb = sample_bundle.load_Sample_Bundle("C:/Users/TopSecret!/Documents/aMSI1/Teamprojekt/DeepRain/Data/RegenTage2016")
+
+    print(sb.info())
+    train_realdata(model, sb, n_epoch=80, savename="UNet64", channelsLast=True, use_logfile=True,
+                   load_last_state=True, n_testsamples=50, prediction_shape = (64, 64), PREDICTION_IMG_ID=6)
     # eval_trainingsphase(model, n_epoch=100, diffToLabel=DIFF_TO_LABEL, n_train=1000,
     #                    savename="twoUPSamplings", channelsLast=True, n_inputs=N_INPUTS, use_logfile=True, load_last_state=True)
 ## compare nets on different Seeds:
