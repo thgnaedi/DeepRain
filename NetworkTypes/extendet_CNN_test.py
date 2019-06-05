@@ -1,9 +1,11 @@
 import tfModels as tfM
+import tfLosses as tfL
 import simple_CNN_test as sCNN
 import numpy as np
 import os
 from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
+import keras
 
 N_INPUTS = 5
 input_shape = (100, 100, N_INPUTS)  # Channels Last!
@@ -183,11 +185,11 @@ if __name__ == '__main__':
     #model = tfM.UNet64x2(input_shape)
     #sb = sample_bundle.load_Sample_Bundle("C:/Users/TopSecret!/Documents/aMSI1/Teamprojekt/DeepRain/Data/RegenTage2016_5_2")
     #ein Zeitschritt
-    model = tfM.UNet64(input_shape=(64, 64, 5))
+    model = tfM.UNet64(input_shape=(64, 64, 5), lossfunction=tfL.mean_squared_error_kopie)
     sb = sample_bundle.load_Sample_Bundle("C:/Users/TopSecret!/Documents/aMSI1/Teamprojekt/DeepRain/Data/RegenTage2016")
 
     print(sb.info())
-    train_realdata(model, sb, n_epoch=80, savename="UNet64", channelsLast=True, use_logfile=True,
+    train_realdata(model, sb, n_epoch=10, savename="UNet64", channelsLast=True, use_logfile=True,
                    load_last_state=True, n_testsamples=50, prediction_shape = (64, 64), PREDICTION_IMG_ID=6)
     # eval_trainingsphase(model, n_epoch=100, diffToLabel=DIFF_TO_LABEL, n_train=1000,
     #                    savename="twoUPSamplings", channelsLast=True, n_inputs=N_INPUTS, use_logfile=True, load_last_state=True)
