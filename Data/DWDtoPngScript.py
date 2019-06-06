@@ -14,7 +14,6 @@ import wradlib as wrl
 import numpy as np
 import warnings
 import csv
-import fileinput
 import cv2
 import logging
 
@@ -22,11 +21,15 @@ import logging
 counter_files = 0
 total_files = 0
 
+
 logger = logging.getLogger("DWD to PNG (script)")
 logger.setLevel(logging.INFO)
+formatter = logging.Formatter(fmt="%(asctime)s %(levelname)-8s %(message)s",
+                              datefmt="%Y-%m-%d %H:%M:%S")
 
 file_handler = logging.FileHandler("dwd-to-png.log")
 file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 stream_handler = logging.StreamHandler()
@@ -130,17 +133,21 @@ def update_metadata_file_multiple_entries(metadata_file_name, new_row_entries_li
 
 
 def clean_csv(filename):
+    os.rename(filename, filename + ".BAK")
+
     num_unique_lines = 0
     num_total_lines = 0
     seen = set()
-    for line in fileinput.FileInput(filename, inplace=1):
-        num_total_lines += 1
-        if line in seen:
-            continue
-        seen.add(line)
-        print(line)
-        num_unique_lines += 1
-    logger.info("Cleanup metadata: {} unique entries, {} entries removed".format(num_unique_lines, num_total_lines-num_unique_lines))
+    with open(filename + ".BAK", 'r') as in_file, open(filename, 'w') as out_file:
+        for line in in_file:
+            num_total_lines += 1
+            if line in seen:
+                continue
+            num_unique_lines += 1
+            seen.add(line)
+            out_file.write(line)
+    logger.info("Cleanup metadata: {} unique entries, {} entries removed"
+                .format(num_unique_lines, num_total_lines - num_unique_lines))
 
 
 def get_timestamp_for_bin_filename(bin_file_name):
