@@ -108,7 +108,6 @@ def query_metadata_file(filename):
                 minimum = float(row[1])
             if float(row[2]) > maximum:
                 maximum = float(row[2])
-
     return minimum, maximum
 
 
@@ -131,12 +130,17 @@ def update_metadata_file_multiple_entries(metadata_file_name, new_row_entries_li
 
 
 def clean_csv(filename):
+    num_unique_lines = 0
+    num_total_lines = 0
     seen = set()
     for line in fileinput.FileInput(filename, inplace=1):
+        num_total_lines += 1
         if line in seen:
             continue
         seen.add(line)
         print(line)
+        num_unique_lines += 1
+    logger.info("Cleanup metadata: {} unique entries, {} entries removed".format(num_unique_lines, num_total_lines-num_unique_lines))
 
 
 def get_timestamp_for_bin_filename(bin_file_name):
@@ -176,7 +180,7 @@ def main():
         total_files += len(files)
         for file in files:
             if '.png' in file:
-                logger.info("Skipping png (" + str(counter_files)+'/'+str(len(files))+")")
+                logger.info("Skipping png (" + str(counter_files) + '/' + str(len(files)) + ")")
                 total_files -= 1
                 continue
             if file in already_parsed_files:
@@ -207,7 +211,7 @@ def main():
         for file in files:
             image_file_path = out_dir + '/' + "scaled_" + get_timestamp_for_bin_filename(file)
             if '.png' in file:
-                logger.info("Skipping png (" + str(counter)+'/'+str(len(files))+")")
+                logger.info("Skipping png (" + str(counter)+'/' + str(len(files)) + ")")
                 total_files -= 1
                 continue
             if os.path.isfile(image_file_path + ".png"):
@@ -216,7 +220,7 @@ def main():
             data, attrs = read_radolan(subdir + '/' + file)
 
             data = normalize(data, abs_max)  # Scale
-            logger.info("Normalized file: " + image_file_path + " (" + str(counter)+'/'+str(len(files))+")")
+            logger.info("Normalized file: " + image_file_path + " (" + str(counter) + '/' + str(len(files)) + ")")
             save_png_grayscale_8bit(data, image_file_path)
             counter += 1
 
