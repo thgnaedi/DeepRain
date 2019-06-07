@@ -79,7 +79,6 @@ def daily_download_months(year, target_directory):
 
 
 def gunzip(file_path, output_path):
-    # ToDo: Test if valid archive
     logger.info("Uncompressing gz file: " + file_path)
     with gzip.open(file_path, "rb") as compressed, open(output_path, "wb") as file_out:
         shutil.copyfileobj(compressed, file_out)

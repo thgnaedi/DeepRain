@@ -10,6 +10,7 @@
 
 import argparse
 import os
+import sys
 import wradlib as wrl
 import numpy as np
 import warnings
@@ -61,7 +62,7 @@ def get_metadata_for_file(path_to_file):
     current_min = 0
     current_max = data.max()
     counter_files += 1
-    logger.info("Computed metadata for file: " + path + '/' + file + " (" + str(counter_files)+'/'+str(total_files)+")")
+    logger.info("Computed metadata for file: " + path+'/'+file+" ("+str(counter_files)+'/'+str(total_files)+")")
     return [file, current_min, current_max]
 
 
@@ -156,63 +157,50 @@ def get_timestamp_for_bin_filename(bin_file_name):
     return timestamp
 
 
-def main():
+def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=False):
     global counter_files, total_files
-    metadata_file_name = "radolan_metadata.csv"
     warnings.filterwarnings('ignore')
-
-    parser = argparse.ArgumentParser(
-        description="Reads radolan files in one directory, scales them and saves them as PNG files in a directory")
-    parser.add_argument("-i", "--inputDir",
-                        dest="in_directory",
-                        help="Directory with binary DWD files to be converted.")
-    parser.add_argument("-o", "--outputDir",
-                        dest="out_directory",
-                        help="Target directory for PNG files.")
-
-    args = parser.parse_args()
-    logger.info("Parsed arguments:")
-    in_dir = "./" if args.in_directory is None else args.in_directory
-    out_dir = "./" if args.out_directory is None else args.out_directory
-    logger.info("DWD data directory: " + str(in_dir))
-    logger.info("PNG image directory: " + str(out_dir))
 
     # Path to DATA location (Change to match Crwaler)
     os.environ["WRADLIB_DATA"] = in_dir
-    already_parsed_files = query_files_with_metadata(metadata_file_name)
 
     # First pass: get min and max for all radolan files
-    files_to_be_parsed = []
-    for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
-        total_files += len(files)
-        for file in files:
-            if '.png' in file:
-                logger.info("Skipping png (" + str(counter_files) + '/' + str(len(files)) + ")")
-                total_files -= 1
-                continue
-            if file in already_parsed_files:
-                total_files -= 1
-                continue
+    if not no_metadata:
+        already_parsed_files = query_files_with_metadata(metadata_file)
 
-            # Add filenames to be parsed to list
-            files_to_be_parsed.append(subdir + '/' + file)
+        files_to_be_parsed = []
+        for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
+            total_files += len(files)
+            for file in files:
+                if '.png' in file:
+                    logger.info("Skipping png (" + str(counter_files) + '/' + str(len(files)) + ")")
+                    total_files -= 1
+                    continue
+                if file in already_parsed_files:
+                    total_files -= 1
+                    continue
 
-    logger.info("Files to parse: " + str(len(files_to_be_parsed)))
+                # Add filenames to be parsed to list
+                files_to_be_parsed.append(subdir + '/' + file)
 
-    # Make cool generator for lazy evaluation!
-    generator = get_maximum_for_file_generator(files_to_be_parsed)
+        logger.info("Files to parse: " + str(len(files_to_be_parsed)))
 
-    # Write all metadata to file
-    for file, file_max in generator:
-        update_metadata_file_with_max(metadata_file_name, file, file_max)
+        # Make cool generator for lazy evaluation!
+        generator = get_maximum_for_file_generator(files_to_be_parsed)
 
-    clean_csv(metadata_file_name)  # Removes duplicate entries
-    logger.info("Cleaned metadata file: " + metadata_file_name)
+        # Write all metadata to file
+        for file, file_max in generator:
+            update_metadata_file_with_max(metadata_file, file, file_max)
+
+        clean_csv(metadata_file)  # Removes duplicate entries
+        logger.info("Cleaned metadata file: " + metadata_file)
 
     # 2nd pass - save scaled images with generated metadata
     total_files = 0
     counter = 0
-    abs_min, abs_max = query_metadata_file(metadata_file_name)
+    abs_min, abs_max = query_metadata_file(metadata_file)
+    logger.info("Minimum: {} / Maximum: {}".format(abs_min, abs_max))
+
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         total_files += len(files)
         for file in files:
@@ -233,4 +221,39 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        description="Reads radolan files in one directory, scales them and saves them as PNG files in a directory")
+    parser.add_argument("-i", "--inputDir",
+                        dest="in_directory",
+                        help="Directory with binary DWD files to be converted.")
+    parser.add_argument("-o", "--outputDir",
+                        dest="out_directory",
+                        help="Target directory for PNG files.")
+    parser.add_argument("-m", "--metadataFile",
+                        dest="metadata_file",
+                        help="Specify the file to save and load metadata.")
+    parser.add_argument("-n", "--not-compute-metadata",
+                        dest="not_compute_metadata",
+                        help="Does not compute metadata for new files, but reads only metadata from given file.",
+                        action="store_true")
+
+    args = parser.parse_args()
+    logger.info("Parsed arguments:")
+    in_dir = "./" if args.in_directory is None else args.in_directory
+    out_dir = "./" if args.out_directory is None else args.out_directory
+    logger.info("DWD data directory: {}".format(str(in_dir)))
+    logger.info("PNG image directory: {}".format(str(out_dir)))
+    logger.info("Metadata file: {}".format(str(args.metadata_file)))
+    if args.not_compute_metadata:
+        logger.info("Not compute Metadata!")
+    else:
+        logger.info("Compute Metadata")
+
+    if not os.path.isdir(in_dir) or not os.path.isdir(out_dir):
+        logger.error("Input or output directory is not valid: Aborting!")
+        sys.exit(-1)
+    if not os.path.isfile(args.metadata_file) and args.not_compute_metadata:
+        logger.error("No valid metadata file given and should not compute metadata: Aborting!")
+        sys.exit(-1)
+
+    main(in_dir=in_dir, out_dir=out_dir, metadata_file=args.metadata_file, no_metadata=args.not_compute_metadata)
