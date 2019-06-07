@@ -214,8 +214,7 @@ def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=Fals
                 continue
             data, attrs = read_radolan(subdir + '/' + file)
 
-            data = normalize(data, abs_max)  # Scale
-            logger.info("Normalized file: " + image_file_path + " (" + str(counter) + '/' + str(len(files)) + ")")
+            data = normalize(data, abs_max)
             save_png_grayscale_8bit(data, image_file_path)
             counter += 1
 
