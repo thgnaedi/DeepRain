@@ -88,27 +88,33 @@ if __name__ == '__main__':
     #display_one_img(sb, 896, [[redl,orl],[redl,orl],[redl,orl],[redl,orl],[redl,orl],[redl,orl]])
 
 
-    ### vergleiche Skalierungsfaktoren von 2016
-    print("beginne Auswertung:")
-    dataset = ["TestData2016", "TestData2016EDIT", "TestData2016MAL20"]
-    for d in dataset:
-        print("\n",d)
-        sb = sample_bundle.load_Sample_Bundle(d)
-        #print(sb.info())
-        all_m = quick_eval(sb, get_all_max=True)
-        plt.figure(d)
-        plt.title(d)
-        plt.hist(all_m, bins=25, log=True)
+### vergleiche Skalierungsfaktoren von 2016
+    #print("beginne Auswertung:")
+    #dataset = ["TestData2016", "TestData2016EDIT", "TestData2016MAL20", "RegenTage2017_5_7_kn_centered"]
+    #for d in dataset:
+    #    print("\n",d)
+    #    sb = sample_bundle.load_Sample_Bundle(d)
+    #    #print(sb.info())
+    #    all_m = quick_eval(sb, get_all_max=True)
+    #    plt.figure(d)
+    #    plt.title(d)
+    #    plt.hist(all_m, bins=25, log=True)
+    #plt.show()
 
-    plt.show()
 
-
-    #for i in range(sb.get_number_samples()):
-    #    m = np.max(data[i])
-    #    if m < 0.9:
-    #        continue
-    #    show_sample([data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], label[i].reshape((64,64))], vmax=1, title="id: {} max: {}".format(i, m))
-    #    plt.show()
+## Einzelbildauswertung:
+    sb = sample_bundle.load_Sample_Bundle("RegenTage2017_5_7_kn_centered")
+    print(sb.info())
+    data, label = sb.get_all_data_label(False)
+    for i in range(sb.get_number_samples()):
+        m = np.max(data[i])
+        if m < 0.9:
+            continue
+        l = label[i]
+        if len(l.shape) > 2:
+            l = l[:,:,0]
+        show_sample([data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], label[i][0].reshape((64,64))], vmax=255, title="id: {} max: {}".format(i, m))
+        plt.show()
 
 
     #sb.clear_samples()
