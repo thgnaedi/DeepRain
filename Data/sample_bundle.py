@@ -18,7 +18,7 @@ class Sample_Bundle():
         info += "Subimg selection is: {}, resizeshape is: {}\n".format(self.subimg, self.resizeshape)
         if hasattr(self, "cleared"):
             if self.cleared > 0:
-                info += "Samples are cleared, mininal max value per Sample is {}\n".format(self.cleared)
+                info += "Samples are cleared, maximal min value per Sample is {}\n".format(self.cleared)
         if self.details is not "":
             info += "### Userinfostring:\n"+self.details
         return  info
