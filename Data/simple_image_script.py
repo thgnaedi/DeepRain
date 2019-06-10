@@ -126,18 +126,19 @@ class Data_converter():
 
         return
 
-    def save_object(self, filename, details="", clear=0, ignorevalue=-1):
+    def save_object(self, filename, details="", clear=0, ignorevalue=-1, move=True):
         """
         :param filename:    name for stored object
         :param details:     custom infostring, will be displayed by calling .info()
         :param clear:       minimum value, can be used to delete empty samples
         :param ignorevalue: can be used to clipp the 'out of Range' values (no radar data avaliable at this pixel)
+        :param move:        if True, samples without moveing will be deleted
         :return:            None
         """
         filename += ".sb"
         obj = sb.Sample_Bundle(self.subimg, self.resize_shape, self.all_samples, details=details)
         if clear > 0:
-            obj.clear_samples(threshold=clear, ignorevalue=ignorevalue)
+            obj.clear_samples(threshold=clear, ignorevalue=ignorevalue, move=move)
         with open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
         return
