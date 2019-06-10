@@ -149,13 +149,14 @@ class Date_Comperator():
         self.diff = timediff
 
     def compare(self, vFirst, vNext):
-        # ToDo: 17:60 gibt es nicht, muss dann zu 1800 umgerechnet werden, überlauf geht weiter usw...
         try:
             time = vFirst.replace(self.pre, "").replace(self.post, "")
             time = int(time)
             time2 = vNext.replace(self.pre, "").replace(self.post, "")
             time2 = int(time2)
-            return time == time2 - self.diff
+            if time == time2 - self.diff:
+                return True         #Basisfall 16:05 && 16:10
+            return time == time2-45 #Sonderfall 16:55 && 17:00
         except:
             raise ValueError("There are problems converting img name to timestamp!",self.pre, self.post)
             return False
