@@ -128,7 +128,7 @@ class Data_converter():
                 break
         return
 
-    def save_object(self, filename, details="", clear=0, ignorevalue=-1, move=True):
+    def save_object(self, filename, details="", clear=0, ignorevalue=-1, move=True, percentage=0.25):
         """
         :param filename:    name for stored object
         :param details:     custom infostring, will be displayed by calling .info()
@@ -140,7 +140,7 @@ class Data_converter():
         filename += ".sb"
         obj = sb.Sample_Bundle(self.subimg, self.resize_shape, self.all_samples, details=details)
         if clear > 0:
-            obj.clear_samples(threshold=clear, ignorevalue=ignorevalue, move=move)
+            obj.clear_samples(threshold=clear, ignorevalue=ignorevalue, move=move, percentage=percentage)
         with open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
         return
