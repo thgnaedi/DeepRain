@@ -38,7 +38,8 @@ class Data_converter():
         self.resize_shape = output_shape  # (60, 60)
 
         self.all_images = self.collect_images()
-        self.create_images()
+        if len(self.all_images) > 0:
+            self.create_images()
 
         self.id = 0  # id for .get_next()
         if not self.silent:
@@ -234,6 +235,9 @@ def list_to_set(imgList, n_input, n_output):
 
 def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False, vmax=None):
     img2D = open_2D_img(path, silent)
+    if img2D is None:
+        print("open_one_img failed for:", path)
+        return None
     if vmax is None:
         vmax = 255
     if _subimg is None:
