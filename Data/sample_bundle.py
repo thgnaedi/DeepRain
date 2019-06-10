@@ -94,7 +94,7 @@ class Sample_Bundle():
         index = 0
         while(True):
             a = self.all_samples[index]
-            a[0][a[0] == ignorevalue] = -1
+            #a[0][a[0] == ignorevalue] = -1
             if np.max(a[0]) < threshold:
                 del self.all_samples[index]
             else:
@@ -105,7 +105,7 @@ class Sample_Bundle():
                         index += 1
                 else:
                     index +=1
-            a[0][a[0] == -1] = ignorevalue
+            #a[0][a[0] == -1] = ignorevalue
             if index >= len(self.all_samples):
                 break
         self.cleared = threshold
