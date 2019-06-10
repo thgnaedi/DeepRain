@@ -76,6 +76,7 @@ class Data_converter():
             del all_images[-1]
 
         all_valid_images = []
+        print("found",len(all_images), "in", self.path)
         legals = []
         first_d = None
         next_d = None
@@ -96,6 +97,7 @@ class Data_converter():
             else:
                 # Datum nicht okay
                 legals = [next_d]
+        print("could create", len(all_valid_images), "samples")
         return all_valid_images
 
     def create_images(self):
@@ -124,7 +126,6 @@ class Data_converter():
             self.all_samples.append(one_sample)
             if len(self.all_samples) == self.max_num_samples:
                 break
-
         return
 
     def save_object(self, filename, details="", clear=0, ignorevalue=-1, move=True):
