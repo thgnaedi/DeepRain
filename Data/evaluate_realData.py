@@ -39,6 +39,7 @@ def quick_eval(sb, plotit=False, get_all_max=False):
     data, label = sb.get_all_data_label(channels_Last=False)
     n_hits = 0
     maximum_value = 0
+    minimum_value = 99999
     all_max = []
     for i in range(data.shape[0]):
         m = np.max(data[i])
@@ -51,7 +52,9 @@ def quick_eval(sb, plotit=False, get_all_max=False):
                     show_sample([data[i][0], data[i][1], data[i][2], data[i][3], data[i][4]], vmax=m)
                     plt.show()
             n_hits += 1
-    print("there are {} usefull images [{}%], maximum value was: {}".format(n_hits, n_hits*100/data.shape[0],maximum_value))
+        if np.min(data[i]) < minimum_value:
+            minimum_value = np.min(data[i])
+    print("there are {} usefull images [{}%], maximum value was: {}, minimum value was: {}".format(n_hits, n_hits*100/data.shape[0],maximum_value, minimum_value))
     if get_all_max:
         return all_max
     return
