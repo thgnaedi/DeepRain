@@ -83,6 +83,15 @@ class Sample_Bundle():
                     return True
         return False
 
+    def sample_is_empty(self, sample, emptyvalue, percentage=0.25):
+        assert percentage > 0.0 and percentage < 1.0
+        n_pixels = sample.shape[0]*sample.shape[1]
+        if len(sample.shape) > 2:
+            n_pixels = n_pixels*sample.shape[2]
+
+        number = np.count_nonzero(sample == emptyvalue)
+        return number > n_pixels*percentage
+
     def clear_samples(self, threshold=1, ignorevalue=-1, move=False):
         if not hasattr(self, 'cleared'):   #supports older versions of Objects
             print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
@@ -95,7 +104,7 @@ class Sample_Bundle():
         while(True):
             a = self.all_samples[index]
             #a[0][a[0] == ignorevalue] = -1
-            if np.max(a[0]) < threshold:
+            if np.max(a[0]) < threshold or self.sample_is_empty(a[0], ignorevalue):
                 del self.all_samples[index]
             else:
                 if move:
