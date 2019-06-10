@@ -128,7 +128,7 @@ class Data_converter():
                 break
         return
 
-    def save_object(self, filename, details="", clear=0, ignorevalue=-1, move=True, percentage=0.25):
+    def save_object(self, filename, details="", clear=0, ignorevalue=-1, move=True, percentage=0.2):
         """
         :param filename:    name for stored object
         :param details:     custom infostring, will be displayed by calling .info()
