@@ -75,7 +75,7 @@ class Sample_Bundle():
             return np.array(data), np.array(label)
         return np.swapaxes(np.array(data),1,3), np.swapaxes(np.array(label),1,3)
 
-    def clear_samples(self, threshold=1):
+    def clear_samples(self, threshold=1, ignorevalue=-1):
         if not hasattr(self, 'cleared'):   #supports older versions of Objects
             print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
             self.cleared = -1
@@ -86,10 +86,12 @@ class Sample_Bundle():
         index = 0
         while(True):
             a = self.all_samples[index]
+            a[0][a[0] == ignorevalue] = -1
             if np.max(a[0]) < threshold:
                 del self.all_samples[index]
             else:
                 index += 1
+            a[0][a[0] == -1] = ignorevalue
             if index >= len(self.all_samples):
                 break
         self.cleared = threshold

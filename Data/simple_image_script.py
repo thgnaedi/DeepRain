@@ -126,14 +126,21 @@ class Data_converter():
 
         return
 
-    def save_object(self, filename, details="", clear=0):
+    def save_object(self, filename, details="", clear=0, ignorevalue=-1):
+        """
+        :param filename:    name for stored object
+        :param details:     custom infostring, will be displayed by calling .info()
+        :param clear:       minimum value, can be used to delete empty samples
+        :param ignorevalue: can be used to clipp the 'out of Range' values (no radar data avaliable at this pixel)
+        :return:            None
+        """
         filename += ".sb"
         obj = sb.Sample_Bundle(self.subimg, self.resize_shape, self.all_samples, details=details)
         if clear > 0:
-            obj.clear_samples(threshold=clear)
+            obj.clear_samples(threshold=clear, ignorevalue=ignorevalue)
         with open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
-
+        return
 
 class Date_Comperator():
     def __init__(self, pre, post, timediff=5):
@@ -266,8 +273,12 @@ def usage():
 
 
 if __name__ == '__main__':
-    path = "C:\\temp\\loeschen\\"
-    dc = Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None, subimg_startpos=(100, 200),
-                        subimg_shape=(100, 100), output_shape=50, silent=True, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png")
-    dc.save_object("einObjekt", "nur ein TestObjekt mit wenigen Samples")
-    print("anzahl Daten, die gesammelt wurden:",dc.get_number_samples())
+    path = "../Examples/scaled_1707251910.png"
+    img = open_2D_img(path)
+    plt.hist(img.flatten(),log=True,bins=250)
+    plt.show()
+    #path = "C:\\temp\\loeschen\\"
+    #dc = Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None, subimg_startpos=(100, 200),
+    #                    subimg_shape=(100, 100), output_shape=50, silent=True, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png")
+    #dc.save_object("einObjekt", "nur ein TestObjekt mit wenigen Samples")
+    #print("anzahl Daten, die gesammelt wurden:",dc.get_number_samples())
