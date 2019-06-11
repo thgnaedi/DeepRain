@@ -4,6 +4,7 @@ import numpy as np
 import os
 import glob
 import pickle
+import sys
 import sample_bundle as sb
 
 
@@ -103,6 +104,8 @@ class Data_converter():
     def create_images(self):
         min_n = self.n_data + self.n_label
         self.all_samples = []
+        number_done = 0
+        number_todo = min(len(self.all_samples)/min_n, self.max_num_samples)
         while len(self.all_images) >= min_n:
             data = None
             label = None
@@ -124,6 +127,11 @@ class Data_converter():
                     label = np.dstack((label, current))
             one_sample = (data, label)
             self.all_samples.append(one_sample)
+            number_done += 1
+            if number_done % 10 == 0:
+                percentage = int((number_done / number_todo)*100)
+                sys.stdout.write("\r{}% {}".format(percentage,'#' * int(i/5)))
+                sys.stdout.flush()
             if len(self.all_samples) == self.max_num_samples:
                 break
         return
