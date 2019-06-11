@@ -105,8 +105,8 @@ class Data_converter():
         min_n = self.n_data + self.n_label
         self.all_samples = []
         number_done = 0
-        print("creating images:", int(len(self.all_samples)/min_n), self.max_num_samples)
-        number_todo = int(len(self.all_samples)/min_n)
+        print("creating images:", int(len(self.all_images)/min_n), self.max_num_samples)
+        number_todo = min(int(len(self.all_images)/min_n), self.max_num_samples)
         while len(self.all_images) >= min_n:
             data = None
             label = None
