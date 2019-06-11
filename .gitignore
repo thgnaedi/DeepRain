@@ -18,6 +18,7 @@ NetworkTypes/UNet64*/
 *.csv
 *.xml
 
+*.BAK
 *---bin
 *.zip
 *.bz2
