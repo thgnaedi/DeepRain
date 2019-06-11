@@ -131,7 +131,7 @@ class Data_converter():
             number_done += 1
             if number_done % 10 == 0:
                 percentage = int((number_done / number_todo)*100)
-                sys.stdout.write("\r{}% |{}{}|".format(percentage,'#' * int(percentage/5),' '* (20 - '#' * int(percentage/5))))
+                sys.stdout.write("\r{}% |{}{}|".format(percentage,'#' * int(percentage/5),' '* (' ' *(20 - int(percentage/5)) )))
                 sys.stdout.flush()
             if len(self.all_samples) == self.max_num_samples:
                 break
