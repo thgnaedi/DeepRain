@@ -276,7 +276,7 @@ if __name__ == '__main__':
     if args.not_compute_metadata and args.compute_metadata:
         logger.error("To compute and not to compute metadata?!? Aborting!!!")
         sys.exit(-1)
-    if args.factor is not None and is_number(args.factor):
+    if args.factor is not None and not is_number(args.factor):
         logger.error("Factor is not a valid number: {} !!! Aborting!!!".format(args.factor))
         sys.exit(-1)
 
