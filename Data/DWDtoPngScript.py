@@ -71,9 +71,9 @@ def read_radolan(radfile):
     return wrl.io.read_radolan_composite(radfile)
 
 
-def save_png_grayscale_8bit(image_data, filename):
+def save_png_grayscale_8bit(image_data, filename, factor=1.0):
     image_data_8bit = image_data.astype(np.uint8)
-    image_data_8bit *= 20
+    image_data_8bit *= factor
     full_filename = filename + ".png"
     cv2.imwrite(full_filename, image_data_8bit)
     logger.info("Saved image file: " + full_filename)
@@ -157,7 +157,7 @@ def get_timestamp_for_bin_filename(bin_file_name):
     return timestamp
 
 
-def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=False):
+def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1.0):
     global counter_files, total_files
     warnings.filterwarnings('ignore')
 
@@ -215,8 +215,16 @@ def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=Fals
             data, attrs = read_radolan(subdir + '/' + file)
 
             data = normalize(data, abs_max)
-            save_png_grayscale_8bit(data, image_file_path)
+            save_png_grayscale_8bit(data, image_file_path, factor)
             counter += 1
+
+
+def is_number(x):
+    try:
+        float(x)
+        return True
+    except ValueError:
+        return False
 
 
 if __name__ == '__main__':
@@ -235,6 +243,13 @@ if __name__ == '__main__':
                         dest="not_compute_metadata",
                         help="Does not compute metadata for new files, but reads only metadata from given file.",
                         action="store_true")
+    parser.add_argument("-c", "--compute-metadata",
+                        dest="compute_metadata",
+                        help="Explicitly compute metadata for new files.",
+                        action="store_true")
+    parser.add_argument("-f", "--factor",
+                        dest="factor",
+                        help="Specify a factor to multiply with each data element.")
 
     args = parser.parse_args()
     logger.info("Parsed arguments:")
@@ -248,11 +263,25 @@ if __name__ == '__main__':
     else:
         logger.info("Compute Metadata")
 
-    if not os.path.isdir(in_dir) or not os.path.isdir(out_dir):
-        logger.error("Input or output directory is not valid: Aborting!")
+    # Test if arguments are valid
+    if not os.path.isdir(in_dir):
+        logger.error("Input directory is not valid: Aborting!")
+        sys.exit(-1)
+    if not os.path.isdir(out_dir):
+        logger.error("Output directory is not valid: Aborting!")
         sys.exit(-1)
     if not os.path.isfile(args.metadata_file) and args.not_compute_metadata:
         logger.error("No valid metadata file given and should not compute metadata: Aborting!")
         sys.exit(-1)
+    if args.not_compute_metadata and args.compute_metadata:
+        logger.error("To compute and not to compute metadata?!? Aborting!!!")
+        sys.exit(-1)
+    if is_number(args.factor):
+        logger.error("Factor is not a valid number: {} !!! Aborting!!!".format(args.factor))
+        sys.exit(-1)
 
-    main(in_dir=in_dir, out_dir=out_dir, metadata_file=args.metadata_file, no_metadata=args.not_compute_metadata)
+    main(in_dir=in_dir,
+         out_dir=out_dir,
+         metadata_file=args.metadata_file,
+         no_metadata=args.not_compute_metadata,
+         factor=args.factor)
