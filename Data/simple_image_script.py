@@ -105,7 +105,7 @@ class Data_converter():
         min_n = self.n_data + self.n_label
         self.all_samples = []
         number_done = 0
-        print("creating images:", int(len(self.all_images)/min_n), self.max_num_samples)
+        print("creating {} images:".format(min(int(len(self.all_images)/min_n), self.max_num_samples)))
         number_todo = min(int(len(self.all_images)/min_n), self.max_num_samples)
         while len(self.all_images) >= min_n:
             data = None
@@ -131,7 +131,7 @@ class Data_converter():
             number_done += 1
             if number_done % 10 == 0:
                 percentage = int((number_done / number_todo)*100)
-                sys.stdout.write("\r{}% {}".format(percentage,'#' * int(i/5)))
+                sys.stdout.write("\r{}% |{}{}|".format(percentage,'#' * int(i/5),' '* (20 - '#' * int(i/5))))
                 sys.stdout.flush()
             if len(self.all_samples) == self.max_num_samples:
                 break
