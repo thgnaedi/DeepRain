@@ -4,6 +4,7 @@ import numpy as np
 import os
 import glob
 import pickle
+import sys
 import sample_bundle as sb
 
 
@@ -38,7 +39,8 @@ class Data_converter():
         self.resize_shape = output_shape  # (60, 60)
 
         self.all_images = self.collect_images()
-        self.create_images()
+        if len(self.all_images) > 0:
+            self.create_images()
 
         self.id = 0  # id for .get_next()
         if not self.silent:
@@ -75,6 +77,7 @@ class Data_converter():
             del all_images[-1]
 
         all_valid_images = []
+        print("found",len(all_images), "in", self.path)
         legals = []
         first_d = None
         next_d = None
@@ -95,11 +98,15 @@ class Data_converter():
             else:
                 # Datum nicht okay
                 legals = [next_d]
+        print("could create", len(all_valid_images), "samples")
         return all_valid_images
 
     def create_images(self):
         min_n = self.n_data + self.n_label
         self.all_samples = []
+        number_done = 0
+        print("creating images:", int(len(self.all_images)/min_n), self.max_num_samples)
+        number_todo = min(int(len(self.all_images)/min_n), self.max_num_samples)
         while len(self.all_images) >= min_n:
             data = None
             label = None
@@ -121,19 +128,31 @@ class Data_converter():
                     label = np.dstack((label, current))
             one_sample = (data, label)
             self.all_samples.append(one_sample)
+            number_done += 1
+            if number_done % 10 == 0:
+                percentage = int((number_done / number_todo)*100)
+                sys.stdout.write("\r{}% {}".format(percentage,'#' * int(i/5)))
+                sys.stdout.flush()
             if len(self.all_samples) == self.max_num_samples:
                 break
-
         return
 
-    def save_object(self, filename, details="", clear=0):
+    def save_object(self, filename, details="", clear=0, ignorevalue=-1, move=True, percentage=0.2):
+        """
+        :param filename:    name for stored object
+        :param details:     custom infostring, will be displayed by calling .info()
+        :param clear:       minimum value, can be used to delete empty samples
+        :param ignorevalue: can be used to clipp the 'out of Range' values (no radar data avaliable at this pixel)
+        :param move:        if True, samples without moveing will be deleted
+        :return:            None
+        """
         filename += ".sb"
         obj = sb.Sample_Bundle(self.subimg, self.resize_shape, self.all_samples, details=details)
         if clear > 0:
-            obj.clear_samples(threshold=clear)
+            obj.clear_samples(threshold=clear, ignorevalue=ignorevalue, move=move, percentage=percentage)
         with open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
-
+        return
 
 class Date_Comperator():
     def __init__(self, pre, post, timediff=5):
@@ -142,13 +161,14 @@ class Date_Comperator():
         self.diff = timediff
 
     def compare(self, vFirst, vNext):
-        # ToDo: 17:60 gibt es nicht, muss dann zu 1800 umgerechnet werden, überlauf geht weiter usw...
         try:
             time = vFirst.replace(self.pre, "").replace(self.post, "")
             time = int(time)
             time2 = vNext.replace(self.pre, "").replace(self.post, "")
             time2 = int(time2)
-            return time == time2 - self.diff
+            if time == time2 - self.diff:
+                return True         #Basisfall 16:05 && 16:10
+            return time == time2-45 #Sonderfall 16:55 && 17:00
         except:
             raise ValueError("There are problems converting img name to timestamp!",self.pre, self.post)
             return False
@@ -225,6 +245,9 @@ def list_to_set(imgList, n_input, n_output):
 
 def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False, vmax=None):
     img2D = open_2D_img(path, silent)
+    if img2D is None:
+        print("open_one_img failed for:", path)
+        return None
     if vmax is None:
         vmax = 255
     if _subimg is None:
@@ -266,8 +289,12 @@ def usage():
 
 
 if __name__ == '__main__':
-    path = "C:\\temp\\loeschen\\"
-    dc = Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None, subimg_startpos=(100, 200),
-                        subimg_shape=(100, 100), output_shape=50, silent=True, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png")
-    dc.save_object("einObjekt", "nur ein TestObjekt mit wenigen Samples")
-    print("anzahl Daten, die gesammelt wurden:",dc.get_number_samples())
+    path = "../Examples/scaled_1707251910.png"
+    img = open_2D_img(path)
+    plt.hist(img.flatten(),log=True,bins=250)
+    plt.show()
+    #path = "C:\\temp\\loeschen\\"
+    #dc = Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None, subimg_startpos=(100, 200),
+    #                    subimg_shape=(100, 100), output_shape=50, silent=True, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png")
+    #dc.save_object("einObjekt", "nur ein TestObjekt mit wenigen Samples")
+    #print("anzahl Daten, die gesammelt wurden:",dc.get_number_samples())

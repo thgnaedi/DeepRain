@@ -18,7 +18,7 @@ class Sample_Bundle():
         info += "Subimg selection is: {}, resizeshape is: {}\n".format(self.subimg, self.resizeshape)
         if hasattr(self, "cleared"):
             if self.cleared > 0:
-                info += "Samples are cleared, mininal max value per Sample is {}\n".format(self.cleared)
+                info += "Samples are cleared, minimal max value per Sample is {}\n".format(self.cleared)
         if self.details is not "":
             info += "### Userinfostring:\n"+self.details
         return  info
@@ -75,7 +75,24 @@ class Sample_Bundle():
             return np.array(data), np.array(label)
         return np.swapaxes(np.array(data),1,3), np.swapaxes(np.array(label),1,3)
 
-    def clear_samples(self, threshold=1):
+    def sample_is_moving(self, sample):
+        shape = sample.shape
+        for i in range(shape[0]):
+            for j in range(shape[1]):
+                if np.unique(sample[i][j]).size > 1:
+                    return True
+        return False
+
+    def sample_is_empty(self, sample, emptyvalue, percentage=0.25):
+        assert percentage > 0.0 and percentage < 1.0
+        n_pixels = sample.shape[0]*sample.shape[1]
+        if len(sample.shape) > 2:
+            n_pixels = n_pixels*sample.shape[2]
+
+        number = np.count_nonzero(sample == emptyvalue)
+        return number > n_pixels*percentage
+
+    def clear_samples(self, threshold=1, ignorevalue=-1, move=False, percentage=0.25):
         if not hasattr(self, 'cleared'):   #supports older versions of Objects
             print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
             self.cleared = -1
@@ -86,10 +103,18 @@ class Sample_Bundle():
         index = 0
         while(True):
             a = self.all_samples[index]
-            if np.max(a[0]) < threshold:
+            #a[0][a[0] == ignorevalue] = -1
+            if np.max(a[0]) < threshold or self.sample_is_empty(a[0], ignorevalue, percentage=percentage):
                 del self.all_samples[index]
             else:
-                index += 1
+                if move:
+                    if not self.sample_is_moving(a[0]):
+                        del self.all_samples[index]
+                    else:
+                        index += 1
+                else:
+                    index +=1
+            #a[0][a[0] == -1] = ignorevalue
             if index >= len(self.all_samples):
                 break
         self.cleared = threshold
@@ -130,6 +155,16 @@ def load_Sample_Bundle(path):
 
 
 if __name__ == '__main__':
+    data = np.array([[200,200,1,0,4,200],[200,5,3,2,6,200]])
+    label = np.array([[0,0,0],[0,0,0]])
+    sb = Sample_Bundle((0,0), (64,64), [(data, label)], details="")
+    print(sb.info())
+    print(sb.all_samples[0][0])
+    sb.clear_samples(threshold=7, ignorevalue=200)
+    print(sb.info())
+    input("NEINNEIN")
+
+
     sb = load_Sample_Bundle("einObjekt")
     print(sb.info())
     #duplicate first Sample 10 times, so 11 images are avaliable
