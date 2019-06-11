@@ -71,9 +71,9 @@ def read_radolan(radfile):
     return wrl.io.read_radolan_composite(radfile)
 
 
-def save_png_grayscale_8bit(image_data, filename, factor=1.0):
+def save_png_grayscale_8bit(image_data, filename, factor=1):
     image_data_8bit = image_data.astype(np.uint8)
-    image_data_8bit *= factor
+    image_data_8bit *= int(factor)
     full_filename = filename + ".png"
     cv2.imwrite(full_filename, image_data_8bit)
     logger.info("Saved image file: " + full_filename)
@@ -157,7 +157,7 @@ def get_timestamp_for_bin_filename(bin_file_name):
     return timestamp
 
 
-def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1.0):
+def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1):
     global counter_files, total_files
     warnings.filterwarnings('ignore')
 
