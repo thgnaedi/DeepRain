@@ -281,10 +281,6 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     if args.factor is None:
-        args.factor = 1.0
-
-    main(in_dir=in_dir,
-         out_dir=out_dir,
-         metadata_file=args.metadata_file,
-         no_metadata=args.not_compute_metadata,
-         factor=args.factor)
+        main(in_dir, out_dir, args.metadata_file, args.not_compute_metadata)
+    else:
+        main(in_dir, out_dir, args.metadata_file, args.not_compute_metadata, args.factor)
