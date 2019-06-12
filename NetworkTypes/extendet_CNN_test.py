@@ -100,7 +100,7 @@ def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, cha
 
 
 def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", channelsLast=True,
-                   use_logfile=True, load_last_state=True, n_testsamples=50, prediction_shape = (64, 64), PREDICTION_IMG_ID=14):
+                   use_logfile=True, load_last_state=True, n_testsamples=50, prediction_shape = (64, 64), PREDICTION_IMG_ID=14, normalize=True, data=None, label=None):
     """
     Method to train Network on real Data (depending on the given samplebundle)
     :param model:           NN to train
@@ -123,7 +123,6 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
         if _model is not None:
             model = _model
 
-    samplebundle.normalize()
     info = "Starte Trainingsphase für {} Epochen".format(n_epoch)
     if offset > 0:
         info += ", beginne bei Epoche {}, geladenes Netz = {}".format(offset, savename + "_" + str(offset) + ".h5")
@@ -131,7 +130,12 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
         info += " Zwischenschritte werden gespeichert!"
     print(info)
 
-    data, label = samplebundle.get_all_data_label(channels_Last=channelsLast, flatten_output=True)
+    if samplebundle is not None:
+        if normalize:
+            samplebundle.normalize()
+        data, label = samplebundle.get_all_data_label(channels_Last=channelsLast, flatten_output=True)
+    else:
+        print("using given data, label without samplebundle.")
 
     x_train, y_train = data[n_testsamples:], label[n_testsamples:]
     x_test, y_test = data[:n_testsamples], label[:n_testsamples]
@@ -142,7 +146,7 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
         if savename is not None:
             current_name = savename + "_" + str(i + 1)
 
-        history = model.fit(x_train, y_train, batch_size=200, epochs=1, verbose=1, validation_data=(x_test, y_test))
+        history = model.fit(x_train, y_train, batch_size=400, epochs=1, verbose=1, validation_data=(x_test, y_test))
         trainloss = np.mean(np.array(history.history["loss"]))
         valloss = np.mean(np.array(history.history["val_loss"]))
         if current_name is not None:
@@ -190,7 +194,7 @@ if __name__ == '__main__':
 
     print(sb.info())
     train_realdata(model, sb, n_epoch=10, savename="UNet64", channelsLast=True, use_logfile=True,
-                   load_last_state=True, n_testsamples=50, prediction_shape = (64, 64), PREDICTION_IMG_ID=6)
+                   load_last_state=True, n_testsamples=365, prediction_shape = (64, 64), PREDICTION_IMG_ID=6)
     # eval_trainingsphase(model, n_epoch=100, diffToLabel=DIFF_TO_LABEL, n_train=1000,
     #                    savename="twoUPSamplings", channelsLast=True, n_inputs=N_INPUTS, use_logfile=True, load_last_state=True)
 ## compare nets on different Seeds:
