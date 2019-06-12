@@ -120,16 +120,16 @@ class Sample_Bundle():
         self.cleared = threshold
         return
 
-    def normalize(self):
-        max_val = 0
-        for i in range(len(self.all_samples)):
-            a = self.all_samples[i]
-            if np.max(a[0]) > max_val: #data
-                max_val = np.max(a[0])
-            if np.max(a[1]) > max_val: #label
-                max_val = np.max(a[1])
-        if max_val == 1:
-            return
+    def normalize(self, max_val= 0):
+        if max_val == 0:   #max value raussuchen
+            for i in range(len(self.all_samples)):
+                a = self.all_samples[i]
+                if np.max(a[0]) > max_val: #data
+                    max_val = np.max(a[0])
+                if np.max(a[1]) > max_val: #label
+                    max_val = np.max(a[1])
+            if max_val == 1:    # wenn schon 1, gibts nichts zu tun
+                return
 
         for i in range(len(self.all_samples)):
             a = self.all_samples[i]
@@ -137,6 +137,20 @@ class Sample_Bundle():
             self.all_samples[i] = normalized
 
         return
+
+    def clear_by_sum(self, threshold):
+        index = 0
+        b = []
+        while(True):
+            a = self.all_samples[index]
+            if np.sum(a[0]) < threshold:
+                del self.all_samples[index]
+            else:
+                index +=1
+                b.append(np.sum(a[0]))
+            if index >= len(self.all_samples):
+                break
+        return b
 
     def save_object(self, filename):
         filename += ".sb"
