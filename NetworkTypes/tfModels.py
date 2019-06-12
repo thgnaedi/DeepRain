@@ -3,7 +3,7 @@ from tensorflow.python.keras.layers import (Input, Lambda, Conv2D, MaxPooling2D,
                                             Lambda, Activation, BatchNormalization, concatenate, UpSampling2D,
                                             ZeroPadding2D)
 
-def UNet64(input_shape, lossfunction="mean_squared_error"):
+def UNet64(input_shape, n_predictions=1, lossfunction="mean_squared_error"):
     inputs = Input(shape=input_shape)
 
     conv01 = Conv2D(10, kernel_size=(3,3), padding="same")(inputs)  #10 x 64x64
@@ -43,8 +43,8 @@ def UNet64(input_shape, lossfunction="mean_squared_error"):
     up01 = concatenate([conv01, up01], axis=3)                          #10+80 x 64x64
     print("7)", up01.shape, "90 x 64x64")
 
-    output = Conv2D(1, (1, 1), activation='relu')(up01)                 #1 x 64x64
-    print("8)", output.shape, "1 x 64x64")
+    output = Conv2D(n_predictions, (1, 1), activation='relu')(up01)                 #1 x 64x64
+    print("8)", output.shape, "{} x 64x64".format(n_predictions))
     output = Flatten()(output)
     model = Model(inputs=inputs, outputs=output)
     model.compile(loss=lossfunction, optimizer='adam')
