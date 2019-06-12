@@ -81,15 +81,14 @@ def display_one_img(samplebundle, img_id, details=None, vmax=1):
 
 if __name__ == '__main__':
 
-    ### quick eval soll schnellen überblick liefern
-    sb = sample_bundle.load_Sample_Bundle("RegenTage2016")
-    quick_eval(sb)
+### quick eval soll schnellen überblick liefern
+    #sb = sample_bundle.load_Sample_Bundle("samplebundles\\2008_5in_7out_64x64")
+    #quick_eval(sb)
 
     ### anschauliche darstellung von Daten&label aus 2016 (1 Bsp.)
-    redl = (([0,63]), ([35,35], "r"))
-    orl = (([35,35]), ([0,63], "orange"))
+    #redl = (([0,63]), ([35,35], "r"))
+    #orl = (([35,35]), ([0,63], "orange"))
     #display_one_img(sb, 896, [[redl,orl],[redl,orl],[redl,orl],[redl,orl],[redl,orl],[redl,orl]])
-
 
 ### vergleiche Skalierungsfaktoren von 2016
     #print("beginne Auswertung:")
@@ -106,12 +105,16 @@ if __name__ == '__main__':
 
 
 ## Einzelbildauswertung:
-    sb = sample_bundle.load_Sample_Bundle("RegenTage2017_5_7_kn_centered")
+    sb = sample_bundle.load_Sample_Bundle("samplebundles\\2008_5in_7out_64x64")
+    print(sb.info())
+    b = sb.clear_by_sum(76100)
+    #plt.hist(b, bins=100)
+    #plt.show()
     print(sb.info())
     data, label = sb.get_all_data_label(False)
-    for i in range(sb.get_number_samples()):
+    for i in range(0, sb.get_number_samples()):
         m = np.max(data[i])
-        if m < 0.9:
+        if m < 96:
             continue
         l = label[i]
         if len(l.shape) > 2:
