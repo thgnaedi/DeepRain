@@ -93,6 +93,14 @@ class Sample_Bundle():
         return number > n_pixels*percentage
 
     def clear_samples(self, threshold=1, ignorevalue=-1, move=False, percentage=0.25, clip=True):
+        """
+        :param threshold:   minimum value needed in array
+        :param ignorevalue: currently unused
+        :param move:        if True, at least one Pixel has to change along z-axis
+        :param percentage:  maximum ammount of 'none radar data' in image
+        :param clip:        if True, negative values will be clipped
+        :return:            None
+        """
         if not hasattr(self, 'cleared'):   #supports older versions of Objects
             print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
             self.cleared = -1

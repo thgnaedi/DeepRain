@@ -121,7 +121,7 @@ class Data_converter():
             for i in range(self.n_label):
                 current = self.all_images.pop(0)
                 current = open_one_img(path=current, _subimg=self.subimg, _resize_shape=self.resize_shape,
-                                       raiseError=True, silent=self.silent)
+                                       raiseError=True, silent=self.silent, invalid_value=invalid_value)
                 if label is None:
                     label = np.atleast_3d(current)
                 else:
@@ -256,6 +256,7 @@ def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_
         assert isinstance(_subimg, tuple)
         img2D_sub = select_subimg(img2D, startpos=_subimg[0], _size=_subimg[1], raiseError=raiseError)
 
+    img2D = img2D.astype(int)
     img2D_sub[img2D_sub == invalid_value] = -255
     if _resize_shape is None:
         scaled = img2D_sub
