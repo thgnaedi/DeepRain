@@ -83,16 +83,16 @@ class Sample_Bundle():
                     return True
         return False
 
-    def sample_is_empty(self, sample, emptyvalue, percentage=0.25):
+    def sample_is_empty(self, sample, percentage=0.25):
         assert percentage > 0.0 and percentage < 1.0
         n_pixels = sample.shape[0]*sample.shape[1]
         if len(sample.shape) > 2:
             n_pixels = n_pixels*sample.shape[2]
 
-        number = np.count_nonzero(sample == emptyvalue)
+        number = np.count_nonzero(sample < 0)
         return number > n_pixels*percentage
 
-    def clear_samples(self, threshold=1, ignorevalue=-1, move=False, percentage=0.25):
+    def clear_samples(self, threshold=1, ignorevalue=-1, move=False, percentage=0.25, clip=True):
         if not hasattr(self, 'cleared'):   #supports older versions of Objects
             print("You are using an outdatet Version of sample_bundle! this may cause to errors!")
             self.cleared = -1
@@ -102,9 +102,9 @@ class Sample_Bundle():
             return
         index = 0
         while(True):
+            removed=False
             a = self.all_samples[index]
-            #a[0][a[0] == ignorevalue] = -1
-            if np.max(a[0]) < threshold or self.sample_is_empty(a[0], ignorevalue, percentage=percentage):
+            if np.max(a[0]) < threshold or self.sample_is_empty(a[0], percentage=percentage):
                 del self.all_samples[index]
             else:
                 if move:
@@ -114,9 +114,10 @@ class Sample_Bundle():
                         index += 1
                 else:
                     index +=1
-            #a[0][a[0] == -1] = ignorevalue
             if index >= len(self.all_samples):
                 break
+        if clip:
+            self.clip_all()
         self.cleared = threshold
         return
 
@@ -151,6 +152,13 @@ class Sample_Bundle():
             if index >= len(self.all_samples):
                 break
         return b
+
+    def clip_all(self):
+        for i in range(len(self.all_samples)):
+            a = self.all_samples[i]
+            clipped = (np.clip(a[0], a_min=0, a_max=None, out=None), np.clip(a[1], a_min=0, a_max=None, out=None))
+            self.all_samples[i] = clipped
+        return
 
     def save_object(self, filename):
         filename += ".sb"

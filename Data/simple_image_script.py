@@ -10,7 +10,7 @@ import sample_bundle as sb
 
 class Data_converter():
     def __init__(self, path, max_num_samples, n_data, n_label, start_img=None, subimg_startpos=None, subimg_shape=None,
-                 output_shape=None, silent=False, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png"):
+                 output_shape=None, silent=False, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png", invalid_value=-1):
         """
         start_img       Derzeit nicht verwendet, spaeter sollen nur Bilder nach diesem Zeitpunkt verwendet werden.
         subimg_startpos tupel mit x,y Koordinate bei welcher der zu generierende Bildausschnitt beginnen soll.
@@ -40,7 +40,7 @@ class Data_converter():
 
         self.all_images = self.collect_images()
         if len(self.all_images) > 0:
-            self.create_images()
+            self.create_images(invalid_value)
 
         self.id = 0  # id for .get_next()
         if not self.silent:
@@ -101,7 +101,7 @@ class Data_converter():
         print("could create", len(all_valid_images), "samples")
         return all_valid_images
 
-    def create_images(self):
+    def create_images(self, invalid_value):
         min_n = self.n_data + self.n_label
         self.all_samples = []
         number_done = 0
@@ -113,7 +113,7 @@ class Data_converter():
             for i in range(self.n_data):
                 current = self.all_images.pop(0)
                 current = open_one_img(path=current, _subimg=self.subimg, _resize_shape=self.resize_shape,
-                                       raiseError=True, silent=self.silent)
+                                       raiseError=True, silent=self.silent, invalid_value=invalid_value)
                 if data is None:
                     data = np.atleast_3d(current)
                 else:
@@ -243,7 +243,7 @@ def list_to_set(imgList, n_input, n_output):
     return (x, y)
 
 
-def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False, vmax=None):
+def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False, vmax=None, invalid_value=-1, clip=False):
     img2D = open_2D_img(path, silent)
     if img2D is None:
         print("open_one_img failed for:", path)
@@ -255,10 +255,14 @@ def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_
     else:
         assert isinstance(_subimg, tuple)
         img2D_sub = select_subimg(img2D, startpos=_subimg[0], _size=_subimg[1], raiseError=raiseError)
+
+    img2D_sub[img2D_sub == invalid_value] = -255
     if _resize_shape is None:
         scaled = img2D_sub
     else:
         scaled = resize_img(img2D_sub, shape=_resize_shape)
+    if clip:
+        scaled = np.clip(scaled, a_min=0, a_max=None)  # clipping
     if show_result:
         images = [img2D, img2D_sub, scaled]
         titles = ["Original Bild", "Ausschnitt (200x200)", "Skaliert (80x80)"]
