@@ -589,7 +589,7 @@ def eval_trainlogfile(logfilepath, plot=False):
 if __name__ == '__main__':
     loadAndEval = True
 
-    val_curve, train_curve = eval_trainlogfile("C:\\Users\\TopSecret!\\Documents\\aMSI1\\Teamprojekt\\DeepRain\\NetworkTypes\\trainphase.log", plot=True)
+    val_curve, train_curve = eval_trainlogfile("C:\\Users\\TopSecret!\\Documents\\aMSI1\\Teamprojekt\\DeepRain\\Final_Networks\\trainphase.log", plot=True)
 
     if loadAndEval:
         sb = sample_bundle.load_Sample_Bundle("RegenTage2016")
