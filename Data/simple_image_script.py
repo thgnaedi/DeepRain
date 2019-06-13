@@ -256,8 +256,7 @@ def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_
         assert isinstance(_subimg, tuple)
         img2D_sub = select_subimg(img2D, startpos=_subimg[0], _size=_subimg[1], raiseError=raiseError)
 
-    img2D = img2D.astype(int)
-    img2D_sub[img2D_sub == invalid_value] = -255
+    img2D_sub[img2D_sub == invalid_value] = 0
     if _resize_shape is None:
         scaled = img2D_sub
     else:
