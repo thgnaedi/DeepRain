@@ -105,21 +105,31 @@ if __name__ == '__main__':
 
 
 ## Einzelbildauswertung:
-    sb = sample_bundle.load_Sample_Bundle("samplebundles\\2008_5in_7out_64x64")
+    sb = sample_bundle.load_Sample_Bundle("samplebundles\\2008_5in_7out_64x64_without_border")
     print(sb.info())
     b = sb.clear_by_sum(76100)
+
+    dl = sb.get_item_at(1)
+    plt.imshow(dl[0][:,:,0])
+    plt.show()
+    sb.replace_borders(80)
+
+    dl = sb.get_item_at(1)
+    plt.imshow(dl[0][:,:,0])
+    plt.show()
+
     #plt.hist(b, bins=100)
     #plt.show()
     print(sb.info())
     data, label = sb.get_all_data_label(False)
     for i in range(0, sb.get_number_samples()):
         m = np.max(data[i])
-        if m < 96:
+        if m < 0:
             continue
         l = label[i]
         if len(l.shape) > 2:
             l = l[:,:,0]
-        show_sample([data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], label[i][0].reshape((64,64))], vmax=255, title="id: {} max: {}".format(i, m))
+        show_sample([data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], label[i][0].reshape((64,64))], vmax=255, title="id: {} max: {} sum {}".format(i, m, np.sum(data[i])))
         plt.show()
 
 
