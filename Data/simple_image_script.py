@@ -110,22 +110,34 @@ class Data_converter():
         while len(self.all_images) >= min_n:
             data = None
             label = None
+            error = False
             for i in range(self.n_data):
                 current = self.all_images.pop(0)
                 current = open_one_img(path=current, _subimg=self.subimg, _resize_shape=self.resize_shape,
                                        raiseError=True, silent=self.silent, invalid_value=invalid_value)
+                if current is None:
+                    #Open schlug Fehl!
+                    error = True
+                    break
                 if data is None:
                     data = np.atleast_3d(current)
                 else:
                     data = np.dstack((data, current))
             for i in range(self.n_label):
+                if error:
+                    break
                 current = self.all_images.pop(0)
                 current = open_one_img(path=current, _subimg=self.subimg, _resize_shape=self.resize_shape,
                                        raiseError=True, silent=self.silent, invalid_value=invalid_value)
+                if current is None:
+                    error = True
+                    break
                 if label is None:
                     label = np.atleast_3d(current)
                 else:
                     label = np.dstack((label, current))
+            if error:
+                continue
             one_sample = (data, label)
             self.all_samples.append(one_sample)
             number_done += 1
