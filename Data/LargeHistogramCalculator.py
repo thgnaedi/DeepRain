@@ -58,7 +58,7 @@ def get_filename_prefix(year):
 
 # Must determine (MIN and) MAX of values, to determine bins correctly
 for year in range(year_begin, year_end+1):
-    print("Parsing year: {}".format(year))
+    logger.info("Parsing year: {}".format(year))
     year_dir = data_dir + str(year) + "/"
     ## Make wradlib stop complaining
     os.environ["WRADLIB_DATA"] = year_dir
@@ -73,17 +73,17 @@ for year in range(year_begin, year_end+1):
             if bin_data_max > year_max:
                 year_max = bin_data_max
         except OSError as e:
-            print("Could not read file: " + str(e))
+            logger.info("Could not read file: " + str(e))
     maxima[year] = year_max
 
-print(maxima)
+logger.info(maxima)
 
 # Determine bins
 bins = np.linspace(data_min, data_max, num_bins)
 hist = np.zeros(num_bins - 1, dtype='int16')
 
 for year in range(year_begin, year_end+1):
-    print("Parsing year: {}".format(year))
+    logger.info("Parsing year: {}".format(year))
     year_dir = data_dir + str(year) + "/"
     ## Make wradlib stop complaining
     os.environ["WRADLIB_DATA"] = year_dir
@@ -99,7 +99,7 @@ for year in range(year_begin, year_end+1):
             hist += bin_data_hist
             counter += 1
         except OSError as e:
-            print("Could not read file: " + str(e))
-    print("Processed {} files.".format(counter))
-print("Number of values: {}".format(np.sum(hist)))
+            logger.error("Could not read file: " + str(e))
+    logger.info("Processed {} files.".format(counter))
+logger.info("Number of values: {}".format(np.sum(hist)))
 np.save("LargeHistogram.npy", hist)
