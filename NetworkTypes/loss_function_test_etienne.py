@@ -1,15 +1,14 @@
 import NetworkTypes.tfModels as tfM
-import Data.sample_bundle as sampleBundle
 import sys
-import os
+sys.path.append("../Data")
+sys.path.append("../NetworkTypes")
+import Data.sample_bundle as sampleBundle
 from NetworkTypes.extendet_CNN_test import train_realdata
 
-sys.path.append("../Data")
 
 input_shape = (64, 64, 5)
 model = tfM.UNet64(input_shape)
 
-print(os.getcwd())
 sb = sampleBundle.load_Sample_Bundle("../Data/RegenTage2016")
 
 data, label = sb.get_all_data_label(channels_Last=True, flatten_output=True)
