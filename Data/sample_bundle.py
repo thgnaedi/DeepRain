@@ -1,7 +1,9 @@
 import numpy as np
 import pickle
-import sample_bundle
+import sys
 
+sys.path.append("../Data")
+import sample_bundle
 
 class Sample_Bundle():
     def __init__(self, subimg, resizeshape, all_samples, details=""):
