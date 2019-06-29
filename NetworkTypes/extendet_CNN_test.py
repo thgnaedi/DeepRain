@@ -100,7 +100,8 @@ def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, cha
 
 
 def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", channelsLast=True,
-                   use_logfile=True, load_last_state=True, n_testsamples=50, prediction_shape = (64, 64), PREDICTION_IMG_ID=14, normalize=True, data=None, label=None):
+                   use_logfile=True, load_last_state=True, n_testsamples=50, prediction_shape = (64, 64),
+                   PREDICTION_IMG_ID=14, normalize=True, data=None, label=None):
     """
     Method to train Network on real Data (depending on the given samplebundle)
     :param model:           NN to train
