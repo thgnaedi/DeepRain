@@ -35,8 +35,6 @@ def main():
     sb = sampleBundle.load_Sample_Bundle("../Data/RegenTage2016")
 
     data, label = sb.get_all_data_label(channels_Last=True, flatten_output=True)
-    data = data[:200]
-    label = label[:200]
     print("Original label shape: {}".format(label.shape))
     label = categorize_data(label)
     n_testsamples = 50
