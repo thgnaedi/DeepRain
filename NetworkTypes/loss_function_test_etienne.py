@@ -9,49 +9,49 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 
-def categorize_data(data):
-    if len(data.shape) == 3:
-        return _categorize_data(data)
-    else:
-        new_data = map(categorize_data, data)
-        return np.array(new_data)
+def categorize_data(label):
+    label = label.reshape(1950, 64, 64)
+    print("Old shape: {}".format(label.shape))
+    new_label_shape = label.shape + (3,)
+    labels = np.zeros(new_label_shape, label.dtype)
 
-
-def _categorize_data(data):
-    new_label_shape = data.shape[:-1] + (3,)
-    print(new_label_shape)
-    labels = np.zeros(new_label_shape, data.dtype)
-
-    for idx , value in np.ndenumerate(data):
+    for idx, value in np.ndenumerate(label):
         if value <= 20:
-            label = np.array([1, 0, 0])
+            labels[idx] = np.array([1, 0, 0])
         elif value <= 40:
-            label = np.array([0, 1, 0])
+            labels[idx] = np.array([0, 1, 0])
         else:
-            label = np.array([0, 0, 1])
-        labels[idx] = label
+            labels[idx] = np.array([0, 0, 1])
+    labels = labels.reshape(1950, 4096*3)
+    print("New shape: {}".format(labels.shape))
     return labels
 
 
 def main():
     input_shape = (64, 64, 5)
-    model = tfM.UNet64(input_shape)
+    model = tfM.UNet64(input_shape, n_predictions=3)
 
     sb = sampleBundle.load_Sample_Bundle("../Data/RegenTage2016")
 
     data, label = sb.get_all_data_label(channels_Last=True, flatten_output=True)
-    label = categorize_data(data)
+    print("Original label shape: {}".format(label.shape))
+    label = categorize_data(label)
     n_testsamples = 50
-    #x_train, y_train = data[n_testsamples:], label[n_testsamples:]
+    x_train, y_train = data[n_testsamples:], label[n_testsamples:]
+    print("Data shape: {}".format(x_train.shape))
+    print("Label shape: {}".format(y_train.shape))
     #x_test, y_test = data[:n_testsamples], label[:n_testsamples]
 
-    train_realdata(model,
-                   sb,
+    train_realdata(model=model,
+                   samplebundle=None,
                    n_epoch=80,
-                   savename="{FEHLERFUNKTIONSNAME}",
+                   savename="Categorization_0-20_20-40_above",
                    channelsLast=True,
                    use_logfile=True,
-                   load_last_state=True)
+                   load_last_state=True,
+                   data=data,
+                   label=label,
+                   _eval_output=False)
 
 
 if __name__ == "__main__":
