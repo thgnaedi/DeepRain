@@ -10,7 +10,8 @@ os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 
 def categorize_data(label):
-    label = label.reshape(1950, 64, 64)
+    n_samples = len(label)
+    label = label.reshape(n_samples, 64, 64)
     print("Old shape: {}".format(label.shape))
     new_label_shape = label.shape + (3,)
     labels = np.zeros(new_label_shape, label.dtype)
@@ -22,7 +23,7 @@ def categorize_data(label):
             labels[idx] = np.array([0, 1, 0])
         else:
             labels[idx] = np.array([0, 0, 1])
-    labels = labels.reshape(1950, 4096*3)
+    labels = labels.reshape(n_samples, 4096*3)
     print("New shape: {}".format(labels.shape))
     return labels
 
@@ -49,6 +50,7 @@ def main():
                    channelsLast=True,
                    use_logfile=True,
                    load_last_state=True,
+                   prediction_shape=(64,64,3),
                    data=data,
                    label=label,
                    _eval_output=True)

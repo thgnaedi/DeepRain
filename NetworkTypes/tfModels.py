@@ -47,7 +47,7 @@ def UNet64(input_shape, n_predictions=1, lossfunction="mean_squared_error", simp
     print("8)", output.shape, "{} x 64x64".format(n_predictions))
     output = Flatten()(output)
     if simpleclassification is not None:
-        output = Dense(simpleclassification, activation='softmax')
+        output = Dense(simpleclassification, activation='softmax')(output)
         print("9)", output.shape, "zur Klassifikation von {} Klassen (mit softmax)".format(simpleclassification))
 
     model = Model(inputs=inputs, outputs=output)

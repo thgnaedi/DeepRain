@@ -49,7 +49,10 @@ def load_last_net(nameoffset, _dir=os.getcwd()):
         if nameoffset in e and ".h5" in e:
             e = e.replace(".h5", "")
             e = e.replace(nameoffset + "_", "")
-            n = int(e)
+            try:
+                n = int(e)
+            except:
+                continue
             if n > last_version:
                 last_version = n
 
