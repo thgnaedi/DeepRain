@@ -51,7 +51,7 @@ def main():
                    load_last_state=True,
                    data=data,
                    label=label,
-                   _eval_output=False)
+                   _eval_output=True)
 
 
 if __name__ == "__main__":

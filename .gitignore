@@ -6,6 +6,8 @@ Temp/
 *.jpg
 *.jpeg
 *.bmp
+*.h5
+*.tar
 
 NetworkTypes/*.h5
 NetworkTypes/Net_tinyUNet/
