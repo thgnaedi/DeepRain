@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 # ToDo: 2013 ist durchschnittsjahr =)
-def generate_Data_5_7(path, sum=76100, invalid_value=80):
+def generate_Data_5_7(path, sum=7500, invalid_value=80):
     trainbundles = []
     testbundle = None
     print("generiere Samples von 2004-2017 ...")
@@ -15,7 +15,7 @@ def generate_Data_5_7(path, sum=76100, invalid_value=80):
         sb = sample_bundle.load_Sample_Bundle(path.format(year))
         sys.stdout.write(" clear")
         sys.stdout.flush()
-        b = sb.clear_by_sum(7500)  # 2017 hat anderen Grenzwert
+        b = sb.clear_by_sum(sum)  # 2017 hat anderen Grenzwert
         #plt.hist(b,bins=100)
         #plt.show()
         #sb.replace_borders(invalid_value)   #entferne Radarfreie Zonen
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     ### Einsammeln aller Samples mit anschließendem Normieren:
     #path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
     path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
-    train, test = generate_Data_5_7(path)
+    train, test = generate_Data_5_7(path)    #13000 = 4569 18000 = 2904
 
     # True nur, beim aussuchen einer guten image ID:
     if False:
@@ -69,6 +69,6 @@ if __name__ == '__main__':
     print("collected {} samples for training, 2013 excluded!".format(len(all_data)))
 
     ## Training starten:
-    train_realdata(model, samplebundle=None, n_epoch=20, savename="10years", channelsLast=True, use_logfile=True,
+    train_realdata(model, samplebundle=None, n_epoch=21, savename="10years", channelsLast=True, use_logfile=True,
                    load_last_state=True, n_testsamples=623, prediction_shape=(64, 64, 7), PREDICTION_IMG_ID=413, data=all_data,
                    label=all_label)
