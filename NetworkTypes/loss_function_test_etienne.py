@@ -17,9 +17,9 @@ def categorize_data(label):
     labels = np.zeros(new_label_shape, label.dtype)
 
     for idx, value in np.ndenumerate(label):
-        if value <= 20:
+        if value == 0:
             labels[idx] = np.array([1, 0, 0])
-        elif value <= 40:
+        elif value <= 10:
             labels[idx] = np.array([0, 1, 0])
         else:
             labels[idx] = np.array([0, 0, 1])
