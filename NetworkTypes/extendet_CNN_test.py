@@ -123,7 +123,7 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
         if _model is not None:
             model = _model
 
-    info = "Starte Trainingsphase für {} Epochen".format(n_epoch)
+    info = "Starte Trainingsphase fuer {} Epochen".format(n_epoch)
     if offset > 0:
         info += ", beginne bei Epoche {}, geladenes Netz = {}".format(offset, savename + "_" + str(offset) + ".h5")
     if savename is not None:

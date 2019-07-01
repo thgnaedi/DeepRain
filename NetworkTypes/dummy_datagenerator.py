@@ -82,7 +82,7 @@ def eval_output(output, label, name="", rescale=False, save_img_name=None, vmax=
     if save_img_name is None:
         plt.show()
     else:
-        plt.savefig(save_img_name+".jpg")
+        plt.savefig(save_img_name+".png")
     plt.close('all')
     return
 
