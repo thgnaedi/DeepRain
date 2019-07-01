@@ -13,7 +13,6 @@ def categorize_data(label):
     label = label.reshape(1950, 64, 64)
     print("Old shape: {}".format(label.shape))
     new_label_shape = label.shape + (3,)
-    print("New shape: {}".format(new_label_shape))
     labels = np.zeros(new_label_shape, label.dtype)
 
     for idx, value in np.ndenumerate(label):
@@ -23,6 +22,8 @@ def categorize_data(label):
             labels[idx] = np.array([0, 1, 0])
         else:
             labels[idx] = np.array([0, 0, 1])
+    labels = labels.reshape(1950, 4096*3)
+    print("New shape: {}".format(labels.shape))
     return labels
 
 
@@ -48,8 +49,9 @@ def main():
                    channelsLast=True,
                    use_logfile=True,
                    load_last_state=True,
-                   data=x_train,
-                   label=label)
+                   data=data,
+                   label=label,
+                   _eval_output=False)
 
 
 if __name__ == "__main__":

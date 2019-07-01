@@ -101,7 +101,7 @@ def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, cha
 
 def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", channelsLast=True,
                    use_logfile=True, load_last_state=True, n_testsamples=50, prediction_shape = (64, 64),
-                   PREDICTION_IMG_ID=14, normalize=True, data=None, label=None):
+                   PREDICTION_IMG_ID=14, normalize=True, data=None, label=None, _eval_output=True):
     """
     Method to train Network on real Data (depending on the given samplebundle)
     :param model:           NN to train
@@ -124,7 +124,7 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
         if _model is not None:
             model = _model
 
-    info = "Starte Trainingsphase für {} Epochen".format(n_epoch)
+    info = "Starte Trainingsphase fuer {} Epochen".format(n_epoch)
     if offset > 0:
         info += ", beginne bei Epoche {}, geladenes Netz = {}".format(offset, savename + "_" + str(offset) + ".h5")
     if savename is not None:
@@ -154,9 +154,11 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
             model.save(current_name + '.h5')  # creates a HDF5 file 'my_model.h5'
 
         prediction = model.predict(np.expand_dims(data[PREDICTION_IMG_ID], axis=0))
-        sCNN.eval_output(output=prediction, label=label[PREDICTION_IMG_ID].reshape(prediction_shape),
-                         name=savename + "_" + str(i + 1), rescale=False,
-                         save_img_name=savename + "_" + str(i + 1))
+        if _eval_output:
+            sCNN.eval_output(output=prediction, label=label[PREDICTION_IMG_ID].reshape(prediction_shape),
+                             name=savename + "_" + str(i + 1), rescale=False,
+                             save_img_name=savename + "_" + str(i + 1))
+
         if use_logfile:
             info = "Epoch: " + str(i) + "\tmax: " + str(np.max(prediction)) +"/{}".format(np.max(label[PREDICTION_IMG_ID]))+ "\tmin: " + str(np.min(prediction)) +"\tloss: " + str(valloss) + "\ttrain_loss: " + str(trainloss) + "\tsaved as: " + savename + "_" + str(i + 1) + "\n"
             print(info)
