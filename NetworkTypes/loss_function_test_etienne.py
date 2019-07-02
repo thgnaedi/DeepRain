@@ -30,7 +30,11 @@ def categorize_data(label):
 
 def main():
     input_shape = (64, 64, 5)
-    model = tfM.UNet64(input_shape, n_predictions=3)
+    #https://stackoverflow.com/questions/50395170/multi-label-classification-loss-function
+    #https://www.i2tutorials.com/machine-learning-using-tensorflow-tutorial/tensorflow-loss-function/
+    model = tfM.UNet64(input_shape,
+                       n_predictions=3,
+                       lossfunction="categorical_crossentropy")
 
     sb = sampleBundle.load_Sample_Bundle("../Data/RegenTage2016")
 
@@ -46,7 +50,7 @@ def main():
     train_realdata(model=model,
                    samplebundle=None,
                    n_epoch=80,
-                   savename="Categorization_0-20_20-40_above",
+                   savename="categorical_crossentropy_0-20_20-40_above",
                    channelsLast=True,
                    use_logfile=True,
                    load_last_state=True,
