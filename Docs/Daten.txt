@@ -27,7 +27,7 @@ Die dritte Herausforderung lag darin, dass es in den Daten nicht erklärbare Aus
 
 
 # Environment
-Das Trainieren von unserem Netz geschieht mit der Tensorflow-Library in der Version 1.14.0. Diese haben wir in einem Docker-Image für unsere CPU selbst kompiliert und vermeiden dadurch Inkompatibilitäten mit vor-kompilierten Builds, haben die optimale Performance auf unserer CPU und haben Zugriff auf die neuesten Features.
+Das Trainieren von unserem Netz geschieht mit der Tensorflow-Library in der Version 1.14.0. Diese haben wir in einem Docker-Image für unsere CPU selbst kompiliert und umgehen dadurch Inkompatibilitäten mit vor-kompilierten Builds, haben die optimale Performance auf unserer CPU und haben Zugriff auf die neuesten Features.
 
 Mithilfe des Docker-Images können wir mehrere Container starten und somit können wir parallel mehrere Loss-Funktionen validieren.
 
@@ -35,4 +35,6 @@ Mithilfe des Docker-Images können wir mehrere Container starten und somit könn
 # Klassifizierung
 Statt die genaue Regenmenge vorherzusagen, stellten wir drei Kategorien auf: kein Regen (= 0mm), wenig Regen (<= 10mm) und viel Regen (> 10mm). Diese Kategorien haben wir als One-Hot-Vector kodiert. [1, 0, 0] entspricht hierbei kein Regen, sodass man aus der ersten Dimension der Vorhersage einfach ein Vorschaubild generieren kann aus dem man gleich feststellen kann, ob es am jeweiligen Pixel regnet oder nicht.
 
-Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde nur "kein Regen" vorhergesagt. Stattdessen wurde als Loss-Funktion die "Categorical Crossentropy" von Keras verwendet, die relativ gut funktioniert aber einen Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
+Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur "kein Regen" vorhergesagt. Stattdessen wurde als Loss-Funktion die "Categorical Crossentropy" von Keras verwendet; die binäre Crossentropy können wir nicht verwenden, weil wir mehr als zwei Kategorien verwenden. Die "Categorical Crossentropy" funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
+
+Als nächstes wird versucht, die Optimizers zu verändern um die Lernrate zu verbessern. Dadurch verbessert sich hoffentlich die Vorraussage schon bei den verwerndeten 80 Epochen.
