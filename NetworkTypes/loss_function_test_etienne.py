@@ -35,6 +35,7 @@ def main():
     model = tfM.UNet64(input_shape,
                        n_predictions=3,
                        lossfunction="categorical_crossentropy",
+                       activation_hidden="tanh",
                        activation_output="softmax")
 
     sb = sampleBundle.load_Sample_Bundle("../Data/RegenTage2016")
@@ -55,7 +56,7 @@ def main():
                    channelsLast=True,
                    use_logfile=True,
                    load_last_state=True,
-                   prediction_shape=(64,64,3),
+                   prediction_shape=(64, 64, 3),
                    data=data,
                    label=label,
                    _eval_output=True)
