@@ -34,7 +34,8 @@ def main():
     #https://www.i2tutorials.com/machine-learning-using-tensorflow-tutorial/tensorflow-loss-function/
     model = tfM.UNet64(input_shape,
                        n_predictions=3,
-                       lossfunction="categorical_crossentropy")
+                       lossfunction="categorical_crossentropy",
+                       activation_output="softmax")
 
     sb = sampleBundle.load_Sample_Bundle("../Data/RegenTage2016")
 

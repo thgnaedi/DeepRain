@@ -3,7 +3,14 @@ from tensorflow.python.keras.layers import (Input, Lambda, Conv2D, MaxPooling2D,
                                             Lambda, Activation, BatchNormalization, concatenate, UpSampling2D,
                                             ZeroPadding2D)
 
-def UNet64(input_shape, n_predictions=1, lossfunction="mean_squared_error", simpleclassification=None, flatten_output=True):
+
+def UNet64(input_shape,
+           n_predictions=1,
+           lossfunction="mean_squared_error",
+           simpleclassification=None,
+           flatten_output=True,
+           optimizer="adam",
+           activation_output="relu"):
     inputs = Input(shape=input_shape)
 
     conv01 = Conv2D(10, kernel_size=(3,3), padding="same")(inputs)  #10 x 64x64
@@ -43,7 +50,7 @@ def UNet64(input_shape, n_predictions=1, lossfunction="mean_squared_error", simp
     up01 = concatenate([conv01, up01], axis=3)                          #10+80 x 64x64
     print("7)", up01.shape, "90 x 64x64")
 
-    output = Conv2D(n_predictions, (1, 1), activation='relu')(up01)                 #1 x 64x64
+    output = Conv2D(n_predictions, (1, 1), activation=activation_output)(up01)                 #1 x 64x64
     print("8)", output.shape, "{} x 64x64".format(n_predictions))
     if flatten_output:
         output = Flatten()(output)
@@ -53,7 +60,7 @@ def UNet64(input_shape, n_predictions=1, lossfunction="mean_squared_error", simp
             print("9)", output.shape, "zur Klassifikation von {} Klassen (mit softmax)".format(simpleclassification))
 
     model = Model(inputs=inputs, outputs=output)
-    model.compile(loss=lossfunction, optimizer='adam')
+    model.compile(loss=lossfunction, optimizer=optimizer)
     return model
 
 
