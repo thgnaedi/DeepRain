@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
+sys.path.append("../Data")
+sys.path.append("../NetworkTypes")
 import sample_bundle
 from eval_stored_network import load_model
 from evaluate_realData import display_one_img

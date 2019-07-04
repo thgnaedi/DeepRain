@@ -36,7 +36,8 @@ def main():
                        n_predictions=3,
                        lossfunction="categorical_crossentropy",
                        activation_hidden="tanh",
-                       activation_output="softmax")
+                       activation_output="softmax",
+                       metrics=["categorical_accuracy"])
 
     sb = sampleBundle.load_Sample_Bundle("../Data/RegenTage2016")
 

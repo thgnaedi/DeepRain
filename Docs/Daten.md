@@ -6,7 +6,7 @@ Die Daten, die wir verwenden, stammen vom Deutschen Wetterdienst (ab jezt DWD) u
 
 Mit einem in Python geschriebenem Crawler werden die Tar-Archive, die jeweils einen Monat beinhalten heruntergeladen und entpackt; die Tage sind jeweils wieder in einem Tarball komprimiert. Die Binärdateien werden letztendlich auf einer Btrfs-formatierten Partition gespeichert, da diese wegen der häufigen Nullen einfach komprimierbar sind.
 
-[DWD Opendata](https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/2016/)
+[DWD Opendata Jahre 2001 bis 2017](https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/)
 
 ## Preprocessing (Konverter)
 Die Daten liegen in einem Binärformat des DWD vor, aus dem man den Niederschlag (auch für bestimmte Koordinaten) in mm extrahieren kann. Dazu muss man die Python-Bibliothek "Wradlib" über den Package-Manager von Anaconda installieren.
@@ -33,14 +33,19 @@ Mithilfe des Docker-Images können wir mehrere Container starten und somit könn
 
 
 # Klassifizierung
-Statt die genaue Regenmenge vorherzusagen, stellten wir drei Kategorien auf: kein Regen (= 0mm), wenig Regen (<= 10mm) und viel Regen (> 10mm). Diese Kategorien haben wir als One-Hot-Vector kodiert. [1, 0, 0] entspricht hierbei kein Regen, sodass man aus der ersten Dimension der Vorhersage einfach ein Vorschaubild generieren kann aus dem man gleich feststellen kann, ob es am jeweiligen Pixel regnet oder nicht.
+Statt die genaue Regenmenge vorherzusagen, stellten wir drei Kategorien auf: kein Regen (= 0mm), wenig Regen (<= 10mm) und viel Regen (> 10mm). Diese Kategorien haben wir als One-Hot-Vector kodiert. `[1, 0, 0]` entspricht hierbei kein Regen, sodass man aus der ersten Dimension der Vorhersage einfach ein Vorschaubild generieren kann aus dem man gleich feststellen kann, ob es am jeweiligen Pixel regnet oder nicht.
 
 Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur "kein Regen" vorhergesagt. Stattdessen wurde als Loss-Funktion die "Categorical Crossentropy" von Keras verwendet; die binäre Crossentropy können wir nicht verwenden, weil wir mehr als zwei Kategorien verwenden. Die "Categorical Crossentropy" funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
 
 Danach wurde noch die Aktivierungsfunktion für den Output-Layer Sigmoid durch Softmax ersetzt. Dadurch erscheint das Vorschaubild etwas verwaschener, aber der Blob um das Regengebiet wird kleiner und die Differenz zum Referenzbild wird kleiner.
 
-Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert, verbessert sich auch die Kategorisierung: der Blob nähert sich weiter dem Regengebiet aus derm zu vorhersagendem Bild an.
+Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert, verbessert sich auch die Kategorisierung: der Blob nähert sich weiter dem Regengebiet aus derm zu vorhersagendem Bild an, ist aber immer noch merkbar größer und franst an den kanten aus.
 
-Als nächstes wird versucht, die Optimizers zu verändern um die Lernrate zu verbessern. Dadurch verbessert sich hoffentlich die Vorraussage schon bei den verwerndeten 80 Epochen.
+Als nächstes wird die Metrik "categorical_accuracy" verwendet, um die Vorhersage zu überwachen. Dadurch kann der Fortschritt beim Trainieren besser überwacht werden.
 
 ## Endgültige Architektur des Netzes
+
+
+## Herausforderungen in diesem Kapitel
+- Richtige Kategorien finden
+- Training mit richtiger Aktivierungsfunktion / Optimizer
