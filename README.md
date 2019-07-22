@@ -6,7 +6,7 @@ Kurzzeit Regenvorhersage mittels Deep Learning
 
 #### Teilnehmer: 
 
-Etienne, Merle, Patrick, Thomas, Tim
+Etienne, Merle, Thomas, Tim
 
 #### Projektleitung: 
 
