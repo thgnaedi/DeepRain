@@ -20,6 +20,6 @@ Oliver Duerr
 #### Bewertung:
 
 - Lauffähiger Code in Github
-- Bericht ca. 20 Seiten, kann auch in Form eines Blogs sein
+- Bericht ca. 20 Seiten, kann auch in Form eines Blogs sein (locker, was getan wurden)
 - Kurzbericht 2 Seiten
-- Vortrag 30 Minuten 
+- Vortrag 20 Minuten 
