@@ -6,11 +6,13 @@ import Data.sample_bundle as sample_bundle
 from NetworkTypes.extendet_CNN_test import train_realdata
 import Final_Networks.predict35minutes
 import numpy as np
+# If the GPU has not enough Memory (1GB or less) do not use CUDA, else comment the following 2 lines
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-
-def categorize_data(label):
+def categorize_data(label, bit_rainy_border=2):
+    image_resolution = 64
+    num_categories = 3
     print("Old shape: {}".format(label.shape))
     n_samples = len(label)
     label = label.reshape(n_samples, 64, 64)
@@ -21,11 +23,12 @@ def categorize_data(label):
     for idx, value in np.ndenumerate(label):
         if value == 0:
             labels[idx] = np.array([1, 0, 0])
-        elif value <= 10:
+        elif value <= bit_rainy_border:
             labels[idx] = np.array([0, 1, 0])
         else:
             labels[idx] = np.array([0, 0, 1])
-    labels = labels.reshape(n_samples, 4096*3)
+
+    labels = labels.reshape(n_samples, image_resolution * image_resolution * num_categories)
     print("New shape: {}".format(labels.shape))
     return labels
 
@@ -34,15 +37,17 @@ def main(data=None, label=None):
     input_shape = (64, 64, 5)
     # https://stackoverflow.com/questions/50395170/multi-label-classification-loss-function
     # https://www.i2tutorials.com/machine-learning-using-tensorflow-tutorial/tensorflow-loss-function/
+    activation_function_hidden_layer = "softmax"
+    activation_function_output_layer = "softmax"
     model = tfM.UNet64(input_shape,
                        n_predictions=3,
                        lossfunction="categorical_crossentropy",
-                       activation_hidden="tanh",
-                       activation_output="softmax",
+                       activation_hidden=activation_function_hidden_layer,
+                       activation_output=activation_function_output_layer,
                        metrics=["categorical_accuracy"])
 
     if data is None:
-        sb = sampleBundle.load_Sample_Bundle("../Data/RegenTage2016")
+        sb = sample_bundle.load_Sample_Bundle("../Data/RegenTage2016")
         data, label = sb.get_all_data_label(channels_Last=True, flatten_output=True)
 
     print("Original label shape: {}".format(label.shape))
@@ -51,25 +56,27 @@ def main(data=None, label=None):
     x_train, y_train = data[n_testsamples:], label[n_testsamples:]
     print("Data shape: {}".format(x_train.shape))
     print("Label shape: {}".format(y_train.shape))
-    # x_test, y_test = data[:n_testsamples], label[:n_testsamples]
 
+    save_name_string = "categorical_crossentropy_hidden-" + activation_function_hidden_layer + "_output-"\
+                       + activation_function_output_layer + "_above"
     train_realdata(model=model,
                    samplebundle=None,
-                   n_epoch=80,
-                   savename="categorical_crossentropy_0-20_20-40_above",
+                   n_epoch=120,
+                   savename=save_name_string,
                    channelsLast=True,
                    use_logfile=True,
                    load_last_state=True,
                    prediction_shape=(64, 64, 3),
                    data=data,
                    label=label,
-                   _eval_output=True)
+                   _eval_output=True,
+                   use_first_dimennsion=True)
 
 
 if __name__ == "__main__":
     # Unzip ZIP files to new sub-directory
     path = "..\\Data\\samplebundles\\unzip\\{}_5in_7out_64x64_without_border"
-    train, test = Final_Networks.predict35minutes.generate_Data_5_7(path)    # 13000 = 4569 18000 = 2904
+    train, test = Final_Networks.predict35minutes.generate_Data_5_7(path, sum=2*7500)    # 13000 = 4569 18000 = 2904
 
     # Merge Years to one list
     all_data = None
@@ -87,4 +94,7 @@ if __name__ == "__main__":
     print("All Data shape: {}".format(all_data.shape))
     print("All Label shape: {}".format(all_label.shape))
 
-    main(data=all_data, label=all_label[:, :, :, 6])
+    all_label = all_label[:, :, :, 0]
+    print("New All Label shape: {}".format(all_label.shape))
+
+    main(data=all_data, label=all_label)
