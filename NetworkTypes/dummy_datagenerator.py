@@ -60,7 +60,7 @@ def plot_6_images(data, label):
     plt.show()
     return
 
-def eval_output(output, label, name="", rescale=False, save_img_name=None, vmax=1):
+def eval_output(output, label, name="", rescale=False, save_img_name=None, vmax=1, use_first_dimennsion=False):
     if output.shape[0] == 1:
         output = output.reshape(label.shape)
     if rescale:
@@ -68,8 +68,12 @@ def eval_output(output, label, name="", rescale=False, save_img_name=None, vmax=
         name += " SCALED!"
     if len(label.shape) > 2:
         print("habe 3D dingens zum zeigen, nehme letztes Bild!", label.shape)
-        output = output[:,:,label.shape[2]-1]
-        label = label[:, :, label.shape[2]-1]
+        if use_first_dimennsion:
+            output = output[:,:,0]
+            label = label[:, :, 0]
+        else:
+            output = output[:, :, label.shape[2] - 1]
+            label = label[:, :, label.shape[2] - 1]
     f, (ax1, ax2, ax3) = plt.subplots(1, 3)
     ax1.imshow(output, cmap="gray", vmin=0, vmax=vmax)
     ax1.set_title("prediction")

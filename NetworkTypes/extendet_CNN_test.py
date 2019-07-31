@@ -104,7 +104,7 @@ def eval_trainingsphase(model, n_epoch, diffToLabel, n_train, savename=None, cha
 
 def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", channelsLast=True,
                    use_logfile=True, load_last_state=True, n_testsamples=50, prediction_shape = (64, 64),
-                   PREDICTION_IMG_ID=14, normalize=True, data=None, label=None, _eval_output=True):
+                   PREDICTION_IMG_ID=14, normalize=True, data=None, label=None, _eval_output=True, use_first_dimennsion=False):
     """
     Method to train Network on real Data (depending on the given samplebundle)
     :param model:           NN to train
@@ -160,7 +160,7 @@ def train_realdata(model, samplebundle, n_epoch=100, savename="UNet64_2016", cha
         if _eval_output:
             sCNN.eval_output(output=prediction, label=label[PREDICTION_IMG_ID].reshape(prediction_shape),
                              name=savename + "_" + str(i + 1), rescale=False,
-                             save_img_name=savename + "_" + str(i + 1))
+                             save_img_name=savename + "_" + str(i + 1), use_first_dimennsion=use_first_dimennsion)
 
         if use_logfile:
             info = "Epoch: " + str(i) + "\tmax: " + str(np.max(prediction)) +"/{}".format(np.max(label[PREDICTION_IMG_ID]))+ "\tmin: " + str(np.min(prediction)) +"\tloss: " + str(valloss) + "\ttrain_loss: " + str(trainloss) + "\tsaved as: " + savename + "_" + str(i + 1) + "\n"
