@@ -77,10 +77,3 @@ if __name__ == '__main__':
         eval_all()
 
 
-# KullbackLeiberDivergenz liefert negative Werte bei Lossfunktion, ergebniss?
-    # beginn 19241 endEP1  -729 mitte Ep2 -1756 ab dann kaum mehr änderung
-# MSE-Loss liefert eher eine art einheitliches Graubild?!?
-# MSE kann halbwegs vernünftige Ergebnisse liefern, vielleicht mal mit Batchnorm versuchen
-# Deutlich mehr Trainingssamples erstellen (wäre toll wenn vm wieder Keras kann)
-
-
