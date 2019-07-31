@@ -11,7 +11,7 @@ def generate_Data_5_7(path, sum=7500, invalid_value=80):
     trainbundles = []
     testbundle = None
     print("generiere Samples von 2004-2017 ...")
-    for year in range(2004, 2018):
+    for year in range(2004, 2005):#2018):
         sb = sample_bundle.load_Sample_Bundle(path.format(year))
         sys.stdout.write(" clear")
         sys.stdout.flush()
@@ -38,6 +38,7 @@ if __name__ == '__main__':
     #path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
     path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
     train, test = generate_Data_5_7(path)    #13000 = 4569 18000 = 2904
+    print(len(train), len(test))
 
     # True nur, beim aussuchen einer guten image ID:
     if False:
