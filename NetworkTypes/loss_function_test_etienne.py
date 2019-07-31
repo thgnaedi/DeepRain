@@ -10,12 +10,15 @@ import numpy as np
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-def categorize_data(label, bit_rainy_border=2):
+
+def categorize_data(label, bit_rainy_border=8):
     image_resolution = 64
     num_categories = 3
+    scale_factor = 1.0/255.0
+    _bit_rainy_border = bit_rainy_border * scale_factor
     print("Old shape: {}".format(label.shape))
     n_samples = len(label)
-    label = label.reshape(n_samples, 64, 64)
+    label = label.reshape(n_samples, image_resolution, image_resolution)
     new_label_shape = label.shape + (3,)
     print("New shape: {}".format(new_label_shape))
     labels = np.zeros(new_label_shape, label.dtype)
@@ -23,7 +26,7 @@ def categorize_data(label, bit_rainy_border=2):
     for idx, value in np.ndenumerate(label):
         if value == 0:
             labels[idx] = np.array([1, 0, 0])
-        elif value <= bit_rainy_border:
+        elif value <= _bit_rainy_border:
             labels[idx] = np.array([0, 1, 0])
         else:
             labels[idx] = np.array([0, 0, 1])
@@ -61,7 +64,7 @@ def main(data=None, label=None):
                        + activation_function_output_layer + "_above"
     train_realdata(model=model,
                    samplebundle=None,
-                   n_epoch=120,
+                   n_epoch=520,
                    savename=save_name_string,
                    channelsLast=True,
                    use_logfile=True,
@@ -76,7 +79,7 @@ def main(data=None, label=None):
 if __name__ == "__main__":
     # Unzip ZIP files to new sub-directory
     path = "..\\Data\\samplebundles\\unzip\\{}_5in_7out_64x64_without_border"
-    train, test = Final_Networks.predict35minutes.generate_Data_5_7(path, sum=2*7500)    # 13000 = 4569 18000 = 2904
+    train, test = Final_Networks.predict35minutes.generate_Data_5_7(path)    # 13000 = 4569 18000 = 2904
 
     # Merge Years to one list
     all_data = None
