@@ -33,6 +33,7 @@ def generate_Data_5_7(path, sum=7500, invalid_value=80):
 
 
 if __name__ == '__main__':
+
     ### Einsammeln aller Samples mit anschließendem Normieren:
     #path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
     path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
@@ -71,7 +72,7 @@ if __name__ == '__main__':
     ## Training starten:
     train_realdata(model,
                    samplebundle=None,
-                   n_epoch=21,
+                   n_epoch=100,
                    savename="10years",
                    channelsLast=True,
                    use_logfile=True,
@@ -79,5 +80,4 @@ if __name__ == '__main__':
                    n_testsamples=623,
                    prediction_shape=(64, 64, 7),
                    PREDICTION_IMG_ID=413,
-                   data=all_data,
-                   label=all_label)
+                   data=all_data)
