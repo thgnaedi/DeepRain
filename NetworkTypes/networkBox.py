@@ -43,3 +43,22 @@ def get_deeper_net(input_shape, dropout=False, loss=keras.losses.mean_squared_er
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
     return model
+
+
+def get_CNN_classification(input_shape, loss=keras.losses.categorical_crossentropy):
+    model = Sequential()
+    model.add(keras.layers.Conv2D(32, kernel_size=(3, 3),
+                     activation='relu',
+                     input_shape=input_shape))
+    model.add(keras.layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    model.add(keras.layers.Dropout(0.25))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(30, activation='relu'))
+    model.add(keras.layers.Dropout(0.2))
+    model.add(keras.layers.Dense(3, activation='softmax'))
+
+    model.compile(loss=loss,
+                  optimizer=keras.optimizers.Adadelta(),
+                  metrics=['accuracy'])
+    return model
