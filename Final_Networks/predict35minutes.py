@@ -38,6 +38,7 @@ if __name__ == '__main__':
     #path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
     path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
     train, test = generate_Data_5_7(path)    #13000 = 4569 18000 = 2904
+    print(len(train), len(test))
 
     # True nur, beim aussuchen einer guten image ID:
     if False:
@@ -69,6 +70,14 @@ if __name__ == '__main__':
     print("collected {} samples for training, 2013 excluded!".format(len(all_data)))
 
     ## Training starten:
-    train_realdata(model, samplebundle=None, n_epoch=100, savename="10years", channelsLast=True, use_logfile=True,
-                   load_last_state=True, n_testsamples=623, prediction_shape=(64, 64, 7), PREDICTION_IMG_ID=413, data=all_data,
-                   label=all_label)
+    train_realdata(model,
+                   samplebundle=None,
+                   n_epoch=100,
+                   savename="10years",
+                   channelsLast=True,
+                   use_logfile=True,
+                   load_last_state=True,
+                   n_testsamples=623,
+                   prediction_shape=(64, 64, 7),
+                   PREDICTION_IMG_ID=413,
+                   data=all_data)
