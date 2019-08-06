@@ -71,6 +71,6 @@ if __name__ == '__main__':
     print("collected {} samples for training, 2013 excluded!".format(len(all_data)))
 
     ## Training starten:
-    train_realdata(model, samplebundle=None, n_epoch=200, savename="10years", channelsLast=True, use_logfile=True,
+    train_realdata(model, samplebundle=None, n_epoch=300, savename="10years", channelsLast=True, use_logfile=True,
                    load_last_state=True, n_testsamples=623, prediction_shape=(64, 64, 7), PREDICTION_IMG_ID=413, data=all_data,
                    label=all_label)
