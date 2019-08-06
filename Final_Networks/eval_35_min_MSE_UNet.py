@@ -125,7 +125,7 @@ def __eval_correlation(firstdim, labelr, predr, data, vmax=10):
 
 if __name__ == '__main__':
     #Lernkurve:
-    eval_trainlogfile("./trainphase.log", plot=True)
+    eval_trainlogfile("./trainphase_MSE.log", plot=True)
 
     #DatenSammeln
     s1,s2 = generate_Data_5_7("..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border", only_2004=True)
