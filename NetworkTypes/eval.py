@@ -32,7 +32,8 @@ def get_category(value, bit_rainy_border=8):
 # w.Regen |            |             |
 # v.Regen |            |             |
 def get_confusion_matrix_2d(_true, _pred):
-    num_samples, x_dim, y_dim, classes = _true.shape
+    index, classes = _true.shape
+    #num_samples, x_dim, y_dim, classes = _true.shape
 
     confusion = np.zeros((classes, classes), dtype=int)
     # c[i][:] = true class
@@ -74,7 +75,7 @@ def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark 
 
 if __name__ == '__main__':
     #Lernkurve:
-    eval_trainlogfile("./trainphase.log", plot=True)
+    eval_trainlogfile("..\\Data\\Training\\activationHidden-tanh_activationOutput-softmax\\trainphase.log", plot=True)
 
     #DatenSammeln
     data, label = generate_classification(False, only_2004=True, print_hist=True)
@@ -83,8 +84,8 @@ if __name__ == '__main__':
 
     #NetzLaden
     #netname = "CNN_classification"
-    netname = "CNN_classification_2duplications"
-    net,offset = load_last_net(netname)
+    netname = "categorical_crossentropy_hidden-tanh_output-softmax_above"
+    net, offset = load_last_net(netname, _dir="..\\Data\\Training\\activationHidden-tanh_activationOutput-softmax")
     assert net is not None
 
     eval_validationSet(val_data, val_lbl, net)
