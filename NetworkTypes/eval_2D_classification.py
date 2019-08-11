@@ -38,16 +38,20 @@ def get_category(value, bit_rainy_border=8):
 # w.Regen |            |             |
 # v.Regen |            |             |
 def get_confusion_matrix_2d(_true, _pred):
-    samples, classes = _true.shape
-    # num_samples, x_dim, y_dim, classes = _true.shape
+    _true = _true.reshape((623, 64, 64, 3))
+    _pred = _pred.reshape((623, 64, 64, 3))
+    print("True-shape: {}".format(_true.shape))
+    print("Pred-Shape: {}".format(_pred.shape))
+    # samples, classes = _true.shape
+    num_samples, x_dim, y_dim, classes = _true.shape
 
     confusion = np.zeros((classes, classes), dtype=int)
     # c[i][:] = true class
     # c[:][i] = prediction
 
-    for sample, x, y, value in np.ndenumerate(_true):
+    for idx, value in np.ndenumerate(_true):
         true_class = get_category(value)
-        pred_class_highest_probability = np.argmax(_pred[sample, x, y])
+        pred_class_highest_probability = np.argmax(_pred[idx])
         x = np.where(pred_class_highest_probability)
         y = np.where(value == 0)
 
