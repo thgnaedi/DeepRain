@@ -33,7 +33,7 @@ def get_category(value, bit_rainy_border=8):
 
 
 # tr/pred | kein Regen | wenig Regen | viel Regen
-# ---------|------------|-------------|-----------
+# --------|------------|-------------|-----------
 # k.Regen |            |             |
 # w.Regen |            |             |
 # v.Regen |            |             |

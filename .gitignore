@@ -36,3 +36,4 @@ NetworkTypes/UNet64*/
 *.pdf
 *.gz
 *busy*
+*.toc

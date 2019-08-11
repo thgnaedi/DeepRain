@@ -11,6 +11,7 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
 
 \section{Daten}
 Dises Kapitel geht darauf ein, woher wir die Daten für das Training des Netzes beschaffen und wie wir diese vor-bearbeiten.
@@ -39,10 +40,9 @@ Darüber hinaus lagen die Archive des DWD im Tar-Format vor, das keine Checksumm
 Die dritte Herausforderung lag darin, dass es in den Daten nicht erklärbare Ausreißer gab und wie man diese eliminieren soll. Weil es extrem lange dauern würde, für 18 Jahre in 5-Minuten-Aulösung ein Histogram zu berechnen, haben wir einen (hoffentlich) Educated Guess gemacht und das Viertel des Maximalwertes als neuen Maximalwert gewählt.
 
 
-\subsection{Environment}
+\section{Environment}
 Das Trainieren von unserem Netz geschieht mit der Tensorflow-Library in der Version 1.14.0. Diese haben wir in einem Docker-Image für unsere CPU selbst kompiliert und umgehen dadurch Inkompatibilitäten mit vor-kompilierten Builds, haben die optimale Performance auf unserer CPU und haben Zugriff auf die neuesten Features.
-
-Mithilfe des Docker-Images können wir mehrere Container starten und somit können wir parallel mehrere Loss-Funktionen validieren.
+Mithilfe des Docker-Images können wir mehrere Container starten und somit mehrere Loss-Funktionen parallel validieren.
 
 Alternativ kann das Netz auch mit einer Nvidia-Grafikkarte trainiert werden, die Compute Capability 3.5 oder höher unterstützt.~\footnote{\url{https://www.tensorflow.org/install/gpu}} Darüber hinaus muss die GPU über 4GB oder mehr RAM verfügen. Ansonsten startet das Training gar nicht erst und der GPU-Support muss über eine Environment-Variable deaktiviert werden.
 
@@ -60,8 +60,10 @@ Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersa
 
 
 \subsection{Herausforderungen in diesem Kapitel}
-- Richtige Kategorien finden
-- Training mit richtiger Aktivierungsfunktion / Optimizer
+\begin{itemize}
+\item Richtige Kategorien finden
+\item Training mit richtiger Aktivierungsfunktion / Optimizer
+\end{itemize}
 
 
 \end{document}
