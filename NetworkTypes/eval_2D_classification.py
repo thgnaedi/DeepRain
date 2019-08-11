@@ -1,21 +1,19 @@
 from Data.evaluate_Network_on_realData import eval_trainlogfile
 from NetworkTypes.extendet_CNN_test import load_last_net
 import Final_Networks.eval_1D_classification_anyNet as eval_1d
+import NetworkTypes.loss_function_test_etienne
 import Data.evaluate_Network_on_realData
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-def generate_classification(neighbors,
-                            print_hist=False,
-                            threshold=0.05,
-                            only_2014=False,
-                            offset=623,
-                            duplications=0):
-    pass
+def generate_classification():
+    all_data, all_label = NetworkTypes.loss_function_test_etienne.load_all_year_data()
+    all_label = NetworkTypes.loss_function_test_etienne.categorize_data(all_label)
+    return all_data, all_label
 
 
-def eval_validationSet(data, label, net):
+def eval_validation_set(data, label, net):
     prediction = net.predict(data)
     print(data.shape)
     print(prediction.shape)
@@ -41,7 +39,7 @@ def get_category(value, bit_rainy_border=8):
 # v.Regen |            |             |
 def get_confusion_matrix_2d(_true, _pred):
     samples, classes = _true.shape
-    #num_samples, x_dim, y_dim, classes = _true.shape
+    # num_samples, x_dim, y_dim, classes = _true.shape
 
     confusion = np.zeros((classes, classes), dtype=int)
     # c[i][:] = true class
@@ -64,7 +62,7 @@ if __name__ == '__main__':
     eval_trainlogfile("..\\Data\\Training\\activationHidden-tanh_activationOutput-softmax\\trainphase.log", plot=True)
 
     #DatenSammeln
-    data, label = generate_classification(False, only_2004=True, print_hist=True)
+    data, label = generate_classification()
     val_data = data[:623]
     val_lbl = label[:623]
 
@@ -74,11 +72,11 @@ if __name__ == '__main__':
     net, offset = load_last_net(netname, _dir="..\\Data\\Training\\activationHidden-tanh_activationOutput-softmax")
     assert net is not None
 
-    eval_validationSet(val_data, val_lbl, net)
+    eval_validation_set(val_data, val_lbl, net)
     plt.show()
-    #ToDo Validieren
-    #confusion Matrix, sieht man eine schöne Einheitsmatrix =P ?
-    #2D Plot korrelations plot pro Klasse mit Sicherheit und tatsächlicher Klasse (sieht man bei unsicherem ist es andere Klasse?
+    # ToDo Validieren
+    # confusion Matrix, sieht man eine schöne Einheitsmatrix =P ?
+    # 2D Plot korrelations plot pro Klasse mit Sicherheit und tatsächlicher Klasse (sieht man bei unsicherem ist es andere Klasse?
 
 
 

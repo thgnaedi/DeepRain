@@ -36,6 +36,30 @@ def categorize_data(label, bit_rainy_border=8):
     return labels
 
 
+def load_all_year_data(path="..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"):
+    train, test = Final_Networks.predict35minutes.generate_Data_5_7(path)    # 13000 = 4569 18000 = 2904
+
+    # Merge Years to one list
+    all_data = None
+    all_label = None
+    for bundle in train:
+        data_year, label_year = bundle.get_all_data_label(channels_Last=True, flatten_output=False)
+        if all_data is None:
+            all_data = data_year
+            all_label = label_year
+        else:
+            all_data = np.concatenate((all_data, data_year), axis=0)
+            all_label = np.concatenate((all_label, label_year), axis=0)
+    print("collected {} samples for training, 2013 excluded!".format(len(all_data)))
+
+    print("All Data shape: {}".format(all_data.shape))
+    print("All Label shape: {}".format(all_label.shape))
+
+    all_label = all_label[:, :, :, 0]
+    print("New All Label shape: {}".format(all_label.shape))
+    return all_data, all_label
+
+
 def main(data=None, label=None):
     input_shape = (64, 64, 5)
     # https://stackoverflow.com/questions/50395170/multi-label-classification-loss-function
@@ -64,7 +88,7 @@ def main(data=None, label=None):
                        + activation_function_output_layer + "_above"
     train_realdata(model=model,
                    samplebundle=None,
-                   n_epoch=520,
+                   n_epoch=1536,
                    savename=save_name_string,
                    channelsLast=True,
                    use_logfile=True,
@@ -77,27 +101,7 @@ def main(data=None, label=None):
 
 
 if __name__ == "__main__":
-    # Unzip ZIP files to new sub-directory
-    path = "..\\Data\\samplebundles\\unzip\\{}_5in_7out_64x64_without_border"
-    train, test = Final_Networks.predict35minutes.generate_Data_5_7(path)    # 13000 = 4569 18000 = 2904
-
-    # Merge Years to one list
-    all_data = None
-    all_label = None
-    for bundle in train:
-        data_year, label_year = bundle.get_all_data_label(channels_Last=True, flatten_output=False)
-        if all_data is None:
-            all_data = data_year
-            all_label = label_year
-        else:
-            all_data = np.concatenate((all_data, data_year), axis=0)
-            all_label = np.concatenate((all_label, label_year), axis=0)
-    print("collected {} samples for training, 2013 excluded!".format(len(all_data)))
-
-    print("All Data shape: {}".format(all_data.shape))
-    print("All Label shape: {}".format(all_label.shape))
-
-    all_label = all_label[:, :, :, 0]
-    print("New All Label shape: {}".format(all_label.shape))
+    # Unzip ZIP files to directory
+    all_data, all_label = load_all_year_data()
 
     main(data=all_data, label=all_label)
