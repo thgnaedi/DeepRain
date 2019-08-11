@@ -30,3 +30,9 @@ NetworkTypes/UNet64*/
 .idea/
 *.idea
 *.save
+
+*.aux
+*.out
+*.pdf
+*.gz
+*busy*
