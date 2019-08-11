@@ -1,19 +1,27 @@
-from Final_Networks.predict35minutes_one_pix_class_CNN import generate_classification
 from Data.evaluate_Network_on_realData import eval_trainlogfile
 from NetworkTypes.extendet_CNN_test import load_last_net
+import Final_Networks.eval_1D_classification_anyNet as eval_1d
 import Data.evaluate_Network_on_realData
 import numpy as np
 import matplotlib.pyplot as plt
 
 
+def generate_classification(neighbors,
+                            print_hist=False,
+                            threshold=0.05,
+                            only_2014=False,
+                            offset=623,
+                            duplications=0):
+    pass
+
+
 def eval_validationSet(data, label, net):
-    firstdim = data.shape[0]
     prediction = net.predict(data)
     print(data.shape)
     print(prediction.shape)
     print(label.shape)
     get_confusion_matrix_2d(label, prediction)
-    correlation_plots(label, prediction)
+    eval_1d.correlation_plots(label, prediction)
     return
 
 
@@ -32,7 +40,7 @@ def get_category(value, bit_rainy_border=8):
 # w.Regen |            |             |
 # v.Regen |            |             |
 def get_confusion_matrix_2d(_true, _pred):
-    index, classes = _true.shape
+    samples, classes = _true.shape
     #num_samples, x_dim, y_dim, classes = _true.shape
 
     confusion = np.zeros((classes, classes), dtype=int)
@@ -49,28 +57,6 @@ def get_confusion_matrix_2d(_true, _pred):
 
     print(confusion)
     return confusion
-
-
-def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark Regen"]):
-    samples, classes = _true.shape
-    assert classes == 3 # other classifications currently not supported
-
-    prob_values = [[], [], []]
-    reality = [[], [], []]
-
-    for i in range(samples):
-        klasse = np.argmax(_pred[i])
-        sicherheit = _pred[i]
-        label = np.where(_true[i] == 1)[0][0]  # returns index of first '1' in vector
-        if sicherheit[klasse] < 0.1:
-           print("Achtung:", sicherheit)
-        prob_values[klasse].append(sicherheit[klasse])
-        reality[klasse].append(label)
-
-    for i in range(classes):
-        plt.figure("predicted class {} | samples: {}".format(classnames[i], len(prob_values[i])))
-        plt.plot(prob_values[i], reality[i], "r*")
-    return
 
 
 if __name__ == '__main__':
