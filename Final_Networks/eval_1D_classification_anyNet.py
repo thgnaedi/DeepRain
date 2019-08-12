@@ -32,12 +32,14 @@ def get_confusionMatrix(_true, _pred):
     print(confusion)
     return
 
+
 def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark Regen"]):
     samples, classes = _true.shape
-    assert classes == 3 # other classifications currently not supported
+    print("Value shape: {}".format(_true.shape))
+    assert classes == 3  # other classifications currently not supported
 
-    prob_values = [[],[],[]]
-    reality = [[],[],[]]
+    prob_values = [[], [], []]
+    reality = [[], [], []]
 
     for i in range(samples):
         klasse = np.argmax(_pred[i])
