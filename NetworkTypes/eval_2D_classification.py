@@ -15,10 +15,12 @@ def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark 
     prob_values = [[], [], []]
     reality = [[], [], []]
 
-    for i in range(samples):
-        klasse = np.argmax(_pred[i])
-        sicherheit = _pred[i]
-        label = np.where(_true[i] == 1)[0][0]  # returns index of first '1' in vector
+    for idx, value in np.ndenumerate(_pred):
+        actual_index = idx[:-1]
+        klasse = np.argmax(_pred[actual_index])
+        print("Klasse: {}".format(klasse))
+        sicherheit = _pred[actual_index]
+        label = np.where(_true[actual_index] == 1)[0][0]  # returns index of first '1' in vector
         if sicherheit[klasse] < 0.1:
            print("Achtung:", sicherheit)
         prob_values[klasse].append(sicherheit[klasse])
