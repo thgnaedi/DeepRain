@@ -1,18 +1,3 @@
-\documentclass[11pt]{article}
-
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[english,ngerman]{babel}
-\usepackage[autostyle=true,german=quotes]{csquotes}
-\usepackage[pdfa]{hyperref}
-
-\title{DeepRain}
-\author{Thomas Gnaedig, Etienne Gramlich, Tim, Merle Wolf}
-
-\begin{document}
-\maketitle
-\tableofcontents
-
 \section{Daten}
 Dises Kapitel geht darauf ein, woher wir die Daten für das Training des Netzes beschaffen und wie wir diese vor-bearbeiten.
 
@@ -38,32 +23,3 @@ Die größte Herausforderung in diesem Kapitel war zweifelsfrei die große Daten
 Darüber hinaus lagen die Archive des DWD im Tar-Format vor, das keine Checksumme anbietet und somit erst beim Entpacken bemerkt werden kann, dass beim Download einer Datei ein Fehler auftrat. Bei den großen Tar-Archiven des DWD ist leider mehrmals ein Download-Fehler aufgetreten, der sehr spät auffiel.
 
 Die dritte Herausforderung lag darin, dass es in den Daten nicht erklärbare Ausreißer gab und wie man diese eliminieren soll. Weil es extrem lange dauern würde, für 18 Jahre in 5-Minuten-Aulösung ein Histogram zu berechnen, haben wir einen (hoffentlich) Educated Guess gemacht und das Viertel des Maximalwertes als neuen Maximalwert gewählt.
-
-
-\section{Environment}
-Das Trainieren von unserem Netz geschieht mit der Tensorflow-Library in der Version 1.14.0. Diese haben wir in einem Docker-Image für unsere CPU selbst kompiliert und umgehen dadurch Inkompatibilitäten mit vor-kompilierten Builds, haben die optimale Performance auf unserer CPU und haben Zugriff auf die neuesten Features.
-Mithilfe des Docker-Images können wir mehrere Container starten und somit mehrere Loss-Funktionen parallel validieren.
-
-Alternativ kann das Netz auch mit einer Nvidia-Grafikkarte trainiert werden, die Compute Capability 3.5 oder höher unterstützt.~\footnote{\url{https://www.tensorflow.org/install/gpu}} Darüber hinaus muss die GPU über 4GB oder mehr RAM verfügen. Ansonsten startet das Training gar nicht erst und der GPU-Support muss über eine Environment-Variable deaktiviert werden.
-
-
-\section{Klassifizierung}
-Statt die genaue Regenmenge vorherzusagen, stellten wir drei Kategorien auf: kein Regen (= 0mm), wenig Regen (<= 8mm) und viel Regen (> 8mm). Diese Kategorien haben wir als One-Hot-Vector kodiert. `[1, 0, 0]` entspricht hierbei kein Regen, sodass man aus der ersten Dimension der Vorhersage einfach ein Vorschaubild generieren kann aus dem man gleich feststellen kann, ob es am jeweiligen Pixel regnet oder nicht.
-
-Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur "kein Regen" vorhergesagt. Stattdessen wurde als Loss-Funktion die \enquote{Categorical Crossentropy} von Keras verwendet; die binäre Crossentropy können wir nicht verwenden, weil wir mehr als zwei Kategorien verwenden. Die \enquote{Categorical Crossentropy} funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
-
-Danach wurde noch die Aktivierungsfunktion für den Output-Layer Sigmoid durch Softmax ersetzt. Dadurch erscheint das Vorschaubild etwas verwaschener, aber der Blob um das Regengebiet wird kleiner und die Differenz zum Referenzbild wird kleiner.
-
-Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert, verbessert sich auch die Kategorisierung: der Blob nähert sich weiter dem Regengebiet aus derm zu vorhersagendem Bild an, ist aber immer noch merkbar größer und franst an den kanten aus.
-
-Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersage zu überwachen. Dadurch kann der Fortschritt beim Trainieren besser überwacht werden.
-
-
-\subsection{Herausforderungen in diesem Kapitel}
-\begin{itemize}
-\item Richtige Kategorien finden
-\item Training mit richtiger Aktivierungsfunktion / Optimizer
-\end{itemize}
-
-
-\end{document}
