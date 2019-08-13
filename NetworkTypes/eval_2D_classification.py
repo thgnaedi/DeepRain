@@ -18,7 +18,6 @@ def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark 
     for idx, value in np.ndenumerate(_pred):
         actual_index = idx[:-1]
         klasse = np.argmax(_pred[actual_index])
-        print("Klasse: {}".format(klasse))
         sicherheit = _pred[actual_index]
         label = np.where(_true[actual_index] == 1)[0][0]  # returns index of first '1' in vector
         if sicherheit[klasse] < 0.1:
@@ -53,15 +52,6 @@ def eval_validation_set(data, label, net):
     return
 
 
-def get_category(value, bit_rainy_border=8):
-    if value == 0:
-        return np.array([1, 0, 0])
-    elif value <= bit_rainy_border:
-        return np.array([0, 1, 0])
-    else:
-        return np.array([0, 0, 1])
-
-
 # tr/pred | kein Regen | wenig Regen | viel Regen
 # --------|------------|-------------|-----------
 # k.Regen |            |             |
@@ -77,12 +67,17 @@ def get_confusion_matrix_2d(_true, _pred):
     # c[i][:] = true class
     # c[:][i] = prediction
 
-    for idx, value in np.ndenumerate(_true):
-        true_class = get_category(value)
+    _true_view = _true[:, :, :, 0]
+    print("True-view-shape: {}".format(_true_view.shape))
+
+    for idx, value in np.ndenumerate(_true_view):
+        true_class = _true[idx]
         pred_class_highest_probability = np.argmax(_pred[idx])
         x = np.where(pred_class_highest_probability)
         y = np.where(value == 0)
 
+        print("Indices: {} / {}".format(x, y))
+        # print("Add to confusion matrix: ({} {})".format(*x, *y))
         confusion[y][x] += 1
 
     print(confusion)
