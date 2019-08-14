@@ -46,7 +46,7 @@ def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark 
         sicherheit = _pred[i]
         label = np.where(_true[i] == 1)[0][0]  # returns index of first '1' in vector
         if sicherheit[klasse] < 0.1:
-           print("Achtung:", sicherheit)
+            print("Achtung:", sicherheit)
         prob_values[klasse].append(sicherheit[klasse])
         reality[klasse].append(label)
 
