@@ -10,6 +10,24 @@ Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert
 Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersage zu überwachen. Dadurch kann der Fortschritt beim Trainieren besser überwacht werden.
 
 
+\begin{figure}[ht]
+\centering
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\linewidth]{pics/categorical_crossentropy_hidden-softmax_output-softmax_above_3072}
+\caption{Hidden layer activation: Softmax}
+\label{fig:hiddenActivationSoftmax}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\linewidth]{pics/categorical_crossentropy_hidden-tanh_output-softmax_above_3072}
+\caption{Hidden layer activation: Tanh}
+\label{fig:hiddenActivationTanh}
+\end{subfigure}%
+\caption{Vergleich von Aktivierungsfunktionen der Hidden-Layer}
+\label{fig:activatinHidden}
+\end{figure}
+
 \subsection{Herausforderungen in diesem Kapitel}
 \begin{itemize}
 \item Richtige Kategorien finden
