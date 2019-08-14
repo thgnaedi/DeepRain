@@ -71,13 +71,12 @@ def get_confusion_matrix_2d(_true, _pred):
     print("True-view-shape: {}".format(_true_view.shape))
 
     for idx, value in np.ndenumerate(_true_view):
-        true_class = _true[idx[0], idx[1], idx[2], :]
         pred_pixel_categories = _pred[idx[0], idx[1], idx[2], :]
-        pred_class_highest_probability = np.argmax(pred_pixel_categories)
-        x = np.where(pred_class_highest_probability)
-        y = np.where(true_class == 1)
+        x = np.argmax(pred_pixel_categories)
 
-        # print("Add to confusion matrix: ({} {})".format(*x, *y))
+        true_class = _true[idx[0], idx[1], idx[2], :]
+        y = np.where(true_class == 1)[0][0]
+
         confusion[y][x] += 1
 
     print(confusion)
