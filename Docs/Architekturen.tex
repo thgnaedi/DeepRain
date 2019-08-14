@@ -1,0 +1,17 @@
+\section{Netzwerkarchitekturen}
+Für die kurzzeit Wettervorhersage entschieden wir uns für zwei grundlegende Aufgabenstellungen. Die erste Herangehensweise war das vorhersagen weiterer Radarbilder in der Zukunft. Die Architektur muss also mehrere zusammengehörende Radarbilder als Eingabe verarbeiten und als Ausgabe wieder ein oder mehrere Zeitschritte liefern. Für diese Aufgabenstellung eignet sich sowohl ein Klasisches CNN (Kaptel \ref{kapitelCNN}), als auch ein UNet(Kaptel \ref{kapitelUNet}). Um uns zwischen diesen Architekturen zu entscheiden nahmen wir einen kurzen Test vor, in welchem beide Architekturen mittels MSE einen Zeitschritt (5minuten) vorhersagen sollten. 
+ToDo: hier jetzt noch die Grafik einbinden!!!!!!!!!!!!!mit lbl -> imgCNNUNet
+Die Abbildung \ref{imgCNNUNet} zeigt die Lernkurve der beiden Architekturen auf die Identische Problemstellung. Das UNet lernt in diesem Beispiel deutlich schneller, wesshalb die Vorhersage von Radarbildern in Zukunft mit einem UNet behandelt wird.
+Die zweite Herangehensweise ist eine Klassifikation, hierbei geht es nicht darum das exakte Radarbild vorherzusagen, sondern einzuordnen, ob es Regnet oder nicht. Diese Aufgabe wurde als einfache Klassifikation für Konstanz, als auch als Pixelweise Klassifikation, für alle eingehenden Pixel durchgeführt. Für die Aufgabe der Klassifikation jedes Pixels wurde wieder ein UNet verwendet. Bei der Aufgabe der einfachen Klassifikation für Konstanz kamen beide Architekturen zum Einsatz.
+
+\subsection{CNN}
+\label{kapitelCNN}
+Ein CNN (Convolutional Neural Network) ist was tolles ...
+Verwendete Architektur?
+
+\subsection{UNet}
+\label{kapitelUNet}
+UNet ist auch ganz toll ...
+Verwendete Architekturen?
+
+
