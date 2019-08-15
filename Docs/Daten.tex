@@ -8,7 +8,7 @@ Die Daten, die wir verwenden, stammen vom Deutschen Wetterdienst (ab jezt DWD) u
 Mit einem in Python geschriebenem Crawler werden die Tar-Archive, die jeweils einen Monat beinhalten heruntergeladen und entpackt; die Tage sind jeweils wieder in einem Tarball komprimiert. Die Binärdateien werden letztendlich auf einer Btrfs-formatierten Partition gespeichert, da diese wegen der häufigen Nullen einfach komprimierbar sind.
 
 \subsection{Preprocessing (Konverter)}
-Die Daten liegen in einem Binärformat des DWD vor, aus dem man den Niederschlag (auch für bestimmte Koordinaten) in mm extrahieren kann. Dazu muss man die Python-Bibliothek "Wradlib" über den Package-Manager von Anaconda installieren.
+Die Daten liegen in einem Binärformat des DWD vor, aus dem man den Niederschlag (auch für bestimmte Koordinaten) in mm extrahieren kann. Dazu muss man die Python-Bibliothek \enquote{Wradlib} über den Package-Manager von Anaconda installieren.
 
 Damit lesen wir die 5-minütlichen Daten ein und rastern daraus den Niederschlag in einer Deutschlandkarte mit einer Auflösung von 1100x900 Pixeln, der Standardauflösung der DWD-Daten. Visualisiert man diese Daten, sieht man eine Menge von Kreisen, die jeweils dem Radius einer Radarstation entsprechen. Diese bedecken Deutschland und reichen leicht über die Grenzen.
 
