@@ -21,6 +21,18 @@ Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersa
 \label{tab:confusionTanh}
 \end{table}
 
+\begin{table}[ht]
+\begin{tabular}{ll|rrr}
+                                     &                      & \multicolumn{3}{c}{Vorhersage}\\
+                                     &                      & \textbf{Kein Regen}    & \textbf{Wenig Regen}    & \textbf{Viel Regen}\\\hline
+\multirow{3}{*}{\rotatebox{90}{Echt}}& \textbf{Kein Regen}  & 2227245                & 33383                   & 3762\\
+                                     & \textbf{Wenig Regen} & 81116                  & 106434                  & 17077\\
+                                     & \textbf{Viel Regen}  & 9695                   & 27930                   & 45166\\
+\end{tabular}
+\caption{Confustion-Matrix (Aktivierungsfunktion Hidden Layer: Softmax)}
+\label{tab:confusionSoftmax}
+\end{table}
+
 \begin{figure}[ht]
 \centering
 \begin{subfigure}{0.5\textwidth}

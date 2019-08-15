@@ -32,8 +32,9 @@ NetworkTypes/UNet64*/
 *.save
 
 *.aux
+*.lof
+*.lot
 *.out
 *.pdf
-*.gz
 *busy*
 *.toc
