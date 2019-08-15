@@ -164,14 +164,15 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             ftp_dir_year(ftp_session, ftp_dir(ftp_session, host_directory))
             ftp_session.close()
         else:
-            num_year = int(year)
             logger.info("Downloading minutely files")
             if not year:
                 daily_download_years(download_dir)
-            elif minutely_year_begin <= num_year <= minutely_year_end:
-                daily_download_months(num_year, download_dir)
             else:
-                logger.info("Year not available for download: " + str(year))
+                num_year = int(year)
+                if minutely_year_begin <= num_year <= minutely_year_end:
+                    daily_download_months(num_year, download_dir)
+                else:
+                    logger.info("Year not available for download: " + str(year))
 
     if unpack:
         if not minutely:
@@ -223,6 +224,8 @@ if __name__ == "__main__":
 
     down_dir = "./" if args.down_directory is None else args.down_directory
     out_dir = "./" if args.out_directory is None else args.out_directory
+    down_dir = os.path.join(down_dir, '')
+    out_dir = os.path.join(out_dir, '')
 
     if args.downloadOnly and args.unpackOnly:
         logger.info("YOU wanted me to do nothing!!! downloadOnly AND unpackOnly")
