@@ -60,8 +60,12 @@ def load_last_net(nameoffset, _dir=os.getcwd()):
     if last_version == -1:
         print("no network found in this Path:", _dir)
         return None, 0
+    print(os.getcwd())
     print(netname)
-    model = load_model(netname)
+    if os.path.isfile(netname):
+        model = load_model(netname)
+    else:
+        model = load_model(_dir + "\\" + netname)
     return model, last_version
 
 

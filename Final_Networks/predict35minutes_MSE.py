@@ -1,6 +1,6 @@
-import sample_bundle
-import tfModels as tfM
-from extendet_CNN_test import train_realdata
+import Data.sample_bundle as sample_bundle
+import NetworkTypes.tfModels as tfM
+from NetworkTypes.extendet_CNN_test import train_realdata
 import sys
 import numpy as np
 import matplotlib.pyplot as plt

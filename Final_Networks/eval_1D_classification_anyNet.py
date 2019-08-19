@@ -1,9 +1,9 @@
 from Final_Networks.predict35minutes_one_pix_class_CNN import generate_classification
 from Data.evaluate_Network_on_realData import eval_trainlogfile
-from Final_Networks.predict35minutes_MSE import generate_Data_5_7
 from NetworkTypes.extendet_CNN_test import load_last_net
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 def eval_validationSet(data, label, net):
     firstdim = data.shape[0]
@@ -13,38 +13,40 @@ def eval_validationSet(data, label, net):
     print(label.shape)
     get_confusionMatrix(label, prediction)
     correlation_plots(label, prediction)
-
     return
+
 
 def get_confusionMatrix(_true, _pred):
     samples, classes = _true.shape
 
-    confusion = np.zeros((classes,classes), dtype=int)
+    confusion = np.zeros((classes, classes), dtype=int)
     # c[i][:] = true class
     # c[:][i] = prediction
     # Y-Achse = Kl 0-2 (von oben) X-Achse = Pred 0-2 (von links)
 
     for i in range(samples):
         x = np.argmax(_pred[i])
-        y = np.where(_true[i] == 1)[0][0]   #returns index of first '1' in vector
+        y = np.where(_true[i] == 1)[0][0]   # returns index of first '1' in vector
         confusion[y][x] += 1
 
     print(confusion)
     return
 
+
 def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark Regen"]):
     samples, classes = _true.shape
-    assert classes == 3 # other classifications currently not supported
+    print("Value shape: {}".format(_true.shape))
+    assert classes == 3  # other classifications currently not supported
 
-    prob_values = [[],[],[]]
-    reality = [[],[],[]]
+    prob_values = [[], [], []]
+    reality = [[], [], []]
 
     for i in range(samples):
         klasse = np.argmax(_pred[i])
         sicherheit = _pred[i]
         label = np.where(_true[i] == 1)[0][0]  # returns index of first '1' in vector
         if sicherheit[klasse] < 0.1:
-           print("Achtung:", sicherheit)
+            print("Achtung:", sicherheit)
         prob_values[klasse].append(sicherheit[klasse])
         reality[klasse].append(label)
 
@@ -52,6 +54,7 @@ def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark 
         plt.figure("predicted class {} | samples: {}".format(classnames[i], len(prob_values[i])))
         plt.plot(prob_values[i], reality[i], "r*")
     return
+
 
 if __name__ == '__main__':
     #Lernkurve:
