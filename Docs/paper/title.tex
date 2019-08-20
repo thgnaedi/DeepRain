@@ -1,0 +1,73 @@
+\begin{titlepage}
+\newgeometry{hscale=0.81,vscale=0.8}
+
+\AddToShipoutPicture*{\BackgroundImgTitelPage}
+
+\vspace*{\bigskipamount}
+
+
+%% Print the title in htwg-teal.
+{\makeatletter
+\fboxsep=0pt
+\colorbox{htwg-white}{\begin{minipage}[t]{145mm}
+    \begin{flushleft}
+        %% Print Report Type Text
+        \color{htwg-teal}\Huge{\@report@typetext}
+        \\
+        %% Print Report Title
+        \color{htwg-teal}\Huge\textbf{\@title}
+    \end{flushleft}
+\end{minipage}}
+\makeatother}
+
+\bigskip
+\bigskip
+
+{
+\setlength{\parskip}{0.5cm}
+\begin{center}
+	\textbf{zur Erlangung des akademischen Grades}
+	
+	\textbf{\Large \type\ of Science (\typeshortcut. Sc.)}
+	
+	\textbf{an der}
+	
+	\textsf{\huge Hochschule Konstanz}\\
+	{\small Technik, Wirtschaft und Gestaltung}
+	
+    \textsf{\Large Fakultät Informatik} \\
+	Studiengang \studiengang
+	
+\end{center}
+}
+
+\bigskip
+\bigskip
+\bigskip
+
+\begin{center}
+	\begingroup
+	\renewcommand*{\arraystretch}{1}
+	\rowcolors{2}{white}{white}
+	{\makeatletter
+		\begin{tabular}{lll}
+			\type kandidat: & \verfasser \\
+							& \strasse \\
+							& \wohnort \\ \\ \\ \\
+	
+			1. Prüfer: & \prueferA \\
+			2. Prüfer: & \prueferB \\ \\ \\ \\
+			
+			Ausgabedatum: & \ausgabedatum \\
+			Abgabedatum: & \abgabedatum
+		\end{tabular}
+		\makeatother}
+	\endgroup
+\end{center}
+
+
+%% reset page margins
+\newgeometry{hscale=0.7,vscale=0.8}
+\end{titlepage}
+
+

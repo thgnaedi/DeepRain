@@ -1,0 +1,46 @@
+\documentclass[oneside]{htwg-report}
+
+\include{header/header}
+
+\addbibresource{./bib/report.bib}
+
+\begin{document}
+
+\pagenumbering{gobble}
+
+%% 'reporttype' add background elements to the cover / front page
+%% possible values are:
+%% bachelor	--> B S C
+%% master	--> M S C
+%% other		--> none
+\reporttype{master}
+
+\reporttypetext{Teamprojekt (Master 3. Semester)}
+
+\newcommand{\verfasserA}{Thomas Gnädig}
+\newcommand{\verfasserB}{Etienne Gramlich}
+\newcommand{\verfasserC}{Merle Wolf}
+\newcommand{\verfasserD}{Tim}
+\newcommand{\verfasserE}{}
+\newcommand{\thema}{Teamprojektthema}
+\newcommand{\hoschschule}{Hochschule für Technik, Wirtschaft und Gestaltung}
+\newcommand{\institut}{HTWG Konstanz, Institut für Optische Systeme}
+\newcommand{\prueferA}{Oliver Dürr}
+\newcommand{\prueferB}{Betreuer B}
+
+
+\title[Teamprojektthema]{\thema}
+
+\doclocation{Konstanz}
+\docdate{20. August 2018}
+
+\makecover[]
+%          
+%% Include an optional title page.
+%\input{title}
+
+\input{extended_abstract}
+
+
+\end{document}
+
