@@ -5,10 +5,39 @@ Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier wü
 
 Danach wurde noch die Aktivierungsfunktion für den Output-Layer Sigmoid durch Softmax ersetzt. Dadurch erscheint das Vorschaubild etwas verwaschener, aber der Blob um das Regengebiet wird kleiner und die Differenz zum Referenzbild wird kleiner.
 
-Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert, verbessert sich auch die Kategorisierung: der Blob nähert sich weiter dem Regengebiet aus derm zu vorhersagendem Bild an, ist aber immer noch merkbar größer und franst an den kanten aus.
+Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert, verbessert sich auch die Kategorisierung: der Blob nähert sich weiter dem Regengebiet aus dem zu vorhersagendem Bild an, ist aber immer noch merkbar größer und franst an den kanten aus.
 
 Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersage zu überwachen. Dadurch kann der Fortschritt beim Trainieren besser überwacht werden.
 
+
+\subsection{Training}
+Für das Training wurden alle Daten der 18 Jahre verwendet, partitioniert in Trainings- und Evaluationsdaten. Als Lossfunktion wurde der MSE verwendet, der den Unterschied über alle Pixel kumuliert (deswegen die hohen Werte in den Abbildungen). Da das Training auf der GPU weniger al 10~Sekunden pro Epoche dauert, wurden gleich 3072 Epochen trainiert.
+
+In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinander dargestellt, links steht das Training des Netzes mit Softmax als Aktivierungsfunktion des Hidden Layer und rechts ist das selbe Netz mit TanH als Aktivierungsfunktion. Man sieht jedoch, dass es ab etwa 1500~Epochen (x-Achse) keine Verbesserungen mehr gibt.
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\linewidth]{pics/lernkurve_activationHidden-softmax_activationOutput-softmax}
+\caption{Lernkurve (Hidden layer: Softmax)}
+\label{fig:lernkurveSoftmax}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\linewidth]{pics/lernkurve_activationHidden-tanh_activationOutput-softmax}
+\caption{Lernkurve (Hidden layer: Tanh)}
+\label{fig:lernkurveTanh}
+\end{subfigure}%
+\caption{Lernkurven von den Aktivierungsfunktionen der Hidden-Layer}
+\label{fig:lernkurven}
+\end{figure}
+
+
+
+\subsection{Auswertung}
+Zu den beiden 
+In den Confustion-Ma
 \begin{table}[ht]
 \begin{tabular}{lr|rrr}
                                      &                      & \multicolumn{3}{c}{Vorhersage}\\
@@ -33,6 +62,7 @@ Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersa
 \label{tab:confusionSoftmax}
 \end{table}
 
+
 \begin{figure}[ht]
 \centering
 \begin{subfigure}{0.5\textwidth}
@@ -50,6 +80,7 @@ Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersa
 \caption{Vergleich von Aktivierungsfunktionen der Hidden-Layer}
 \label{fig:activatinHidden}
 \end{figure}
+
 
 \subsection{Herausforderungen in diesem Kapitel}
 \begin{itemize}
