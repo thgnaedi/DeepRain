@@ -36,13 +36,15 @@ In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinande
 
 
 \subsection{Auswertung}
-Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine Confustion-Matrix stellt (siehe Tabellen~\ref{tab:confusionSoftmax} und~\ref{tab:confusionTanh}).
+Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine Confustion-Matrix stellt (siehe Tabellen~\ref{tab:confusionSoftmax} und~\ref{tab:confusionTanh}). An beiden Matrizen kann man sehen, dass beide Aktivierungsfunktionen für einzelne Pixel statistisch ähnliche Ergebnisse liefern.
+
+Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,1\% respektive 96,3\% auch tatsächlich kein Regen eintrifft. Wird wenig Regen vorhergesagt, ist die Unsicherheit recht groß: zu rund 20\% regnet es gar nicht oder zu etwa 16\% regnet es stark. Zu einem Fünftel kann es also sein, dass hier die Vorhersage \enquote{Regen} nicht eintrifft. Wird starker Regen vorausgesagt, trifft zu gut 68\% auch starker Regen ein, zu fast 26\% wenig Regen oder gut 5\% kein Regen. Hier trifft die Vorhersage \enquote{Regen} also zu 95\% ein.
 
 \begin{table}[ht]
 \begin{tabular}{lr|rrr}
     &                      & \multicolumn{3}{c}{Vorhersage}\\
     &                      & \textbf{Kein Regen} & \textbf{Wenig Regen} & \textbf{Viel Regen}\\\hline
-\multirow{3}{*}{\rotatebox{90}{Echt}}
+\multirow{3}{*}{\rotatebox{90}{Daten}}
     & \textbf{Kein Regen}  & 2227245 (96,1\%)    & 33383 (19,9\%)       & 3762 (05,7\%)\\
     & \textbf{Wenig Regen} & 81116 (03,5\%)      & 106434 (63,4\%)      & 17077 (25,9\%)\\
     & \textbf{Viel Regen}  & 9695 (00,4\%)       & 27930 (16,7\%)       & 45166 (68,4\%)\\
@@ -55,7 +57,7 @@ Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine C
 \begin{tabular}{lr|rrr}
     &                      & \multicolumn{3}{c}{Vorhersage}\\
     &                      & \textbf{Kein Regen} & \textbf{Wenig Regen} & \textbf{Viel Regen}\\\hline
-\multirow{3}{*}{\rotatebox{90}{Echt}}
+\multirow{3}{*}{\rotatebox{90}{Daten}}
     & \textbf{Kein Regen}  & 2225229 (96,3\%)    & 35527 (20,4\%)       & 3634 (05,4\%)\\
     & \textbf{Wenig Regen} & 76988 (03,3\%)      & 110399 (63,5\%)      & 17240 (25,8\%)\\
     & \textbf{Viel Regen}  & 8849 (00,4\%)       & 27969 (16,1\%)       & 45973 (68,8\%)\\
