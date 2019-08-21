@@ -11,7 +11,7 @@ Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersa
 
 
 \subsection{Training}
-Für das Training wurden alle Daten der 18 Jahre verwendet, partitioniert in Trainings- und Evaluationsdaten. Als Lossfunktion wurde der MSE verwendet, der den Unterschied über alle Pixel kumuliert (deswegen die hohen Werte in den Abbildungen). Da das Training auf der GPU weniger al 10~Sekunden pro Epoche dauert, wurden gleich 3072 Epochen trainiert.
+Für das Training wurden alle Daten der 18 Jahre verwendet, partitioniert in Trainings- und Evaluationsdaten. Als Lossfunktion wurde der MSE verwendet, der den Unterschied über alle Pixel kumuliert, weswegen so hohe Werte in den Abbildungen vorkommen (1100x900 Pixel). Da das Training auf der GPU weniger al 10~Sekunden pro Epoche dauert, wurden gleich 3072 Epochen trainiert.
 
 In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinander dargestellt, links steht das Training des Netzes mit Softmax als Aktivierungsfunktion des Hidden Layer und rechts ist das selbe Netz mit TanH als Aktivierungsfunktion. Man sieht jedoch, dass es ab etwa 1500~Epochen (x-Achse) keine Verbesserungen mehr gibt.
 
@@ -66,7 +66,8 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
 \label{tab:confusionTanh}
 \end{table}
 
-
+Bei der Vorhersage von zusammenhängenden Niederschlagsmengen auf einer Karte gibt es Unterschiede zwischen den Aktivierungsfunktionen der Hidden Layer, während es auf die Wahrscheinlichkeit der einzelnen Pixel kaum unterschiede gab.
+Das UNet mit TanH als Aktivierungsfunktion der Hidden Layer erzeugt größere (und leicht rundere) Blobs (Abbildung~\ref{fig:hiddenActivationTanh}). Bei Softmax werden schräge Kanten besser vorhergesagt (Abbildung~\ref{fig:hiddenActivationSoftmax}).
 \begin{figure}[ht]
 \centering
 \begin{subfigure}{0.5\textwidth}
