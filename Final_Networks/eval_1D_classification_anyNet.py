@@ -61,14 +61,16 @@ if __name__ == '__main__':
     eval_trainlogfile("./trainphase.log", plot=True)
 
     #DatenSammeln
-    data, label = generate_classification(False, only_2004=True, print_hist=True)
+    data, label = generate_classification(neigbours=True, only_2004=True, print_hist=True, )
     val_data = data[:623]
     val_lbl = label[:623]
 
     #NetzLaden
     netname = "CNN_classification"
-    netname = "CNN_classification_2duplications"
-    net, offset = load_last_net(netname)
+    netname = "CNN_classification_2duplications_neighbours"
+    netname = "UNet_classification_2duplications_neighbours"
+    #netname = "UNet_classification_2duplications_neighbours_2classes"
+    net,offset = load_last_net(netname)
     assert net is not None
 
     eval_validationSet(val_data, val_lbl, net)
