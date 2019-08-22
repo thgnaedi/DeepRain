@@ -41,6 +41,7 @@ Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine C
 Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,1\% respektive 96,3\% auch tatsächlich kein Regen eintrifft. Wird wenig Regen vorhergesagt, ist die Unsicherheit recht groß: zu rund 20\% regnet es gar nicht oder zu etwa 16\% regnet es stark. Zu einem Fünftel kann es also sein, dass hier die Vorhersage \enquote{Regen} nicht eintrifft. Wird starker Regen vorausgesagt, trifft zu gut 68\% auch starker Regen ein, zu fast 26\% wenig Regen oder gut 5\% kein Regen. Hier trifft die Vorhersage \enquote{Regen} also zu 95\% ein.
 
 \begin{table}[ht]
+\centering
 \begin{tabular}{lr|rrr}
     &                      & \multicolumn{3}{c}{Vorhersage}\\
     &                      & \textbf{Kein Regen} & \textbf{Wenig Regen} & \textbf{Viel Regen}\\\hline
@@ -54,6 +55,7 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
 \end{table}
 
 \begin{table}[ht]
+\centering
 \begin{tabular}{lr|rrr}
     &                      & \multicolumn{3}{c}{Vorhersage}\\
     &                      & \textbf{Kein Regen} & \textbf{Wenig Regen} & \textbf{Viel Regen}\\\hline
@@ -84,6 +86,24 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
 \caption{Vergleich von Aktivierungsfunktionen der Hidden-Layer}
 \label{fig:activatinHidden}
 \end{figure}
+
+
+\subsubsection{Zwei Kategorien}
+Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Regen) durchzuführen um festzustellen, ob die Vorhersage ob es regnet oder nicht besser funktioniert als die mit keinem, wenig oder starkem Regen. Dazu erstellen noch einmal die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategories}). Bei einem Treshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht; und falls Regen vorhergesagt wurde regnet es zu gut 80\%.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lr|rr}
+    &                      & \multicolumn{2}{c}{Vorhersage}\\
+    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
+\multirow{3}{*}{\rotatebox{90}{Daten}}
+    & \textbf{Kein Regen}  & 2218754 (96,3\%)    & 45636 (18,4\%)\\
+    & \textbf{Regen}       & 85427 (03,7\%)      & 201991 (81,6\%)\\
+\end{tabular}
+\caption{Confustion-Matrix (Zwei Kategorien)}
+\label{tab:confusionTwoCategories}
+\end{table}
+
 
 
 \subsection{Herausforderungen in diesem Kapitel}
