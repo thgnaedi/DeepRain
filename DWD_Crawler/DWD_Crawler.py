@@ -222,13 +222,13 @@ if __name__ == "__main__":
 
     logger.info("Download YEAR: " + "ALL" if not args.year else str(args.year))
 
-    down_dir = "./" if args.down_directory is None else args.down_directory
-    out_dir = "./" if args.out_directory is None else args.out_directory
-    down_dir = os.path.join(down_dir, '')
-    out_dir = os.path.join(out_dir, '')
+    down_dir = "./" if args.down_directory is None else os.path.join(args.down_directory, '')
+    out_dir = "./" if args.out_directory is None else os.path.join(args.out_directory, '')
 
     if args.downloadOnly and args.unpackOnly:
-        logger.info("YOU wanted me to do nothing!!! downloadOnly AND unpackOnly")
+        logger.error("Contradicting arguments: downloadOnly AND unpackOnly")
+        logger.info("YOU wanted me to do nothing!!!")
+        logger.info("Exiting now - tschau!")
     else:
         main(download_dir=down_dir,
              out_directory=out_dir,
