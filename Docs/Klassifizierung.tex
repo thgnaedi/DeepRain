@@ -89,7 +89,7 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
 
 
 \subsubsection{Zwei Kategorien}
-Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Regen) durchzuführen um festzustellen, ob die Vorhersage ob es regnet oder nicht besser funktioniert als die mit keinem, wenig oder starkem Regen. Dazu erstellen noch einmal die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategories}). Bei einem Treshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht; und falls Regen vorhergesagt wurde regnet es zu gut 80\%.
+Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Regen) durchzuführen um festzustellen, ob die Vorhersage ob es regnet oder nicht besser funktioniert als die mit keinem, wenig oder starkem Regen. Dazu erstellen noch einmal die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdZero}). Bei einem Treshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht; und falls Regen vorhergesagt wurde regnet es zu gut 80\%.
 
 \begin{table}[ht]
 \centering
@@ -100,8 +100,21 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
     & \textbf{Kein Regen}  & 2218754 (96,3\%)    & 45636 (18,4\%)\\
     & \textbf{Regen}       & 85427 (03,7\%)      & 201991 (81,6\%)\\
 \end{tabular}
-\caption{Confustion-Matrix (Zwei Kategorien)}
-\label{tab:confusionTwoCategories}
+\caption{Confustion-Matrix (Zwei Kategorien, Treshold: 0)}
+\label{tab:confusionTwoCategoriesTresholdZero}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lr|rr}
+    &                      & \multicolumn{2}{c}{Vorhersage}\\
+    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
+\multirow{3}{*}{\rotatebox{90}{Daten}}
+    & \textbf{Kein Regen}  & 2272947 (96,7\%)    & 39276 (19,6\%)\\
+    & \textbf{Regen}       & 78475 (03,3\%)      & 161110 (80,4\%)\\
+\end{tabular}
+\caption{Confustion-Matrix (Zwei Kategorien, Treshold: 2)}
+\label{tab:confusionTwoCategoriesTresholdTwo}
 \end{table}
 
 
