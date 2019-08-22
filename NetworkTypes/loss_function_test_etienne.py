@@ -7,8 +7,31 @@ from NetworkTypes.extendet_CNN_test import train_realdata
 import Final_Networks.predict35minutes
 import numpy as np
 # If the GPU has not enough Memory (1GB or less) do not use CUDA, else comment the following 2 lines
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+#import os
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+
+def categorize_data_binary(label, border=0):
+    image_resolution = 64
+    num_categories = 2
+    scale_factor = 1.0/255.0
+    _bit_rainy_border = border * scale_factor
+    print("Old shape: {}".format(label.shape))
+    n_samples = len(label)
+    label = label.reshape(n_samples, image_resolution, image_resolution)
+    new_label_shape = label.shape + (num_categories,)
+    print("New shape: {}".format(new_label_shape))
+    labels = np.zeros(new_label_shape, label.dtype)
+
+    for idx, value in np.ndenumerate(label):
+        if value <= _bit_rainy_border:
+            labels[idx] = np.array([1, 0])
+        else:
+            labels[idx] = np.array([0, 1])
+
+    labels = labels.reshape(n_samples, image_resolution * image_resolution * num_categories)
+    print("New shape: {}".format(labels.shape))
+    return labels
 
 
 def categorize_data(label, bit_rainy_border=8):
@@ -19,7 +42,7 @@ def categorize_data(label, bit_rainy_border=8):
     print("Old shape: {}".format(label.shape))
     n_samples = len(label)
     label = label.reshape(n_samples, image_resolution, image_resolution)
-    new_label_shape = label.shape + (3,)
+    new_label_shape = label.shape + (num_categories,)
     print("New shape: {}".format(new_label_shape))
     labels = np.zeros(new_label_shape, label.dtype)
 
@@ -67,7 +90,7 @@ def main(data=None, label=None):
     activation_function_hidden_layer = "softmax"
     activation_function_output_layer = "softmax"
     model = tfM.UNet64(input_shape,
-                       n_predictions=3,
+                       n_predictions=2,
                        lossfunction="categorical_crossentropy",
                        activation_hidden=activation_function_hidden_layer,
                        activation_output=activation_function_output_layer,
@@ -78,7 +101,7 @@ def main(data=None, label=None):
         data, label = sb.get_all_data_label(channels_Last=True, flatten_output=True)
 
     print("Original label shape: {}".format(label.shape))
-    label = categorize_data(label)
+    label = categorize_data_binary(label)
     n_testsamples = 50
     x_train, y_train = data[n_testsamples:], label[n_testsamples:]
     print("Data shape: {}".format(x_train.shape))
@@ -93,7 +116,7 @@ def main(data=None, label=None):
                    channelsLast=True,
                    use_logfile=True,
                    load_last_state=True,
-                   prediction_shape=(64, 64, 3),
+                   prediction_shape=(64, 64, 2),
                    data=data,
                    label=label,
                    _eval_output=True,
