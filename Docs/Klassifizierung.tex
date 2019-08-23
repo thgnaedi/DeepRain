@@ -118,6 +118,19 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
 \label{tab:confusionTwoCategoriesTresholdTwo}
 \end{table}
 
+\begin{table}[ht]
+\centering
+\begin{tabular}{lr|rr}
+    &                      & \multicolumn{2}{c}{Vorhersage}\\
+    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
+\multirow{3}{*}{\rotatebox{90}{Daten}}
+    & \textbf{Kein Regen}  & 2376736 (97,3\%)    & 25441 (23,2\%)\\
+    & \textbf{Regen}       & 65381 (02,7\%)      & 84250 (77,8\%)\\
+\end{tabular}
+\caption{Confustion-Matrix (Zwei Kategorien, Treshold: 4)}
+\label{tab:confusionTwoCategoriesTresholdFour}
+\end{table}
+
 
 
 \subsection{Herausforderungen in diesem Kapitel}
