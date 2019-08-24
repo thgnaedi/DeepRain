@@ -6,9 +6,11 @@
 
 \usepackage[english,ngerman]{babel}                 % German and English word separation settings
 \usepackage[autostyle=true,german=quotes]{csquotes} % Better German quotes
-\usepackage{graphicx}                               % Include graphics/images
+\usepackage{graphicx}  
+\usepackage{float}                             % Include graphics/images
 \usepackage{multirow}                               % Row spanning over multiple rows
 \usepackage{subcaption}                             % Used for 2 images side-by-side
+\usepackage{tabularx} % for 'tabularx' environment
 \usepackage[bookmarks,                 % Creates bookmarks
             bookmarksnumbered=true,    % Numbers in PDF bookmarks
             bookmarksopen=true,        % Don't show bookmaks when opened
@@ -17,7 +19,7 @@
             pdfa]{hyperref}                         % Klickable Links and ToC entries (should be last package !!!)
 
 \hypersetup{
-    pdfauthor    = {Thomas Gnaedig, Etienne Gramlich, Tim, Merle Wolf},
+    pdfauthor    = {Thomas Gnaedig, Etienne Gramlich, Tim Hardenacke, Merle Wolf},
     pdftitle     = {DeepRain},
     pdfsubject   = {Deep Learning},
     pdfkeywords  = {Deep Learning,rain},
@@ -32,7 +34,7 @@
 }
 
 \title{DeepRain}
-\author{Thomas Gnaedig, Etienne Gramlich, Tim, Merle Wolf}
+\author{Thomas Gnaedig, Etienne Gramlich, Tim Hardenacke, Merle Wolf}
 
 \begin{document}
 \maketitle
@@ -48,6 +50,7 @@ Dazu vergleichen wir verschiedene Typen von neuronalen Netzen und trainieren sie
 \input{Daten.tex}
 
 % Datenaufbereitung
+\input{Datenaufbereitung.tex}
 
 % Datenanalyse
 
