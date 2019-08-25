@@ -7,6 +7,7 @@ It is recommended, that the output directory is on a file system that supports o
 
 Argument   | Action
 -----------|--------
+-h         | Prints a help screen with description and options
 -d         | Only download the files, without decompressing (-o will be ignored, do not use with -u)
 -u         | Only unpacks already downloaded files (use with -z, do not use with -d)
 -z \<dir\> | Expects a directory, in which the tars will be downloaded

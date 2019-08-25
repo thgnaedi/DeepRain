@@ -10,7 +10,8 @@
 \usepackage{float}
 \usepackage{multirow}                               % Row spanning over multiple rows
 \usepackage{subcaption}                             % Used for 2 images side-by-side
-\usepackage{tabularx} % for 'tabularx' environment
+\usepackage{tabularx}                               % for 'tabularx' environment
+\usepackage[printonlyused,withpage]{acronym}        % Abkürzungsverzeichnis, https://de.wikibooks.org/wiki/LaTeX-W%C3%B6rterbuch:_Abk%C3%BCrzungsverzeichnis
 \usepackage[bookmarks,                 % Creates bookmarks
             bookmarksnumbered=true,    % Numbers in PDF bookmarks
             bookmarksopen=true,        % Don't show bookmaks when opened
@@ -39,6 +40,12 @@
 \begin{document}
 \maketitle
 \tableofcontents
+
+\begin{acronym}[Bash] % Hier steht die längste Abkürzung, damit die Breite stimmt
+ \acro{DL}{Deep Learning}
+ \acro{Bash}{Bourne-again shell}
+ \acro{VM}{Virtuelle Maschine}
+\end{acronym}
 
 % Abstract
 \begin{abstract}
