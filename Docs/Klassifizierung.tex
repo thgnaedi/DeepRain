@@ -1,13 +1,13 @@
 \section{Klassifizierung}
 Statt die genaue Regenmenge vorherzusagen, stellten wir drei Kategorien auf: kein Regen ($= 0mm$), wenig Regen ($\leq 8mm$) und viel Regen ($> 8mm$). Diese Kategorien haben wir als One-Hot-Vector kodiert. `[1, 0, 0]` entspricht hierbei kein Regen, sodass man aus der ersten Dimension der Vorhersage einfach ein Vorschaubild generieren kann aus dem man gleich feststellen kann, ob es am jeweiligen Pixel regnet oder nicht.
 
-Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur "kein Regen" vorhergesagt. Stattdessen wurde als Loss-Funktion die \enquote{Categorical Crossentropy} von Keras verwendet; die binäre Crossentropy können wir nicht verwenden, weil wir mehr als zwei Kategorien verwenden. Die \enquote{Categorical Crossentropy} funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
+Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur "kein Regen" vorhergesagt. Stattdessen wurde als Loss-Funktion die \gqq{Categorical Crossentropy} von Keras verwendet; die binäre Crossentropy können wir nicht verwenden, weil wir mehr als zwei Kategorien verwenden. Die \gqq{Categorical Crossentropy} funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
 
 Danach wurde noch die Aktivierungsfunktion für den Output-Layer Sigmoid durch Softmax ersetzt. Dadurch erscheint das Vorschaubild etwas verwaschener, aber der Blob um das Regengebiet wird kleiner und die Differenz zum Referenzbild wird kleiner.
 
 Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert, verbessert sich auch die Kategorisierung: der Blob nähert sich weiter dem Regengebiet aus dem zu vorhersagendem Bild an, ist aber immer noch merkbar größer und franst an den kanten aus.
 
-Als nächstes wird die Metrik "categorical\_accuracy" verwendet, um die Vorhersage zu überwachen. Dadurch kann der Fortschritt beim Trainieren besser überwacht werden.
+Als nächstes wird die Metrik \gqq{categorical\_accuracy} verwendet, um die Vorhersage zu überwachen. Dadurch kann der Fortschritt beim Trainieren besser überwacht werden.
 
 
 \subsection{Training}
@@ -38,7 +38,7 @@ In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinande
 \subsection{Auswertung}
 Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine Confustion-Matrix stellt (siehe Tabellen~\ref{tab:confusionSoftmax} und~\ref{tab:confusionTanh}). An beiden Matrizen kann man sehen, dass beide Aktivierungsfunktionen für einzelne Pixel statistisch ähnliche Ergebnisse liefern.
 
-Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,1\% respektive 96,3\% auch tatsächlich kein Regen eintrifft. Wird wenig Regen vorhergesagt, ist die Unsicherheit recht groß: zu rund 20\% regnet es gar nicht oder zu etwa 16\% regnet es stark. Zu einem Fünftel kann es also sein, dass hier die Vorhersage \enquote{Regen} nicht eintrifft. Wird starker Regen vorausgesagt, trifft zu gut 68\% auch starker Regen ein, zu fast 26\% wenig Regen oder gut 5\% kein Regen. Hier trifft die Vorhersage \enquote{Regen} also zu 95\% ein.
+Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,1\% respektive 96,3\% auch tatsächlich kein Regen eintrifft. Wird wenig Regen vorhergesagt, ist die Unsicherheit recht groß: zu rund 20\% regnet es gar nicht oder zu etwa 16\% regnet es stark. Zu einem Fünftel kann es also sein, dass hier die Vorhersage \gqq{Regen} nicht eintrifft. Wird starker Regen vorausgesagt, trifft zu gut 68\% auch starker Regen ein, zu fast 26\% wenig Regen oder gut 5\% kein Regen. Hier trifft die Vorhersage \gqq{Regen} also zu 95\% ein.
 
 \begin{table}[ht]
 \centering
