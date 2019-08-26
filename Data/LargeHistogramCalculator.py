@@ -61,10 +61,9 @@ def main(data_directory, metadata_file_name, year=None):
 
     for year in range(year_begin, year_end+1):
         logger.info("Parsing year: {}".format(year))
-        year_dir = data_directory + str(year) + "/"
         # Make wradlib stop complaining
-        os.environ["WRADLIB_DATA"] = year_dir
-        os.chdir(year_dir)
+        os.environ["WRADLIB_DATA"] = data_directory
+        os.chdir(data_directory)
 
         # Compose complete historgram by singele histograms
         counter = 0
@@ -86,7 +85,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Computes a histogram of the given year or all years. The maximum "
                                                  "must already be computed with DWD2PNG script in the same folder and "
                                                  "metadat file given with option! Use -h  for optinos!")
-    parser.add_argument("-n", "--metadataFile",
+    parser.add_argument("-m", "--metadataFile",
                         dest="metadata_file",
                         help="Path to file with metadata of the radolan files.")
     parser.add_argument("-d", "--directory",

@@ -8,6 +8,7 @@ import tarfile
 import os
 import requests
 import logging
+import uuid
 
 
 logger = logging.getLogger("DWD Crawler (script)")
@@ -36,7 +37,7 @@ minutely_filename_end = ".tar"
 
 
 def daily_uncompress(archive_directory, target_directory, year=None):
-    temp_dir_name = "tmp"
+    temp_dir_name = "tmp_" + str(uuid.uuid4())
     os.chdir(archive_directory)
     if not os.path.isdir(temp_dir_name):
         os.mkdir(temp_dir_name)
