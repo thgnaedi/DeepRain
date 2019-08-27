@@ -89,8 +89,8 @@ Das UNet mit TanH als Aktivierungsfunktion der Hidden Layer erzeugt größere (u
 \end{figure}
 
 
-\subsubsection{Zwei Kategorien}
-Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Regen) durchzuführen um festzustellen, ob die Vorhersage ob es regnet oder nicht besser funktioniert als die mit keinem, wenig oder starkem Regen. Dazu erstellen noch einmal die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdZero}). Bei einem Treshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht; und falls Regen vorhergesagt wurde regnet es zu gut 80\%.
+\subsubsection{Training mit zwei Kategorien}
+Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Regen) durchzuführen um festzustellen, ob die Vorhersage auf diese Weise besser funktioniert als die mit den drei bisherigen Kategorien. Dazu trainierten wir noch einmal das Netz mit zwei Kategorien und stellen die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdZero}). Bei einem Treshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht; und falls Regen vorhergesagt wurde regnet es zu gut 80\%.
 
 \begin{table}[ht]
 \centering
@@ -105,6 +105,7 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
 \label{tab:confusionTwoCategoriesTresholdZero}
 \end{table}
 
+Verwendet man einen Treshold von 2 (mm) für die Generierung der Kategorien, verschlechtern sich die Wahrscheinlichkeiten leicht (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdTwo}). Falls Regen vorhergesagt wurde, ist die Kein-Regen-Wahrscheinlichkeit nun 19,6\%, statt 18,4\%. Die Wahrscheinlichkeit von Regen, falls kein Regen vorhergesagt wurde, wird dafür minimal besser: 3,3\% statt 3,7\%.
 \begin{table}[ht]
 \centering
 \begin{tabular}{lr|rr}
@@ -118,6 +119,7 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
 \label{tab:confusionTwoCategoriesTresholdTwo}
 \end{table}
 
+Erhöht man den Treshold weiter auf 4, verdeutlicht sich der Trend aus der letzten Confusion Matrix (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdFour}): die Wahrscheinlichkeit, dass für Regen \gqq{kein Regen} vorhergesagt wird, sinkt auf 2,7\%, die Wahrscheinlichkeit, dass Regen vorhergesagt wird und nicht eintrifft, steigt auf 23,2\%.
 \begin{table}[ht]
 \centering
 \begin{tabular}{lr|rr}
@@ -131,10 +133,12 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
 \label{tab:confusionTwoCategoriesTresholdFour}
 \end{table}
 
+Man sieht also, dass die Vorhersage ob Regen eintrifft oder nicht, bei drei Kategorien und zwei Kategorien (bei einem Treshold von 0) fast gleich ausfällt und  die Erhöhung des Tresholds die Genauigkeit senkt. Die genaue Regenmenge vorauszusagen hat sich als schwierig herausgestellt, aber man weiß zumindest (fast) sicher, dass man, wenn kein Regen vorhergesagt wird, nicht nass wird.
 
 
 \subsection{Herausforderungen in diesem Kapitel}
-\begin{itemize}
-\item Richtige Kategorien finden
-\item Training mit richtiger Aktivierungsfunktion / Optimizer
-\end{itemize}
+In diesem Kapitel gab es zwei große Herausforderungen: zum einen war es schwierig die richtigen Kategorien zu finden, und zum Anderen musste sich herausstellen, wie sich die verschiedenen Aktivierungsfunktionen auswirken.
+
+Die drei Kategorien haben sich als nicht ganz optimal herausgestellt, denn mit zwei Kategorien können wir aussagekräftigere Angaben geben: wir können sicherer angeben ob es regnet oder nicht.
+
+Die Aktivierungsfunktionen haben sich nur auf die Form der Blobs der Niederschlagsmengen ausgewirkt (Abbildung~\ref{fig:activatinHidden}), aber weniger auf die Regen-Wahrscheinlichkeit der einzelnen Punkte (siehe Tabellen~\ref{tab:confusionSoftmax} und \ref{tab:confusionTanh}).
