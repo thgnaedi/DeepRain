@@ -4,6 +4,33 @@ from NetworkTypes.extendet_CNN_test import load_last_net
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+def plot_some_images(data, label, net):
+    firstdim = data.shape[0]
+    prediction = net.predict(data)
+    da = data.reshape((firstdim, 64, 64, 5))
+    labelr = label.reshape((firstdim, 64, 64, 7))
+    predr = prediction.reshape((firstdim, 64, 64, 7))
+
+    for i in range(firstdim):
+        print("Nummer: "+str(i))
+        #Label plot 2x7
+        fig, axes = plt.subplots(2, 7)
+        for j in range(7):
+            a = labelr[i][:,:,j]
+            b = predr[i][:,:,j]
+            axes[0, j].imshow(a, cmap="gray")
+            axes[1, j].imshow(b, cmap="gray")
+        #Data plot 1x5
+        fig, axes = plt.subplots(1, 5)
+        for j in range(5):
+            a = da[i][:, :, j]
+            axes[j].imshow(a, cmap="gray")
+        plt.show()
+    return
+
+
+
 def eval_validationSet(data, label, net, usebase=True):
 
     #Netz predicten lassen
@@ -144,6 +171,8 @@ if __name__ == '__main__':
 
     net,offset = load_last_net("10years")
     assert net is not None
+    # eval of Images
+    #plot_some_images(validation_data, validation_label, net)
     eval_validationSet(validation_data, validation_label, net, usebase=False)
     ## Lernkurve beschreiben, beides Fällt stark, dann auswerten, ob Fehler auch gut ist.
     ## Pro Zeitschritt evaluieren
