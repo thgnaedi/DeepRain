@@ -61,7 +61,7 @@ def daily_uncompress(archive_directory, target_directory, year=None):
 
 
 def daily_download_years(target_directory):
-    for year in range(minutely_year_begin, minutely_year_end):
+    for year in range(minutely_year_begin, minutely_year_end + 1):
         daily_download_months(year, target_directory)
 
 
