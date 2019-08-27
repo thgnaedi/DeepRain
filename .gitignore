@@ -29,6 +29,8 @@ NetworkTypes/UNet64*/
 *.save
 
 *.aux
+*.bbl
+*.blg
 *.dvi
 *.fdb_latexmk
 *.fls

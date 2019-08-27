@@ -584,6 +584,7 @@ def eval_trainlogfile(logfilepath, plot=False):
         plt.plot(learning_curve, label="validation Data")
         plt.plot(learning_curve_traindata, label="trainings Data")
         plt.legend()
+        plt.savefig(logfilepath + '.png')
         plt.show()
 
     return learning_curve, learning_curve_traindata

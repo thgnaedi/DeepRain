@@ -5,12 +5,13 @@
 \usepackage[T1]{fontenc}
 
 \usepackage[english,ngerman]{babel}                 % German and English word separation settings
-\usepackage[autostyle=true,german=quotes]{csquotes} % Better German quotes
-\usepackage{graphicx}  
-\usepackage{float}                             % Include graphics/images
+\newcommand{\gqq}[1]{\glqq #1\grqq{}}               % Own command for german quotes
+\usepackage{graphicx}                               % Include graphics/images
+\usepackage{float}
 \usepackage{multirow}                               % Row spanning over multiple rows
 \usepackage{subcaption}                             % Used for 2 images side-by-side
-\usepackage{tabularx} % for 'tabularx' environment
+\usepackage{tabularx}                               % for 'tabularx' environment
+\usepackage[printonlyused,withpage]{acronym}        % Abkürzungsverzeichnis, https://de.wikibooks.org/wiki/LaTeX-W%C3%B6rterbuch:_Abk%C3%BCrzungsverzeichnis
 \usepackage[bookmarks,                 % Creates bookmarks
             bookmarksnumbered=true,    % Numbers in PDF bookmarks
             bookmarksopen=true,        % Don't show bookmaks when opened
@@ -19,7 +20,7 @@
             pdfa]{hyperref}                         % Klickable Links and ToC entries (should be last package !!!)
 
 \hypersetup{
-    pdfauthor    = {Thomas Gnaedig, Etienne Gramlich, Tim Hardenacke, Merle Wolf},
+    pdfauthor    = {Thomas Gnaedig, Etienne Gramlich, Tim Hardenacke, Merle Wolff},
     pdftitle     = {DeepRain},
     pdfsubject   = {Deep Learning},
     pdfkeywords  = {Deep Learning,rain},
@@ -40,12 +41,21 @@
 \maketitle
 \tableofcontents
 
+\begin{acronym}[Bash] % Hier steht die längste Abkürzung, damit die Breite stimmt
+ \acro{DL}{Deep Learning}
+ \acro{Bash}{Bourne-again shell}
+ \acro{VM}{Virtuelle Maschine}
+\end{acronym}
+
 % Abstract
 \begin{abstract}
 Die Niederschlagvorhersage geschieht oft mit Modellen aus der Meteorologie, die auf physikalischen Gesetzen passieren. Unser Ziel war es zu bestimmen, ob der Niederschlag mit Methoden des Maschinellen Lernens vorhergesagt werden kann.
 
-Dazu vergleichen wir verschiedene Typen von neuronalen Netzen und trainieren sie mit Daten des Deutschen Wetterdienstes und präsentieren die Ergebnisse und Genauigkeit für die Stadt Konstanz und ganz Deutschland.
+Dazu vergleichen wir verschiedene Typen von neuronalen Netzen und trainieren sie mit Daten des Deutschen Wetterdienstes und präsentieren die Ergebnisse und Genauigkeit für die Stadt Konstanz und ganz Deutschland.~\cite{DBLP:journals/corr/RonnebergerFB15}
 \end{abstract}
+
+%Einleitung zu DeepLearning
+\input{Abstract.tex}
 
 \input{Daten.tex}
 
@@ -53,7 +63,7 @@ Dazu vergleichen wir verschiedene Typen von neuronalen Netzen und trainieren sie
 \input{Datenaufbereitung.tex}
 
 % Datenanalyse
-
+\input{Datenanalyse.tex}
 % Netzwerke
 \input{Architekturen.tex}
 \input{Klassifizierung.tex}
@@ -65,5 +75,8 @@ Dazu vergleichen wir verschiedene Typen von neuronalen Netzen und trainieren sie
 \newpage
 \listoffigures
 \listoftables
+
+\bibliography{paper/bib/report.bib}
+\bibliographystyle{alpha}
 
 \end{document}
