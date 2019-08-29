@@ -5,7 +5,27 @@ Wetterradardaten werden von öffentlichen und privaten Anbietern erhoben und sin
 Die umfangreichsten Radardaten werden von der Deutschen Wetterstation zur Verfügung gestellt, daher wurde sich im Team für die Verwendung dieser Daten entschieden. 
 
 \subsection{Verifizierung der Daten}
-In den Daten des DWD hat die Konstanzer Wetterstation die ID: 02712. Aus dem Zip-File mit der enthaltenen Textdatei können somit die nun aufgezeigten Daten für die Untersuchung entnommen werden. Zu den wichtigsten Informationen gehören hier das Qualitätsniveau der Daten (zwischen 1 und 16) als QN, das Messdatum im Format YYYYMMDDHHMM, die Niederschlagshöhe und den Niederschlagindikator. Die Aktuellen Daten wurden mit einem Python-Script eingelesen und ein paar kleine Statistiken zum Validieren der Daten vorgenommen. Zum Vergleich wurden hierfür die monatlichen Niederschlagsangaben von Statista.com und Wetterkontor.com genommen, allerdings bezogen die sich auf ganz Deutschland. 
+In den Daten des DWD hat die Konstanzer Wetterstation die ID: 02712. Aus dem Zip-File mit der enthaltenen Textdatei können somit die nun aufgezeigten Daten für die Untersuchung entnommen werden. Zu den wichtigsten Informationen gehören hier das Qualitätsniveau der Daten (zwischen 1 und 16) als QN, das Messdatum im Format YYYYMMDDHHMM, die Niederschlagshöhe und den Niederschlagindikator. Die Aktuellen Daten wurden mit einem Python-Script eingelesen und ein paar kleine Statistiken zum Validieren der Daten vorgenommen. Zum Vergleich wurden hierfür die monatlichen Niederschlagsangaben von Statista.com und Wetterkontor.com genommen, allerdings bezogen die sich auf ganz Deutschland.
+%\begin{table}[ht]
+%\centering
+%\begin{tabular}{ll|l|ll}
+%\textbf{Monat} & \textbf{ref. $l/m^2$} & \textbf{Messung} & \textbf{Fehler (abs.)} & \textbf{Fehler (rel.)}\\\hline
+%Januar    & 40,1  & 37,39  & -2,71  & 6,76\%\\
+%Februar   & 34,5  & 37,02  & 2,52   & 7,30\%\\
+%März      & 40,2  & 40,3   & 0,1    & 0,25\%\\
+%April     & 132,4 & 132,25 & -0,15  & 0,11\%\\
+%Mai       & 56,4  & 52,58  & -3,82  & 6,77\%\\
+%Juni      & 95    & 69,55  & -25,45 & 26,79\%\\
+%Juli      & 168,9 & 171,38 & 2,48   & 1,47\%\\
+%August    & 155,7 & 148,42 & -7,28  & 4,68\%\\
+%September & 65    & 55,23  & -9,77  & 15,03\%\\
+%Oktober   & 36,3  & 36,93  & 0,63   & 1,74\%\\
+%November  & 76,8  & 78,49  & 3,69   & 4,93\%\\
+%Dezember  & 79,5  & 78,52  & -0,98  & 1,23\%\\
+%\end{tabular}
+%\caption{Auswertung des absoluten und relativen Fehlers zwischen den Regendaten verschiedener Quellen}
+%\label{tab:Auswertung}
+%\end{table}
 \begin{table}[ht]
 \centering
 \includegraphics[width=\linewidth]{pics/Auswertung_Thomas}
