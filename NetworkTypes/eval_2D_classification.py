@@ -5,12 +5,14 @@ import Data.evaluate_Network_on_realData
 import numpy as np
 import matplotlib.pyplot as plt
 
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark Regen"]):
     samples, x, y, classes = _true.shape
     print("True shape: {}".format(_true.shape))
     print("Prediction shape: {}".format(_pred.shape))
-    assert classes == 3  # other classifications currently not supported
+    assert classes == 2  # other classifications currently not supported
 
     prob_values = [[], [], []]
     reality = [[], [], []]
@@ -33,14 +35,14 @@ def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark 
 
 def generate_classification():
     all_data, all_label = NetworkTypes.loss_function_test_etienne.load_all_year_data()
-    all_label = NetworkTypes.loss_function_test_etienne.categorize_data(all_label)
+    all_label = NetworkTypes.loss_function_test_etienne.categorize_data_binary(all_label)
     return all_data, all_label
 
 
 def eval_validation_set(data, label, net):
     prediction = net.predict(data)
 
-    target_shape = (623, 64, 64, 3)
+    target_shape = (623, 64, 64, 2)
     prediction = prediction.reshape(target_shape)
     label = label.reshape(target_shape)
     print("Data shape: {}".format(data.shape))
@@ -85,7 +87,7 @@ def get_confusion_matrix_2d(_true, _pred):
 
 def main():
     # Lernkurve:
-    eval_trainlogfile("..\\Data\\Training\\activationHidden-tanh_activationOutput-softmax\\trainphase.log", plot=True)
+    eval_trainlogfile("..\\Data\\Training\\2categories\\treshold_4\\trainphase.log", plot=True)
 
     # DatenSammeln
     data, label = generate_classification()
@@ -93,8 +95,8 @@ def main():
     val_lbl = label[:623]
 
     # NetzLaden
-    netname = "categorical_crossentropy_hidden-tanh_output-softmax_above"
-    net, offset = load_last_net(netname, _dir="..\\Data\\Training\\activationHidden-tanh_activationOutput-softmax")
+    netname = "categorical_crossentropy_hidden-softmax_output-softmax_above"
+    net, offset = load_last_net(netname, _dir="..\\Data\\Training\\2categories\\treshold_4")
     assert net is not None
 
     eval_validation_set(val_data, val_lbl, net)
@@ -109,7 +111,7 @@ if __name__ == '__main__':
     main()
 
     # Evaluate training of UNet with Activation functions: hidden layers: TanH, output layer: softmax
-    Data.evaluate_Network_on_realData.eval_trainlogfile("..\\Data\\Training\\activationHidden-tanh_activationOutput-softmax\\trainphase.log", plot=True)
+    # Data.evaluate_Network_on_realData.eval_trainlogfile("..\\Data\\Training\\activationHidden-tanh_activationOutput-softmax\\trainphase.log", plot=True)
 
     # Evaluate training of UNet with Activation functions: hidden layers: softmax, output layer: softmax
-    Data.evaluate_Network_on_realData.eval_trainlogfile("..\\Data\\Training\\activationHidden-softmax_activationOutput-softmax\\trainphase.log", plot=True)
+    # Data.evaluate_Network_on_realData.eval_trainlogfile("..\\Data\\Training\\activationHidden-softmax_activationOutput-softmax\\trainphase.log", plot=True)
