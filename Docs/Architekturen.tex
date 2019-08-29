@@ -28,7 +28,7 @@ Als Eingabe erwartet es mehrere Zeitschritte um darauf eine Vorhersage zu treffe
 Die Performance ist weniger gut, als ein UNet kann aber mit der sehr einfachen UNet Architektur mithalten. Zu sehen ist das in Abbildung \ref{imgCNNUNet} wo die Blaue Kurve dem Lernverhalten der hier beschriebenen CNN Architektur entspricht.
 
 %Klassifikation:
-Für Klassifikation des Konstanzpixels entschlossen wir uns dazu das CNN welches wir eingangs verwendet hatten um den MNIST Datensatz zu lernen wieder zu verwenden. Dieses Netz besteht lediglich aus zweiunddreißig 3x3 Kerneln mit ReLu aktivierungsfunktion. Anschließend folgt ein 2x2 MaxPooling und ein Flatten Layer. Die nun "Flachen" Daten werden durch ein FullyConnected Layer auf 30 Neuronen reduziert. Darauf folgt ein Dropout Layer mit 20\% welches Overfitting verhindern soll. Abschließend Folgt ein Layer das die Features auf drei ausgabe Neuronen verrechnet. Damit die Klassifizierung einfacher zu interpretieren ist, wird als aktivierungsfunktion ein SoftMax verwendet.
+Für Klassifikation des Konstanzpixels entschlossen wir uns dazu das CNN welches wir eingangs verwendet hatten um den MNIST Datensatz zu lernen wieder zu verwenden. Dieses Netz besteht lediglich aus zweiunddreißig 3x3 Kerneln mit ReLu aktivierungsfunktion. Anschließend folgt ein 2x2 MaxPooling und ein Flatten Layer. Die nun \gqq{flachen} Daten werden durch ein FullyConnected Layer auf 30 Neuronen reduziert. Darauf folgt ein Dropout Layer mit 20\% welches Overfitting verhindern soll. Abschließend Folgt ein Layer das die Features auf drei ausgabe Neuronen verrechnet. Damit die Klassifizierung einfacher zu interpretieren ist, wird als aktivierungsfunktion ein SoftMax verwendet.
 
 \subsection{UNet}
 \label{kapitelUNet}
