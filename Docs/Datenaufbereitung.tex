@@ -1,4 +1,3 @@
-\clearpage
 \section{Daten-Aufbereitung}
 
 \subsection{RADOLAN-Daten}
@@ -14,36 +13,36 @@ Die Open-Source Bibliothek wradlib \footnote{\url{https://docs.wradlib.org/en/st
 	\label{rz}
 \end{figure}
 
-Der resultierende Ausschnitt für Deutschland kann mit Hilfe von wradlib als 1100 * 900 Array ausgelesen werten, dessen Werte einer 1 Kilometer Grid-Box entsprechen.
+Der resultierende Ausschnitt für Deutschland kann mit Hilfe von wradlib als 1100 * 900 Array ausgelesen Werten, dessen Werte einer 1 Kilometer Grid-Box entsprechen.
 
 \subsection{Location Konstanz}
-Um für Konstanz und Umgebung sinnvolle Vorhersagen treffen zu können, muss der Standort von Konstanz auf den Daten markiert werden. Dazu müssen die Geographische Koordinaten für Konstanz in X- und Y-Koordinaten des Koordinatensystems umgewandelt werden. 
+Um für Konstanz und Umgebung sinnvolle Vorhersagen treffen zu können, muss der Standort von Konstanz auf den Daten markiert werden. Dazu müssen die geographischen Koordinaten von Konstanz in X- und Y-Koordinaten des Koordinatensystems umgewandelt werden.
 
 \begin{table}[H]
-\begin{tabularx}{8cm}{|X|X|}
-\hline
-\multicolumn{2}{|l|}{ Geographische Koordinaten}   \\ \hline
-         Latitude  & Longditude         \\ \hline
-           47.66033 & 9.17582            \\ \hline
+\centering
+\begin{tabularx}{8cm}{X|X}
+\multicolumn{2}{c}{Geographische Koordinaten}\\
+\textbf{Latitude} & \textbf{Longditude}\\\hline
+47.66033          & 9.17582\\
 \end{tabularx} 	
 \end{table}
 
 \begin{table}[H]
-\begin{tabularx}{8cm}{|X|X|}
-\hline
-\multicolumn{2}{|l|}{ XY - Koordinaten}   \\ \hline
-        X-Koordinate & Y-Koordinate         \\ \hline
-           -4602.6447 & -66.4622            \\ \hline
+\centering
+\begin{tabularx}{8cm}{X|X}
+\multicolumn{2}{c}{XY - Koordinaten}\\
+\textbf{X-Koordinate} & \textbf{Y-Koordinate}\\\hline
+-4602.6447            & -66.4622\\
 \end{tabularx} 	
 \end{table}
 
-Die umgewandelten XY-Koordinaten müssen nun innerhalb des Arrays gefunden werden. Dazu wurde über den Array iteriert und die Werte mit den errechneten Werten verglichen. Anschließend muss die Location auf der Karte markiert und dargestellt werden. Siehe Abbildung \ref{location}
+Die umgewandelten XY-Koordinaten müssen nun innerhalb des Arrays gefunden werden. Dazu wurde über den Array iteriert und die Werte mit den errechneten Werten verglichen. Anschließend muss die Location auf der Karte markiert und dargestellt werden (siehe Abbildung~\ref{fig:location}).
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{pics/Location.png}
 	\caption{Location von Konstanz im Ausschnitt Deutschland}
-	\label{location}
+	\label{fig:location}
 \end{figure}
 
 \subsection{Herausforderungen} 

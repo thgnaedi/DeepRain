@@ -1,7 +1,7 @@
 \section{Klassifizierung}
 Statt die genaue Regenmenge vorherzusagen, stellten wir drei Kategorien auf: kein Regen ($= 0mm$), wenig Regen ($\leq 8mm$) und viel Regen ($> 8mm$). Diese Kategorien haben wir als One-Hot-Vector kodiert. `[1, 0, 0]` entspricht hierbei kein Regen, sodass man aus der ersten Dimension der Vorhersage einfach ein Vorschaubild generieren kann aus dem man gleich feststellen kann, ob es am jeweiligen Pixel regnet oder nicht.
 
-Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur "kein Regen" vorhergesagt. Stattdessen wurde als Loss-Funktion die \gqq{Categorical Crossentropy} von Keras verwendet; die binäre Crossentropy können wir nicht verwenden, weil wir mehr als zwei Kategorien verwenden. Die \gqq{Categorical Crossentropy} funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
+Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur \gqq{kein Regen} vorhergesagt. Stattdessen wurde als Loss-Funktion die \gqq{Categorical Crossentropy} von Keras verwendet; die binäre Crossentropy können wir nicht verwenden, weil wir mehr als zwei Kategorien verwenden. Die \gqq{Categorical Crossentropy} funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
 
 Danach wurde noch die Aktivierungsfunktion für den Output-Layer Sigmoid durch Softmax ersetzt. Dadurch erscheint das Vorschaubild etwas verwaschener, aber der Blob um das Regengebiet wird kleiner und die Differenz zum Referenzbild wird kleiner.
 
@@ -29,14 +29,14 @@ In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinande
 \caption{Lernkurve (Hidden layer: Tanh)}
 \label{fig:lernkurveTanh}
 \end{subfigure}%
-\caption{Lernkurven von den Aktivierungsfunktionen der Hidden-Layer}
+\caption{Lernkurven von den verschiedenen Aktivierungsfunktionen der Hidden-Layer}
 \label{fig:lernkurven}
 \end{figure}
 
 
 
 \subsection{Auswertung}
-Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine Confustion-Matrix stellt (siehe Tabellen~\ref{tab:confusionSoftmax} und~\ref{tab:confusionTanh}). An beiden Matrizen kann man sehen, dass beide Aktivierungsfunktionen für einzelne Pixel statistisch ähnliche Ergebnisse liefern.
+Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine Confustion-Matrix erstellt (siehe Tabellen~\ref{tab:confusionSoftmax} und~\ref{tab:confusionTanh}). An beiden Matrizen kann man sehen, dass beide Aktivierungsfunktionen für einzelne Pixel statistisch ähnliche Ergebnisse liefern.
 
 Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,1\% respektive 96,3\% auch tatsächlich kein Regen eintrifft. Wird wenig Regen vorhergesagt, ist die Unsicherheit recht groß: zu rund 20\% regnet es gar nicht oder zu etwa 16\% regnet es stark. Zu einem Fünftel kann es also sein, dass hier die Vorhersage \gqq{Regen} nicht eintrifft. Wird starker Regen vorausgesagt, trifft zu gut 68\% auch starker Regen ein, zu fast 26\% wenig Regen oder gut 5\% kein Regen. Hier trifft die Vorhersage \gqq{Regen} also zu 95\% ein.
 
@@ -50,7 +50,7 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
     & \textbf{Wenig Regen} & 81116 (03,5\%)      & 106434 (63,4\%)      & 17077 (25,9\%)\\
     & \textbf{Viel Regen}  & 9695 (00,4\%)       & 27930 (16,7\%)       & 45166 (68,4\%)\\
 \end{tabular}
-\caption{Confustion-Matrix (Aktivierungsfunktion Hidden Layer: Softmax)}
+\caption{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion der Hidden Layer: Softmax)}
 \label{tab:confusionSoftmax}
 \end{table}
 
@@ -64,11 +64,11 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
     & \textbf{Wenig Regen} & 76988 (03,3\%)      & 110399 (63,5\%)      & 17240 (25,8\%)\\
     & \textbf{Viel Regen}  & 8849 (00,4\%)       & 27969 (16,1\%)       & 45973 (68,8\%)\\
 \end{tabular}
-\caption{Confustion-Matrix (Aktivierungsfunktion Hidden Layer: Tanh)}
+\caption{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion Hidden Layer: Tanh)}
 \label{tab:confusionTanh}
 \end{table}
 
-Bei der Vorhersage von zusammenhängenden Niederschlagsmengen auf einer Karte gibt es Unterschiede zwischen den Aktivierungsfunktionen der Hidden Layer, während es auf die Wahrscheinlichkeit der einzelnen Pixel kaum unterschiede gab.
+Bei der Vorhersage von zusammenhängenden Niederschlagsmengen auf einer Karte gibt es Unterschiede zwischen den Aktivierungsfunktionen der Hidden Layer, während es auf die Wahrscheinlichkeit der einzelnen Pixel kaum Unterschiede gab.
 Das UNet mit TanH als Aktivierungsfunktion der Hidden Layer erzeugt größere (und leicht rundere) Blobs (Abbildung~\ref{fig:hiddenActivationTanh}). Bei Softmax werden schräge Kanten besser vorhergesagt (Abbildung~\ref{fig:hiddenActivationSoftmax}).
 \begin{figure}[ht]
 \centering
@@ -89,8 +89,8 @@ Das UNet mit TanH als Aktivierungsfunktion der Hidden Layer erzeugt größere (u
 \end{figure}
 
 
-\subsubsection{Zwei Kategorien}
-Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Regen) durchzuführen um festzustellen, ob die Vorhersage ob es regnet oder nicht besser funktioniert als die mit keinem, wenig oder starkem Regen. Dazu erstellen noch einmal die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdZero}). Bei einem Treshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht; und falls Regen vorhergesagt wurde regnet es zu gut 80\%.
+\subsubsection{Training mit zwei Kategorien}
+Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Regen) durchzuführen um festzustellen, ob die Vorhersage auf diese Weise besser funktioniert als die mit den drei bisherigen Kategorien. Dazu trainierten wir noch einmal das Netz mit zwei Kategorien und stellen die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdZero}). Bei einem Treshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht; und falls Regen vorhergesagt wurde regnet es zu gut 80\%.
 
 \begin{table}[ht]
 \centering
@@ -105,6 +105,7 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
 \label{tab:confusionTwoCategoriesTresholdZero}
 \end{table}
 
+Verwendet man einen Treshold von 2 (mm) für die Generierung der Kategorien, verschlechtern sich die Wahrscheinlichkeiten leicht (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdTwo}). Falls Regen vorhergesagt wurde, ist die Kein-Regen-Wahrscheinlichkeit nun 19,6\%, statt 18,4\%. Die Wahrscheinlichkeit von Regen, falls kein Regen vorhergesagt wurde, wird dafür minimal besser: 3,3\% statt 3,7\%.
 \begin{table}[ht]
 \centering
 \begin{tabular}{lr|rr}
@@ -118,6 +119,7 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
 \label{tab:confusionTwoCategoriesTresholdTwo}
 \end{table}
 
+Erhöht man den Treshold weiter auf 4, verdeutlicht sich der Trend aus der letzten Confusion Matrix (siehe Tabelle~\ref{tab:confusionTwoCategoriesTresholdFour}): die Wahrscheinlichkeit, dass für Regen \gqq{kein Regen} vorhergesagt wird, sinkt auf 2,7\%, die Wahrscheinlichkeit, dass Regen vorhergesagt wird und nicht eintrifft, steigt auf 23,2\%.
 \begin{table}[ht]
 \centering
 \begin{tabular}{lr|rr}
@@ -131,10 +133,12 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
 \label{tab:confusionTwoCategoriesTresholdFour}
 \end{table}
 
+Man sieht also, dass die Vorhersage ob Regen eintrifft oder nicht, bei drei Kategorien und zwei Kategorien (bei einem Treshold von 0) fast gleich ausfällt und  die Erhöhung des Tresholds die Genauigkeit senkt. Die genaue Regenmenge vorauszusagen hat sich als schwierig herausgestellt, aber man weiß zumindest (fast) sicher, dass man, wenn kein Regen vorhergesagt wird, nicht nass wird.
 
 
 \subsection{Herausforderungen in diesem Kapitel}
-\begin{itemize}
-\item Richtige Kategorien finden
-\item Training mit richtiger Aktivierungsfunktion / Optimizer
-\end{itemize}
+In diesem Kapitel gab es zwei große Herausforderungen: zum einen war es schwierig die richtigen Kategorien zu finden, und zum anderen musste sich herausstellen, wie sich die verschiedenen Aktivierungsfunktionen auswirken.
+
+Die drei Kategorien haben sich als nicht ganz optimal herausgestellt, denn mit zwei Kategorien können wir aussagekräftigere Angaben geben: wir können sicherer angeben ob es regnet oder nicht.
+
+Die Aktivierungsfunktionen haben sich nur auf die Form der Blobs der Niederschlagsmengen ausgewirkt (Abbildung~\ref{fig:activatinHidden}), aber weniger auf die Regen-Wahrscheinlichkeit der einzelnen Punkte (siehe Tabellen~\ref{tab:confusionSoftmax} und \ref{tab:confusionTanh}).

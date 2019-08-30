@@ -7,6 +7,8 @@ Temp/
 *.sb
 *.tar
 
+Data/Training/**/*.png
+NetworkTypes/**/*.png
 NetworkTypes/*.h5
 NetworkTypes/Net_tinyUNet/
 NetworkTypes/Net_with_BNorm/

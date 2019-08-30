@@ -1,4 +1,3 @@
-
 \section{Datenanalyse}
 Es wurden im Projekt unterschiedliche Daten auf ihre Quantität, Qualität und Verwendbarkeit untersucht. In diesem Schritt betrifft die Datenqualität erstmal die äußerlichen Merkmale, die tatsächliche Ähnlichkeit und der Vergleich von Regendaten folgt in einem späteren Kapitel. 
 Für das Projekt werden zum einen die tatsächlichen Niederschlagsdaten in Konstanz zum späteren Vergleich benötigt, zum anderen Radardaten, beides möglichst in ein bis zehnminütlicher Auflösung und möglichst von aktuell bis einige Jahre in die Vergangenheit reichend. 
@@ -6,14 +5,29 @@ Wetterradardaten werden von öffentlichen und privaten Anbietern erhoben und sin
 Die umfangreichsten Radardaten werden von der Deutschen Wetterstation zur Verfügung gestellt, daher wurde sich im Team für die Verwendung dieser Daten entschieden. 
 
 \subsection{Verifizierung der Daten}
-In den Daten des DWD hat die Konstanzer Wetterstation die ID: 02712. Aus dem Zip-File mit der enthaltenen Textdatei können somit die nun aufgezeigten Daten für die Untersuchung entnommen werden. Zu den wichtigsten Informationen gehören hier das Qualitätsniveau der Daten (zwischen 1 und 16) als QN, das Messdatum im Format YYYYMMDDHHMM, die Niederschlagshöhe und den Niederschlagindikator. Die Aktuellen Daten wurden mit einem Python-Script eingelesen und ein paar kleine Statistiken zum Validieren der Daten vorgenommen. Zum Vergleich wurden hierfür die monatlichen Niederschlagsangaben von Statista.com und Wetterkontor.com genommen, allerdings bezogen die sich auf ganz Deutschland. 
+In den Daten des DWD hat die Konstanzer Wetterstation die ID: 02712. Aus dem Zip-File mit der enthaltenen Textdatei können somit die nun aufgezeigten Daten für die Untersuchung entnommen werden. Zu den wichtigsten Informationen gehören hier das Qualitätsniveau der Daten (zwischen 1 und 16) als QN, das Messdatum im Format YYYYMMDDHHMM, die Niederschlagshöhe und den Niederschlagindikator. Die Aktuellen Daten wurden mit einem Python-Script eingelesen und ein paar kleine Statistiken zum Validieren der Daten vorgenommen. Zum Vergleich wurden hierfür die monatlichen Niederschlagsangaben von Statista.com und Wetterkontor.com genommen, allerdings bezogen die sich auf ganz Deutschland.
 \begin{table}[ht]
 \centering
-\includegraphics[width=\linewidth]{pics/Auswertung_Thomas}
-\caption{(Auswertung des absoluten und relativen Fehlers zwischen den Regendaten verschiedener Quellen)}
+\begin{tabular}{ll|l|ll}
+\textbf{Monat} & \textbf{ref. $l/m^2$} & \textbf{Messung} & \textbf{Fehler (abs.)} & \textbf{Fehler (rel.)}\\\hline
+Januar    & 40,1  & 37,39  & -2,71  & 6,76\%\\
+Februar   & 34,5  & 37,02  & 2,52   & 7,30\%\\
+März      & 40,2  & 40,3   & 0,1    & 0,25\%\\
+April     & 132,4 & 132,25 & -0,15  & 0,11\%\\
+Mai       & 56,4  & 52,58  & -3,82  & 6,77\%\\
+Juni      & 95    & 69,55  & -25,45 & 26,79\%\\
+Juli      & 168,9 & 171,38 & 2,48   & 1,47\%\\
+August    & 155,7 & 148,42 & -7,28  & 4,68\%\\
+September & 65    & 55,23  & -9,77  & 15,03\%\\
+Oktober   & 36,3  & 36,93  & 0,63   & 1,74\%\\
+November  & 76,8  & 78,49  & 3,69   & 4,93\%\\
+Dezember  & 79,5  & 78,52  & -0,98  & 1,23\%\\
+\end{tabular}
+\caption{Auswertung des absoluten und relativen Fehlers zwischen den Regendaten verschiedener Quellen}
 \label{tab:Auswertung}
 \end{table}
-Die Historischen Daten des DWDs sind auch Monatlich als Textdatei gespeichert. Für den Vergleich wurde das Jahr 2018 betrachtet. In den historischen Daten fallen neue Spalten im Header auf, diese sind aber "ungenutzt" bzw. über alle (geprüft auf Jahr 2017) Einträge identisch. Diese sind: QN, RTH\_01 und RWH\_01. Die Messwerte wurden wie auch zuvor monatsweise zusammenaddiert das Ergebnis des Vergleichs ist in Tabelle~\ref{tab:Auswertung} zu sehen. 
+
+Die Historischen Daten des DWDs sind auch Monatlich als Textdatei gespeichert. Für den Vergleich wurde das Jahr 2018 betrachtet. In den historischen Daten fallen neue Spalten im Header auf, diese sind aber \gqq{ungenutzt} bzw. über alle (geprüft auf Jahr 2017) Einträge identisch. Diese sind: QN, RTH\_01 und RWH\_01. Die Messwerte wurden wie auch zuvor monatsweise zusammenaddiert das Ergebnis des Vergleichs ist in Tabelle~\ref{tab:Auswertung} zu sehen. 
 Auffällig ist, dass einige Messwerte sehr gut übereinstimmen. So ist der Niederschlag in den Monaten März und April fast gleich in der referenzierten Messung und der Messung des DWDs. In anderen Monaten wie im Juni ist der relative Fehler mit 26.79\% sehr hoch. Das könnte an gemessenen Extremwerten in den Daten des DWDs liegen, die in der Größenordnung in den Messungen der anderen Anbieter nicht auftauchen.  
 
 \subsection{Korrelation der Radardaten mit den Regenmessungen}
@@ -23,7 +37,7 @@ Einen wichtigen Anteil an der Korrelationsanalyse hat die Datenaufbereitung in A
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{pics/plot_rainfall_day}
-\caption{(Regenfallmengen im Juni 2016 nach Tag)}
+\caption{Regenfallmengen im Juni 2016 nach Tag}
 \label{fig:Rainfall}
 \end{figure}
 Für die Analyse der Daten wurde dann ein R-Skript geschrieben. In diesem wurden die Datuminformationen extrahiert, sodass eine Einteilung in Jahr, Monat, Tag, Stunde und Minute der Datensätze möglich wurde. Dann wurden die die Regenmengen der gemessenen Niederschlagswerte je Tag dargestellt. Hier zeigte sich eine recht gleichmäßige Verteilung der Regenwerte mit einigen gut identifizierbaren Ausreißern z.B. am den 24. Juni mit über zehn Liter pro Quadratmeter, siehe \ref{fig:Rainfall}. Bei der Werteverteilung der Pixel aus den Radarbildern fällt auf, dass es sehr viele null-Werte und am zweitmeisten den Wert 80 gibt. Werte, die dazwischen existieren sind „10“, „20“, und „40“.  Bezüglich der Niederschlagsdaten könnte hier auch das eher niedrige Qualitätsniveau der Stufe 3 Einfluss gehabt haben.
