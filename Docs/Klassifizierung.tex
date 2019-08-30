@@ -36,7 +36,7 @@ In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinande
 
 
 \subsection{Auswertung}
-Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine Confustion-Matrix stellt (siehe Tabellen~\ref{tab:confusionSoftmax} und~\ref{tab:confusionTanh}). An beiden Matrizen kann man sehen, dass beide Aktivierungsfunktionen für einzelne Pixel statistisch ähnliche Ergebnisse liefern.
+Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine Confustion-Matrix erstellt (siehe Tabellen~\ref{tab:confusionSoftmax} und~\ref{tab:confusionTanh}). An beiden Matrizen kann man sehen, dass beide Aktivierungsfunktionen für einzelne Pixel statistisch ähnliche Ergebnisse liefern.
 
 Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,1\% respektive 96,3\% auch tatsächlich kein Regen eintrifft. Wird wenig Regen vorhergesagt, ist die Unsicherheit recht groß: zu rund 20\% regnet es gar nicht oder zu etwa 16\% regnet es stark. Zu einem Fünftel kann es also sein, dass hier die Vorhersage \gqq{Regen} nicht eintrifft. Wird starker Regen vorausgesagt, trifft zu gut 68\% auch starker Regen ein, zu fast 26\% wenig Regen oder gut 5\% kein Regen. Hier trifft die Vorhersage \gqq{Regen} also zu 95\% ein.
 
@@ -68,7 +68,7 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
 \label{tab:confusionTanh}
 \end{table}
 
-Bei der Vorhersage von zusammenhängenden Niederschlagsmengen auf einer Karte gibt es Unterschiede zwischen den Aktivierungsfunktionen der Hidden Layer, während es auf die Wahrscheinlichkeit der einzelnen Pixel kaum unterschiede gab.
+Bei der Vorhersage von zusammenhängenden Niederschlagsmengen auf einer Karte gibt es Unterschiede zwischen den Aktivierungsfunktionen der Hidden Layer, während es auf die Wahrscheinlichkeit der einzelnen Pixel kaum Unterschiede gab.
 Das UNet mit TanH als Aktivierungsfunktion der Hidden Layer erzeugt größere (und leicht rundere) Blobs (Abbildung~\ref{fig:hiddenActivationTanh}). Bei Softmax werden schräge Kanten besser vorhergesagt (Abbildung~\ref{fig:hiddenActivationSoftmax}).
 \begin{figure}[ht]
 \centering
@@ -137,7 +137,7 @@ Man sieht also, dass die Vorhersage ob Regen eintrifft oder nicht, bei drei Kate
 
 
 \subsection{Herausforderungen in diesem Kapitel}
-In diesem Kapitel gab es zwei große Herausforderungen: zum einen war es schwierig die richtigen Kategorien zu finden, und zum Anderen musste sich herausstellen, wie sich die verschiedenen Aktivierungsfunktionen auswirken.
+In diesem Kapitel gab es zwei große Herausforderungen: zum einen war es schwierig die richtigen Kategorien zu finden, und zum anderen musste sich herausstellen, wie sich die verschiedenen Aktivierungsfunktionen auswirken.
 
 Die drei Kategorien haben sich als nicht ganz optimal herausgestellt, denn mit zwei Kategorien können wir aussagekräftigere Angaben geben: wir können sicherer angeben ob es regnet oder nicht.
 
