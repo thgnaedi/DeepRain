@@ -73,7 +73,7 @@ Die hier verwendeten Daten und Label entstammen dem Validierungsset, welches Rad
 Die Abbildungen zeigen deutlich, dass das Netz die ersten fünf Minuten sehr genau vorhersagen kann. Das ausgegebene Bild hat unterschiedliche Niederschlagsmengen für jeden Pixel vorhergesagt. Mit zunehmender Zeit lässt diese Genauigkeit aber stark nach. So ist im letzten Ausgabebild sehr häufig für einen ganzen Bereich die selbe Niederschlagsmenge vorhergesagt. Es wirkt, als würde die Auflösung der Vorhersage mit zunehmender Zeit abnehmen. Durch die schwache Auflösung werden viele Pixel nicht ganz korrekt wiedergegeben, was den Fehler erhöht. Der so entstehende Fehler ist aber dennoch geringer, als der Fehler welchen die Baseline macht, indem sie exakte Niederschlagsmengen für jeden Pixel vorhersagt. Unser Netz schlägt die Baseline also nicht dadurch eine exaktere Vorhersage zu treffen, sondern durch eine verschwommene Regenfront, welche sich entsprechend der eingegangenen Daten weiter bewegt und dabei auch stets auseinander driftet.
 
 
-\begin{figure}[h]
+\begin{figure}[]
 	\centering
 	\begin{subfigure}[]{\linewidth} 
 		\centering
@@ -91,7 +91,7 @@ Die Abbildungen zeigen deutlich, dass das Netz die ersten fünf Minuten sehr gen
 	\label{vieleBilder1}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[]
 	\centering
 	\begin{subfigure}[]{\linewidth} 
 		\centering
