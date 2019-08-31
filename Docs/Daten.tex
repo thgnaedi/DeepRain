@@ -1,25 +1,21 @@
 \section{Daten}
-Dises Kapitel geht darauf ein, woher wir die Daten für das Training des Netzes beschaffen und wie wir diese vor-bearbeiten.
+Dieses Kapitel geht darauf ein, woher wir die Daten für das Training des Netzes beschaffen und wie wir diese vor-bearbeiten.
 
 \subsection{Quelle}
-Die Daten, die wir verwenden, stammen vom Deutschen Wetterdienst (ab jezt DWD) und sind Radardaten von deren Radarstationen. Die Messungen liegen in einer Auflösung von 5 Minuten vor und ergeben den Niederschlag in mm. Z.zt. liegen die Daten vom Januar 2001 bis Januar 2018 vor (jeweils inklusive). Für unsere Zwecke verwenden wir die 18 kompletten Jahre 2001 bis 2017.\footnote{\url{https://opendata.dwd.de/climate\_environment/CDC/grids\_germany/5\_minutes/radolan/reproc/2017\_002/bin/}}
+Die verwendeten Daten stammen vom Deutschen Wetterdienst (ab jetzt DWD) und sind Radardaten von deren Radarstationen. Die Daten der Messstationen bilden Kreise um die jeweiligen Stationen und bedecken noch einen kleinen Bereich um Deutschland; die Daten geben die Stärke des Niederschlags an. Die Radar-Messungen liegen in einer Auflösung von einer Stunde und 5 Minuten vor, wir verwenden letztere. Z.zt. liegen die Daten vom Januar 2001 bis Januar 2018 vor (jeweils inklusive). Für unsere Zwecke verwenden wir die 18 kompletten Jahre 2001 bis 2017.\footnote{\url{https://opendata.dwd.de/climate\_environment/CDC/grids\_germany/5\_minutes/radolan/reproc/2017\_002/bin/}}
 
 \subsubsection{Crawler}
-Mit einem in Python geschriebenem Crawler werden die Tar-Archive, die jeweils einen Monat beinhalten heruntergeladen und entpackt; die Tage sind jeweils wieder in einem Tarball komprimiert. Die Binärdateien werden letztendlich auf einer Btrfs-formatierten Partition gespeichert, da diese wegen der häufigen Nullen einfach komprimierbar sind.
+Da die Daten in monatsweise in geschachtelten Archiven gepackt sind, haben wir einen Crawler geschrieben, der die Daten zuerst herunterlädt und auspackt. Mit den Kommandozeilenoptionen\footnote{\url{https://github.com/thgnaedi/DeepRain/tree/master/DWD_Crawler}} kann gesteuert werden, ob die stündlichen oder minütlichen Daten heruntergeladen werden und wohin die Binärdateien entpackt werden sollen. Wir empfehlen, die Binärdaten auf eine Btrfs\footnote{\url{https://en.wikipedia.org/wiki/Btrfs}}-formatierte Partition zu entpacken, da die Daten (wegen häufig auftretender Nullen bzw. kein Regen) leicht komprimierbar sind und die minütlichen Daten sonst mehr als ein Terabyte belegen würden.
 
-\subsection{Preprocessing (Konverter)}
-Die Daten liegen in einem Binärformat des DWD vor, aus dem man den Niederschlag (auch für bestimmte Koordinaten) in mm extrahieren kann. Dazu muss man die Python-Bibliothek \gqq{Wradlib} über den Package-Manager von Anaconda installieren.
+\subsection{Preprocessing}
+Um das Binärformat des DWD einzulesen, benötigt man die Python-Bibliothek \gqq{Wradlib}, die man über den Package-Manager von Anaconda installieren kann. Dann kann man die Datensätze als Deutschlandkarte mit einer Auflösung von 1100x900 Pixeln rastern.
 
-Damit lesen wir die 5-minütlichen Daten ein und rastern daraus den Niederschlag in einer Deutschlandkarte mit einer Auflösung von 1100x900 Pixeln, der Standardauflösung der DWD-Daten. Visualisiert man diese Daten, sieht man eine Menge von Kreisen, die jeweils dem Radius einer Radarstation entsprechen. Diese bedecken Deutschland und reichen leicht über die Grenzen.
+Das Preprocessing geschieht in zwei Durchläufen: Zuerst wird das Maximum des Niederschlags bestimmt, das Minimum wird als 0 (kein Regen) angenommen. Danach werden die Werte auf einen Bereich gespreizt.
 
-Danach bestimmen wir für jede Datei das Maximum des Niederschlags (in mm), um die Werte auf einen Bereich spreizen zu können; das Minimum muss nicht berechnet werden und kann als 0 angenommen werden, was keinem Niederschlag entspricht.
-Nach dem Ersten Durchgang, bei dem das Globale Maximum bestimmt wurde, werden die Daten in einem zweiten Durchgang mittels  des globalen Maximalwertes auf einen Wertebereich zwischen 0 und 255 gespreizt, damit die Bilder in einem Bildformat mit einer Bittiefe von 8 Bit gespeichert werden Können. Wir haben uns für das PNG-Format entschieden, weil es verlustfrei komprimiert und von plattformübergreifenden Bibliotheken gelesen und geschrieben werden kann.
-
-Zum Schluss werden die Werte mit dem Faktor 4 multipliziert; dabei werden die Werte über 255 auf den Maximalwert geclampt. Dadurch verwerfen wir Ausreißer und das Training funktioniert besser.
+Beim zweiten Durchgang werden die Daten mithilfe des globalen Maximalwertes auf einen Wertebereich zwischen 0 und 255 umgerechnet, damit die Datensätze in einem Bildformat mit einer Bittiefe von 8 Bit gespeichert zur weiteren Verarbeitung werden können. Wir haben uns für das PNG-Format entschieden, weil es verlustfrei komprimiert und von platt­form­über­grei­fenden Bibliotheken gelesen und geschrieben werden kann.
+Vor dem Speichern werden die Werte mit dem Faktor 4 multipliziert um Werte über 255 auf den Maximalwert abzuschneiden. Dadurch verwerfen wir Ausreißer und das Training funktioniert besser. Der Faktor 4 wurde empirisch bestimmt, weil das Berechnen eines Histogramms über alle 18 Jahre zu aufwendig gewesen wäre.
 
 \subsection{Herausforderungen in diesem Kapitel}
-Die größte Herausforderung in diesem Kapitel war zweifelsfrei die große Datenmenge, die wir verarbeitet haben. Die Rohdaten der 18 Jahre in 5-Minuten-Auflösung hätte unseren zugewiesenen Speicher gesprengt, mit dem Btrfs, das die Dateien on-the-fly komprimiert und de-dupliziert, passten die Daten doch auf unsere Festplatte.
+Die größte Herausforderung in diesem Kapitel war zweifelsfrei die große Datenmenge, die wir verarbeitet haben. Die Rohdaten der 18 Jahre in 5-Minuten-Auflösung hätte unseren zugewiesenen Speicher gesprengt. Mit Btrfs, das die Dateien on-the-fly komprimiert und de-dupliziert, passten die Daten doch auf unsere Festplatte. Auch mussten wir eventuelle Ausreißer empirisch entfernen, weil das Berechnen des Histogramm über so viele Daten zu aufwendig wäre.
 
 Darüber hinaus lagen die Archive des DWD im Tar-Format vor, das keine Checksumme anbietet und somit erst beim Entpacken bemerkt werden kann, dass beim Download einer Datei ein Fehler auftrat. Bei den großen Tar-Archiven des DWD ist leider mehrmals ein Download-Fehler aufgetreten, der sehr spät auffiel.
-
-Die dritte Herausforderung lag darin, dass es in den Daten nicht erklärbare Ausreißer gab und wie man diese eliminieren soll. Weil es extrem lange dauern würde, für 18 Jahre in 5-Minuten-Auflösung ein Histogramm zu berechnen, haben wir einen (hoffentlich) Educated Guess gemacht und das Viertel des Maximalwertes als neuen Maximalwert gewählt.
