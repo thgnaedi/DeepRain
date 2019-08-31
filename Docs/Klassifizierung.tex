@@ -29,7 +29,7 @@ In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinande
 \caption{Lernkurve (Hidden layer: Tanh)}
 \label{fig:lernkurveTanh}
 \end{subfigure}%
-\caption{Lernkurven von zwei verschiedenen Aktivierungsfunktionen der Hidden Layer. Ab etwa der tausendsten Epoche gibt es kaum noch eine Verbesserung.}
+\caption[Lernkurven verschiedener Aktivierungsfkt. der Hidden Layer]{Lernkurven von zwei verschiedenen Aktivierungsfunktionen der Hidden Layer. Ab etwa der tausendsten Epoche gibt es kaum noch eine Verbesserung.}
 \label{fig:lernkurven}
 \end{figure}
 
@@ -50,7 +50,7 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
     & \textbf{Wenig Regen} & 81116 (03,5\%)      & 106434 (63,4\%)      & 17077 (25,9\%)\\
     & \textbf{Viel Regen}  & 9695 (00,4\%)       & 27930 (16,7\%)       & 45166 (68,4\%)\\
 \end{tabular}
-\caption{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion der Hidden Layer: Softmax)}
+\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Softmax)]{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion der Hidden Layer: Softmax)}
 \label{tab:confusionSoftmax}
 \end{table}
 
@@ -64,7 +64,7 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
     & \textbf{Wenig Regen} & 76988 (03,3\%)      & 110399 (63,5\%)      & 17240 (25,8\%)\\
     & \textbf{Viel Regen}  & 8849 (00,4\%)       & 27969 (16,1\%)       & 45973 (68,8\%)\\
 \end{tabular}
-\caption{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion Hidden Layer: Tanh)}
+\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Tanh)]{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion Hidden Layer: Tanh)}
 \label{tab:confusionTanh}
 \end{table}
 
@@ -84,7 +84,7 @@ Das UNet mit TanH als Aktivierungsfunktion der Hidden Layer erzeugt größere (u
 \caption{Hidden layer activation: Tanh}
 \label{fig:hiddenActivationTanh}
 \end{subfigure}%
-\caption{Vergleich von Aktivierungsfunktionen der Hidden-Layer nach je 3072 Epochen. Aktivierungsfunktion der Output Layer ist jedes mal Softmax.}
+\caption[Vergleich von Aktivierungsfunktionen der Hidden-Layer]{Vergleich von Aktivierungsfunktionen der Hidden-Layer nach je 3072 Epochen. Aktivierungsfunktion der Output Layer ist jedes mal Softmax.}
 \label{fig:activatinHidden}
 \end{figure}
 
