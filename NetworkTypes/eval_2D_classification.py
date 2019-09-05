@@ -86,8 +86,9 @@ def get_confusion_matrix_2d(_true, _pred):
 
 
 def main():
+    directory = "..\\Data\\Training\\2categories\\treshold_4\\"
     # Lernkurve:
-    eval_trainlogfile("..\\Data\\Training\\2categories\\treshold_4\\trainphase.log", plot=True)
+    eval_trainlogfile(directory + "trainphase.log", plot=True)
 
     # DatenSammeln
     data, label = generate_classification()
@@ -96,7 +97,7 @@ def main():
 
     # NetzLaden
     netname = "categorical_crossentropy_hidden-softmax_output-softmax_above"
-    net, offset = load_last_net(netname, _dir="..\\Data\\Training\\2categories\\treshold_4")
+    net, offset = load_last_net(netname, _dir=directory)
     assert net is not None
 
     eval_validation_set(val_data, val_lbl, net)
