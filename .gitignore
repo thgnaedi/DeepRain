@@ -6,6 +6,7 @@ Temp/
 *.h5
 *.sb
 *.tar
+*.7z
 
 Data/Training/**/*.png
 NetworkTypes/**/*.png

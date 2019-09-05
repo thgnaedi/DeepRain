@@ -106,6 +106,19 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
 \end{table}
 
 Verwendet man einen Threshold von 2 (mm) für die Generierung der Kategorien, verschlechtern sich die Wahrscheinlichkeiten leicht (siehe Tabelle~\ref{tab:confusionTwoCategoriesThresholdTwo}). Falls Regen vorhergesagt wurde, ist die Kein-Regen-Wahrscheinlichkeit nun 19,6\%, statt 18,4\%. Die Wahrscheinlichkeit von Regen, falls kein Regen vorhergesagt wurde, wird dafür minimal besser: 3,3\% statt 3,7\%.
+%\begin{table}[ht]
+%\centering
+%\begin{tabular}{lr|rr}
+%    &                      & \multicolumn{2}{c}{Vorhersage}\\
+%    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
+%\multirow{3}{*}{\rotatebox{90}{Daten}}
+%    & \textbf{Kein Regen}  & 2323398 (99,7\%)    & 163631 (73,9\%)\\
+%    & \textbf{Regen}       & 7068 (00,3\%)       & 57711 (26,1\%)\\
+%\end{tabular}
+%\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 1, Softmax)}
+%\label{tab:confusionTwoCategoriesThresholdOne}
+%\end{table}
+
 \begin{table}[ht]
 \centering
 \begin{tabular}{lr|rr}
@@ -118,6 +131,19 @@ Verwendet man einen Threshold von 2 (mm) für die Generierung der Kategorien, ve
 \caption{Confustion-Matrix (Zwei Kategorien, Threshold: 2, Softmax)}
 \label{tab:confusionTwoCategoriesThresholdTwo}
 \end{table}
+
+%\begin{table}[ht]
+%\centering
+%\begin{tabular}{lr|rr}
+%    &                      & \multicolumn{2}{c}{Vorhersage}\\
+%    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
+%\multirow{3}{*}{\rotatebox{90}{Daten}}
+%    & \textbf{Kein Regen}  & 2365886 (99,6\%)    & 121143 (69,1\%)\\
+%    & \textbf{Regen}       & 10664 (00,4\%)      & 54115 (30,9\%)\\
+%\end{tabular}
+%\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 3, Softmax)}
+%\label{tab:confusionTwoCategoriesThresholdThree}
+%\end{table}
 
 Erhöht man den Threshold weiter auf 4, verdeutlicht sich der Trend aus der letzten Confusion Matrix (siehe Tabelle~\ref{tab:confusionTwoCategoriesThresholdFour}): die Wahrscheinlichkeit, dass für Regen \gqq{kein Regen} vorhergesagt wird, sinkt auf 2,7\%, die Wahrscheinlichkeit, dass Regen vorhergesagt wird und nicht eintrifft, steigt auf 23,2\%.
 \begin{table}[ht]
@@ -132,6 +158,45 @@ Erhöht man den Threshold weiter auf 4, verdeutlicht sich der Trend aus der letz
 \caption{Confustion-Matrix (Zwei Kategorien, Threshold: 4, Softmax)}
 \label{tab:confusionTwoCategoriesThresholdFour}
 \end{table}
+
+%\begin{table}[ht]
+%\centering
+%\begin{tabular}{lr|rr}
+%    &                      & \multicolumn{2}{c}{Vorhersage}\\
+%    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
+%\multirow{3}{*}{\rotatebox{90}{Daten}}
+%    & \textbf{Kein Regen}  & 2436225 (99,3\%)    & 50804 (51,9\%)\\
+%    & \textbf{Regen}       & 17672 (00,7\%)      & 47107 (48,1\%)\\
+%\end{tabular}
+%\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 5, Softmax)}
+%\label{tab:confusionTwoCategoriesThresholdFive}
+%\end{table}
+
+%\begin{table}[ht]
+%\centering
+%\begin{tabular}{lr|rr}
+%    &                      & \multicolumn{2}{c}{Vorhersage}\\
+%    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
+%\multirow{3}{*}{\rotatebox{90}{Daten}}
+%    & \textbf{Kein Regen}  & 2445930 (99,2\%)    & 41099 (48,1\%)\\
+%    & \textbf{Regen}       & 20450 (00,8\%)      & 44329 (51,9\%)\\
+%\end{tabular}
+%\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 6, Softmax)}
+%\label{tab:confusionTwoCategoriesThresholdSix}
+%\end{table}
+
+%\begin{table}[ht]
+%\centering
+%\begin{tabular}{lr|rr}
+%    &                      & \multicolumn{2}{c}{Vorhersage}\\
+%    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
+%\multirow{3}{*}{\rotatebox{90}{Daten}}
+%    & \textbf{Kein Regen}  & 2475815 (98,5\%)    & 11214 (28,6\%)\\
+%    & \textbf{Regen}       & 36827 (01,5\%)      & 27952 (71,4\%)\\
+%\end{tabular}
+%\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 10, Softmax)}
+%\label{tab:confusionTwoCategoriesThresholdTen}
+%\end{table}
 
 Man sieht also, dass die Vorhersage ob Regen eintrifft oder nicht, bei drei Kategorien und zwei Kategorien (bei einem Threshold von 0) fast gleich ausfällt und  die Erhöhung des Thresholds die Genauigkeit senkt. Die genaue Regenmenge vorauszusagen hat sich als schwierig herausgestellt, aber man weiß zumindest (fast) sicher, dass man, wenn kein Regen vorhergesagt wird, nicht nass wird.
 
