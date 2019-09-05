@@ -201,16 +201,15 @@ Erhöht man den Threshold weiter auf 4, verdeutlicht sich der Trend aus der letz
 Man sieht also, dass die Vorhersage ob Regen eintrifft oder nicht, bei drei Kategorien und zwei Kategorien (bei einem Threshold von 0) fast gleich ausfällt und  die Erhöhung des Thresholds die Genauigkeit senkt. Die genaue Regenmenge vorauszusagen hat sich als schwierig herausgestellt, aber man weiß zumindest (fast) sicher, dass man, wenn kein Regen vorhergesagt wird, nicht nass wird.
 
 \subsection{ROC-Kurve bei zwei Kategorien}
+Zur Überprüfung des Verhaltens der Genauigkeit bei Anpassung des Thresholds wird eine Receiver Operating Characteristic-Kurve (ROC) verwendet (siehe Abbildung~\ref{roc}). Diese dient zum Vergleich der Confusion Matrizen mit verschiedenen Thresholds und damit der Performance des Netzes.
 
-Zur Überprüfung des Verhalten der Genauigkeit bei Anpassung des Treshold wird eine receiver operating characteristic-curve (ROC) verwendet. Siehe Abbildung \ref{roc}. Diese dient zum Vergleich der Confusion Matrizen mit verschiedenen Tresholds und damit der Performance des Netzes. \newline
-
-Auf der X-Achse wird die True Positive Rate (Sensitivität) abgebildet. Diese beschreibt die Rate der richtig kategorisierten positiven Ereignisse (In unserem Fall: Kein Regen vorhergesagt und es regnet tatsächlich nicht). \newline
+Auf der X-Achse wird die True Positive Rate (Sensitivität) abgebildet. Diese beschreibt die Rate der richtig kategorisierten positiven Ereignisse (In unserem Fall: Kein Regen vorhergesagt und es regnet tatsächlich nicht).
 
 \begin{align*}
   TPR \quad	 {=} \quad True Positives \quad / \quad(True Positive + False Negatives)
 \end{align*}
 
-Auf der Y-Achse wird die False Positive Rate abgebildet. Diese beschreibt die Rate der falsch kategorisierten negativen Ereignisse (In unserem Fall: Kein Regen vorhergesagt aber es regnet tatsächlich) und der Gesamtanzahl der negativen Ereignisse. \newline
+Auf der Y-Achse wird die False Positive Rate abgebildet. Diese beschreibt die Rate der falsch kategorisierten negativen Ereignisse (In unserem Fall: Kein Regen vorhergesagt aber es regnet tatsächlich) und der Gesamtanzahl der negativen Ereignisse.
 
 \begin{align*}
   FPR \quad	 {=} \quad False Positives \quad / \quad(False Positive + True Negatives)
@@ -222,12 +221,12 @@ In einem Optimalen Szenario wäre der Wert der TPR gleich eins und der Wert der 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\textwidth]{pics/roc.PNG}
-	\caption{ROC curve}
+	\caption{ROC-Kurve}
 	\label{roc}
 \end{figure}
 
-\subsubsection{Interpretation ROC}
-Wie bereits vermutet, verschlechtert sich die Genauigkeit mit einer Erhöhung eines Tresholds, der mit Null daher den bestmöglichen Wert hat.
+\subsubsection{Interpretation der ROC-Kurve}
+Wie bereits vermutet, verschlechtert sich die Genauigkeit mit einer Erhöhung eines Thresholds, der mit Null daher den bestmöglichen Wert hat.
 Außerdem kann dadurch nachgewiesen werden, dass die Genauigkeit höher als beim zufälligen Auswählen ist.
 
 \subsection{Herausforderungen in diesem Kapitel}
