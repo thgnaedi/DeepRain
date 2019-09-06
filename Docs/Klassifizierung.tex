@@ -29,7 +29,7 @@ In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinande
 \caption{Lernkurve (Hidden layer: Tanh)}
 \label{fig:lernkurveTanh}
 \end{subfigure}%
-\caption[Lernkurven verschiedener Aktivierungsfkt. der Hidden Layer]{Lernkurven von zwei verschiedenen Aktivierungsfunktionen der Hidden Layer. Ab etwa der tausendsten Epoche gibt es kaum noch eine Verbesserung.}
+\caption[Lernkurven verschiedener Aktivierungsfkt. der Hidden Layer]{Gegenüberstellung zweier Lernkurven von verschiedenen Aktivierungsfunktionen der Hidden Layer. Ab etwa der tausendsten Epoche gibt es kaum noch eine Verbesserung. Bei Tanh flacht die Kurve schneler ab.}
 \label{fig:lernkurven}
 \end{figure}
 
@@ -46,11 +46,11 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
     &                      & \multicolumn{3}{c}{Vorhersage}\\
     &                      & \textbf{Kein Regen} & \textbf{Wenig Regen} & \textbf{Viel Regen}\\\hline
 \multirow{3}{*}{\rotatebox{90}{Daten}}
-    & \textbf{Kein Regen}  & 2227245 (96,1\%)    & 33383 (19,9\%)       & 3762 (05,7\%)\\
-    & \textbf{Wenig Regen} & 81116 (03,5\%)      & 106434 (63,4\%)      & 17077 (25,9\%)\\
-    & \textbf{Viel Regen}  & 9695 (00,4\%)       & 27930 (16,7\%)       & 45166 (68,4\%)\\
+    & \textbf{Kein Regen}  & 2227245 (96,1\%)    & 33383 (19,9\%)       & 3762 (5,7\%)\\
+    & \textbf{Wenig Regen} & 81116 (3,5\%)       & 106434 (63,4\%)      & 17077 (25,9\%)\\
+    & \textbf{Viel Regen}  & 9695 (0,4\%)        & 27930 (16,7\%)       & 45166 (68,4\%)\\
 \end{tabular}
-\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Softmax)]{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion der Hidden Layer: Softmax)}
+\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Softmax)]{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion der Hidden Layer: Softmax), Vorhersage für kein Regen sehr gut, die für wenig und viel Regen sind unsicherer.}
 \label{tab:confusionSoftmax}
 \end{table}
 
@@ -60,11 +60,11 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
     &                      & \multicolumn{3}{c}{Vorhersage}\\
     &                      & \textbf{Kein Regen} & \textbf{Wenig Regen} & \textbf{Viel Regen}\\\hline
 \multirow{3}{*}{\rotatebox{90}{Daten}}
-    & \textbf{Kein Regen}  & 2225229 (96,3\%)    & 35527 (20,4\%)       & 3634 (05,4\%)\\
-    & \textbf{Wenig Regen} & 76988 (03,3\%)      & 110399 (63,5\%)      & 17240 (25,8\%)\\
-    & \textbf{Viel Regen}  & 8849 (00,4\%)       & 27969 (16,1\%)       & 45973 (68,8\%)\\
+    & \textbf{Kein Regen}  & 2225229 (96,3\%)    & 35527 (20,4\%)       & 3634 (5,4\%)\\
+    & \textbf{Wenig Regen} & 76988 (3,3\%)       & 110399 (63,5\%)      & 17240 (25,8\%)\\
+    & \textbf{Viel Regen}  & 8849 (0,4\%)        & 27969 (16,1\%)       & 45973 (68,8\%)\\
 \end{tabular}
-\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Tanh)]{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion Hidden Layer: Tanh)}
+\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Tanh)]{Confustion-Matrix (Drei Kategorien, Aktivierungsfunktion Hidden Layer: Tanh), die Werte sind ähnlich wie die der Aktivierungsfunktion Softmax (Tabelle~\ref{tab:confusionSoftmax}).}
 \label{tab:confusionTanh}
 \end{table}
 
@@ -84,7 +84,7 @@ Das UNet mit TanH als Aktivierungsfunktion der Hidden Layer erzeugt größere (u
 \caption{Hidden layer activation: Tanh}
 \label{fig:hiddenActivationTanh}
 \end{subfigure}%
-\caption[Vergleich von Aktivierungsfunktionen der Hidden-Layer]{Vergleich von Aktivierungsfunktionen der Hidden-Layer nach je 3072 Epochen. Aktivierungsfunktion der Output Layer ist jedes mal Softmax.}
+\caption[Vergleich von Aktivierungsfunktionen der Hidden-Layer]{Vergleich von Aktivierungsfunktionen der Hidden-Layer nach je 3072 Epochen. Aktivierungsfunktion der Output Layer ist jedes mal Softmax. Bei Tanh sind die Blobs rundlicher und haben härtere Kanten.}
 \label{fig:activatinHidden}
 \end{figure}
 
@@ -99,9 +99,9 @@ Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Re
     &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 \multirow{3}{*}{\rotatebox{90}{Daten}}
     & \textbf{Kein Regen}  & 2218754 (96,3\%)    & 45636 (18,4\%)\\
-    & \textbf{Regen}       & 85427 (03,7\%)      & 201991 (81,6\%)\\
+    & \textbf{Regen}       & 85427 (3,7\%)       & 201991 (81,6\%)\\
 \end{tabular}
-\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 0, Softmax)}
+\caption[Confustion-Matrix (Zwei Kategorien, Threshold: 0, Softmax)]{Confustion-Matrix (Zwei Kategorien, Threshold: 0, Softmax), die Vorhersage von keinem Regen ist genau so gut wie bei drei Kategorien, die Kategorie für Regen wird besser vorhergesagt, als die einzelnen Kategorien für wenig oder viel Regen (vgl. Tabelle~\ref{tab:confusionTanh}).}
 \label{tab:confusionTwoCategoriesThresholdZero}
 \end{table}
 
@@ -113,7 +113,7 @@ Verwendet man einen Threshold von 2 (mm) für die Generierung der Kategorien, ve
 %    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 %\multirow{3}{*}{\rotatebox{90}{Daten}}
 %    & \textbf{Kein Regen}  & 2323398 (99,7\%)    & 163631 (73,9\%)\\
-%    & \textbf{Regen}       & 7068 (00,3\%)       & 57711 (26,1\%)\\
+%    & \textbf{Regen}       & 7068 (0,3\%)        & 57711 (26,1\%)\\
 %\end{tabular}
 %\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 1, Softmax)}
 %\label{tab:confusionTwoCategoriesThresholdOne}
@@ -126,9 +126,9 @@ Verwendet man einen Threshold von 2 (mm) für die Generierung der Kategorien, ve
     &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 \multirow{3}{*}{\rotatebox{90}{Daten}}
     & \textbf{Kein Regen}  & 2272947 (96,7\%)    & 39276 (19,6\%)\\
-    & \textbf{Regen}       & 78475 (03,3\%)      & 161110 (80,4\%)\\
+    & \textbf{Regen}       & 78475 (3,3\%)       & 161110 (80,4\%)\\
 \end{tabular}
-\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 2, Softmax)}
+\caption[Confustion-Matrix (Zwei Kategorien, Threshold: 2, Softmax)]{Confustion-Matrix (Zwei Kategorien, Threshold: 2, Softmax), die Kategorie \gqq{kein Regen} wird leicht besser vorhergesagt, Regen etwas schlechter (vgl. Tabelle~\ref{tab:confusionTwoCategoriesThresholdZero}).}
 \label{tab:confusionTwoCategoriesThresholdTwo}
 \end{table}
 
@@ -139,7 +139,7 @@ Verwendet man einen Threshold von 2 (mm) für die Generierung der Kategorien, ve
 %    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 %\multirow{3}{*}{\rotatebox{90}{Daten}}
 %    & \textbf{Kein Regen}  & 2365886 (99,6\%)    & 121143 (69,1\%)\\
-%    & \textbf{Regen}       & 10664 (00,4\%)      & 54115 (30,9\%)\\
+%    & \textbf{Regen}       & 10664 (0,4\%)       & 54115 (30,9\%)\\
 %\end{tabular}
 %\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 3, Softmax)}
 %\label{tab:confusionTwoCategoriesThresholdThree}
@@ -153,9 +153,9 @@ Erhöht man den Threshold weiter auf 4, verdeutlicht sich der Trend aus der letz
     &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 \multirow{3}{*}{\rotatebox{90}{Daten}}
     & \textbf{Kein Regen}  & 2376736 (97,3\%)    & 25441 (23,2\%)\\
-    & \textbf{Regen}       & 65381 (02,7\%)      & 84250 (77,8\%)\\
+    & \textbf{Regen}       & 65381 (2,7\%)       & 84250 (77,8\%)\\
 \end{tabular}
-\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 4, Softmax)}
+\caption[Confustion-Matrix (Zwei Kategorien, Threshold: 4, Softmax)]{Confustion-Matrix (Zwei Kategorien, Threshold: 4, Softmax), die Kategorie \gqq{kein Regen} wird wieder etwas besser vorhergesagt, Regen schlechter (vgl. Tabelle~\ref{tab:confusionTwoCategoriesThresholdTwo}).}
 \label{tab:confusionTwoCategoriesThresholdFour}
 \end{table}
 
@@ -166,7 +166,7 @@ Erhöht man den Threshold weiter auf 4, verdeutlicht sich der Trend aus der letz
 %    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 %\multirow{3}{*}{\rotatebox{90}{Daten}}
 %    & \textbf{Kein Regen}  & 2436225 (99,3\%)    & 50804 (51,9\%)\\
-%    & \textbf{Regen}       & 17672 (00,7\%)      & 47107 (48,1\%)\\
+%    & \textbf{Regen}       & 17672 (0,7\%)       & 47107 (48,1\%)\\
 %\end{tabular}
 %\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 5, Softmax)}
 %\label{tab:confusionTwoCategoriesThresholdFive}
@@ -179,7 +179,7 @@ Erhöht man den Threshold weiter auf 4, verdeutlicht sich der Trend aus der letz
 %    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 %\multirow{3}{*}{\rotatebox{90}{Daten}}
 %    & \textbf{Kein Regen}  & 2445930 (99,2\%)    & 41099 (48,1\%)\\
-%    & \textbf{Regen}       & 20450 (00,8\%)      & 44329 (51,9\%)\\
+%    & \textbf{Regen}       & 20450 (0,8\%)       & 44329 (51,9\%)\\
 %\end{tabular}
 %\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 6, Softmax)}
 %\label{tab:confusionTwoCategoriesThresholdSix}
@@ -192,7 +192,7 @@ Erhöht man den Threshold weiter auf 4, verdeutlicht sich der Trend aus der letz
 %    &                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 %\multirow{3}{*}{\rotatebox{90}{Daten}}
 %    & \textbf{Kein Regen}  & 2475815 (98,5\%)    & 11214 (28,6\%)\\
-%    & \textbf{Regen}       & 36827 (01,5\%)      & 27952 (71,4\%)\\
+%    & \textbf{Regen}       & 36827 (1,5\%)       & 27952 (71,4\%)\\
 %\end{tabular}
 %\caption{Confustion-Matrix (Zwei Kategorien, Threshold: 10, Softmax)}
 %\label{tab:confusionTwoCategoriesThresholdTen}
