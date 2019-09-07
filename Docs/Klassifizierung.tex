@@ -220,12 +220,11 @@ In einem Optimalen Szenario wäre der Wert der TPR gleich eins und der Wert der 
 
 
 \subsubsection{ROC-Kurve bei verschieden Trainierten Netzen}
-
-In diesem Beispiel wird der Threshhold der Daten angepasst, ab wann ein Pixel als Regen zählt. Die daraus entstehende confusion Matrix wird dann in der ROC verwendet. Dies soll zur veranschaulichung Dienen, welcher Schwellwert auf den Label am sinnvollsten ist.
+In diesem Beispiel wird der Threshhold der Daten angepasst, ab wann ein Pixel als Regen zählt. Die daraus entstehende Confusion Matrix wird dann in der ROC verwendet. Dies soll zur Veranschaulichung dienen, welcher Schwellwert auf den Label am sinnvollsten ist.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.6\textwidth]{pics/roc.PNG}
+	\includegraphics[width=0.6\textwidth]{pics/roc}
 	\caption{ROC-Kurve}
 	\label{roc}
 \end{figure}
@@ -234,12 +233,11 @@ Wie bereits vermutet, verschlechtert sich die Genauigkeit mit einer Erhöhung ei
 Außerdem kann dadurch nachgewiesen werden, dass die Genauigkeit höher als beim zufälligen Auswählen ist.
 
 \subsubsection{ROC-Kurve bezüglich dem beste Netz}
+Da sich gezeigt hat, dass der Threshold 0 sich am besten Eignet, wird nun die ROC auf die Ausgabe des Netzes, welches mit einem Threshold von 0 trainiert wurde, angewandt. Hierzu wird jeweils die Wahrscheinlichkeit, für die Klasse \gqq{Regen} ausgewertet. Pixel welche als Regen klassifiziert sind haben hier ideal einen Wert nahe bei 1, regenfreie Pixel idealerweise einen Wert nahe bei 0. Wenn die beiden Klassen fehlerfrei voneinander zu trennen sind, ergibt sich daraus eine Area under the Curve (AUC) von 1. Bei einem Klassifikator, welcher die Klassen nicht trennen kann, erreicht eine AUC von 0,5. in unserem Fall (Abbildung~\ref{roc2}) wird eine AUC von 0,955 erreicht, was auf ein recht gutes unterteilen der Klassen hinweist. Unser Klassifikator ist nicht ganz ideal, aber für eine 35 Minuten vorhersage doch recht zuverlässig.
 
-Da sich gezeigt hat, dass der Threshold 0 sich am besten Eignet, wird nun die ROC auf die Ausgabe des Netzes welches mit einem Threshold von 0 trainiert wurde angewandt. Hierzu wird jeweils die Wahrscheinlichkeit, für die Klasse regen ausgewertet. Pixel welche als regen Klassifiziert sind haben hier ideal einen Wert nahe bei 1, regenfreie Pixel idealerweise einen Wert nahe bei 0. Wenn die beiden Klassen Fehlerfrei voneinander zu trennen sind, ergibt sich daraus eine Area under the Curve (AUC) von 1. Bei einem Klassifikator, welcher die Klassen nicht trennen kann, erreicht eine AUC von 0,5. in unserem Fall (Abbildung \ref{roc2}) wird eine AUC von 0,955 erreicht, was auf ein recht gutes unterteilen der Klassen hinweist. Unser Klassifikator ist nicht ganz ideal, aber für eine 35 Minuten vorhersage doch recht zuverlässig.
-
-\begin{figure}[H]
+\begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.6\textwidth]{pics/ROC-curve.PNG}
+	\includegraphics[width=0.6\textwidth]{pics/ROC-curve}
 	\caption{ROC-Kurve}
 	\label{roc2}
 \end{figure}
@@ -247,15 +245,20 @@ Da sich gezeigt hat, dass der Threshold 0 sich am besten Eignet, wird nun die RO
 
 
 \subsection{Vergleich zu einfacher Klassifizierung mittels CNN}
-Ein sehr ähnlicher Test wurde auch mit einem einfachen CNN durchgeführt. Hierbei wurden die selben Eingangsdaten verwendet. Als Label wurde allerdings nur eine einfache Klassifizierung für den 'Konstanzpixel' vorgenommen. Im gegensatz zu dem UNet muss das CNN also lediglich für einen Pixel eine Klassifizierung vornehmen. Das Ergebnis dieses Versuchs zeigt, dass das CNN für eine vergleichsweise einfachere Aufgabe eine ähnliches bzw. leicht schlechteres Ergebnis liefert. Die Auswertung ist in folgender Tabelle abgebildet. Es zeigt sich, eine deutliche schwäche bei der vorhersage von Regen, hier sind lediglich 55\% der vorhersagen korrekt. auch bei 'der Klasse kein Regen ist das UNet zuverlässiger.
+Ein sehr ähnlicher Test wurde auch mit einem einfachen CNN durchgeführt. Hierbei wurden die selben Eingangsdaten verwendet. Als Label wurde allerdings nur eine einfache Klassifizierung für den 'Konstanzpixel' vorgenommen. Im Gegensatz zu dem UNet muss das CNN also lediglich für einen Pixel eine Klassifizierung vornehmen. Das Ergebnis dieses Versuchs zeigt, dass das CNN für eine vergleichsweise einfachere Aufgabe eine ähnliches bzw. leicht schlechteres Ergebnis liefert. Die Auswertung ist in Tabelle~\ref{tab:confusionCNNkonstanz} abgebildet. Es zeigt sich, eine deutliche Schwäche bei der vorhersage von Regen, hier sind lediglich 55\% der vorhersagen korrekt. auch bei der Klasse \gqq{kein Regen} ist das UNet zuverlässiger.
 
+\begin{table}[ht]
+\centering
 \begin{tabular}{lr|rr}
 	&                      & \multicolumn{2}{c}{Vorhersage}\\
 	&                      & \textbf{Kein Regen} & \textbf{Regen}\\\hline
 	\multirow{3}{*}{\rotatebox{90}{Daten}}
-	& \textbf{Kein Regen}  & 410 (92\%)    & 80 (45\%)\\
-	& \textbf{Regen}       & 35 (8\%)       & 98 (55\%)\\
+	& \textbf{Kein Regen}  & 410 (92\%)          & 80 (45\%)\\
+	& \textbf{Regen}       & 35 (8\%)            & 98 (55\%)\\
 \end{tabular}
+\caption[Confusion Matrix der Vorhersage des Konstanzpixels mit CNN]{Confusion Matrix der Vorhersage des Konstanzpixels mit CNN. Die Sicherheit der Vorhersage von \gqq{kein Regen} ist genau so gut wie beim UNet, die der Regenvorhersage deutlich schlechter.}
+\label{tab:confusionCNNkonstanz}
+\end{table}
 
 
 \subsection{Herausforderungen in diesem Kapitel}
