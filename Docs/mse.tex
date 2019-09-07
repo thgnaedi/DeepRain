@@ -1,13 +1,13 @@
-\section{Regenradar Vorhersage}
-Ziel dieser Aufgabe ist es, mit Hilfe eines UNets eine kurzzeit-Regenvorhersage zu erreichen. Die hier verwendeten Daten sind im Kapitel \ref{Samples} genauer erklärt. Ziel des Netzes ist es die Baseline zu schlagen. Als Baseline zählen wir die Vorhersage des zeitlich Letzten Bildes. Es wird bei der Baseline also davon ausgegangen, dass sich an dem Regenverhalten nichts ändert. Im ersten Unterkapitel wird das UNet verwendet um eine fünf-minuten Vorhersage zu machen. Es werden verschiedene Erweiterungen an dem bisherigen UNet angewandt um eine eventuelle performance Steigerung zu erreichen. Im zweiten Unterkapitel soll eine Vorhersage bis zu 35 Minuten in die ZUkunft möglich werden. Die Auswertung wird im jeweiligen Kapitel vorgenommen.
+\section{Regenradar-Vorhersage}
+Ziel dieser Aufgabe ist es, mit Hilfe eines UNets eine kurzzeit-Regenvorhersage zu erreichen. Die hier verwendeten Daten sind im Kapitel~\ref{Samples} genauer erklärt. Ziel des Netzes ist es die Baseline zu schlagen. Als Baseline zählen wir die Vorhersage des zeitlich Letzten Bildes. Es wird bei der Baseline also davon ausgegangen, dass sich an dem Regenverhalten nichts ändert. Im ersten Unterkapitel wird das UNet verwendet um eine fünf-minuten Vorhersage zu machen. Es werden verschiedene Erweiterungen an dem bisherigen UNet angewandt um eine eventuelle performance Steigerung zu erreichen. Im zweiten Unterkapitel soll eine Vorhersage bis zu 35 Minuten in die ZUkunft möglich werden. Die Auswertung wird im jeweiligen Kapitel vorgenommen.
 
-\subsection{Fünf Minuten vorhersage}
+\subsection{Vorhersage von fünf Minuten}
 Um eine Radar-Vorhersage für fünf Minuten zu erreichen, werden Daten wie in Kapitel \ref{Samples} in Abbildung \ref{5D1L} gezeigt verwendet. Die Eingabedaten bestehen aus fünf aufeinander folgende Bilder, welche bis zu 20 Minuten in die Vergangenheit reichen. Das Radarbild im Label ist 5 Minuten in der Zukunft.
 
-Die verwendete Architektur entspricht der des in Kapitel \ref{kapitelUNet} beschriebenen UNets. Die verwendete Fehlerfunktion ist der MSE. Das Training beschränkt sich auf 1900 Samples aus dem Jahr 2016, zum validieren wurden die letzten 50 Samples aus dem Dezember genommen. Die Validierungsdaten kommen somit in keiner Weise während des Trainings vor.
+Die verwendete Architektur entspricht der des in Kapitel~\ref{kapitelUNet} beschriebenen UNets. Die verwendete Fehlerfunktion ist der MSE. Das Training beschränkt sich auf 1900 Samples aus dem Jahr 2016, zum validieren wurden die letzten 50 Samples aus dem Dezember genommen. Die Validierungsdaten kommen somit in keiner Weise während des Trainings vor.
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{pics/mse_learncurve.png}
+	\includegraphics[width=\linewidth]{pics/mse_learncurve}
 	\caption[Lernkurve des UNets zur fünf Minuten Vorhersage]{Die dargestellte Lernkurve bezieht sich auf die fünf Minütige Radarvorhersage mittels MSE. Zum Trainieren wurden 1900 Samples aus dem Jahr 2016 verwendet. Abgebildet ist der Validation-Loss welcher auf weitere 50 Samples berechnet wurde. Die ersten Epochen ist eine sehr starke Verbesserung des Fehlers zu erkennen, auch nach 100 Epochen scheint die Fehlerkurve noch zu fallen.}
 	\label{mseLC}
 \end{figure}
@@ -16,16 +16,16 @@ Die erste Analyse der Lernkurve \ref{mseLC} zeigt, dass das Netz den Fehler (MSE
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{pics/mse_vgl1.png}
+	\includegraphics[width=\linewidth]{pics/mse_vgl1}
 	\caption[Radarbilder für fünf-minuten Vorhersage]{Hier abgebildet sind mehrere Radarbilder. Je heller ein Pixel dargestellt ist, desto stärker regnet es an dieser Stelle. Das hier als timestep 4 bezeichnete Bild ist das letzte Eingangs-Bild und spiegelt somit die Baseline wieder. Rechts daneben abgebildet ist das Label, welches fünf Minuten später repräsentiert. Ganz rechts ist die Vorhersage des Netzes zu sehen. Die eingezeichneten Linien dienen nur der Orientierung um ein Vergleich der Bilder sowie das schätzen der Bewegung der Regenfront zu ermöglichen. Es ist deutlich zu sehen, dass Die Vorhersage des Netzes stark verschwommen ist. Die Bewegung der Regenwolken wurde allerdings sehr gut vorhergesagt. }
 	\label{mse_VGL1}
 \end{figure}
 
-Die Ausgabe sowie die Baseline sind in Abbildung \ref{mse_VGL1} für ein Validierungssample zu sehen. Das Netz hat die Bewegung der Regenfront gut vorhergesagt, allerdings ist die Regenintensität meist unterschätzt. Vor allem starken Niederschlag kann das Netz nicht vorhersagen. Das ist in der linken Abbildung an den weißen Punkten unten Links gut zu erkennen. Das Netz sagt hier eher einen dunkleren Grauton als das Label vorher. Um dennoch bewerten zu können, ob das Netz im Schnitt besser als die Baseline ist, wird für beide Vorhersagen der mittlere quadratische Fehler zum Label (im Bild 'timestep 5') berechnet. Das Resultat zeigt für die Baseline einen Fehler von 0.00165 und für das Netz etwa 0.0008. Die Baseline macht im Schnitt also einen doppelt so großen Fehler wie unser Netz. Diese Berechnung wurde für alle 50 Validierungssamples vorgenommen. Das Resultat ist in Abbildung \ref{vglBaseline1} zu sehen.
+Die Ausgabe sowie die Baseline sind in Abbildung~\ref{mse_VGL1} für ein Validierungssample zu sehen. Das Netz hat die Bewegung der Regenfront gut vorhergesagt, allerdings ist die Regenintensität meist unterschätzt. Vor allem starken Niederschlag kann das Netz nicht vorhersagen. Das ist in der linken Abbildung an den weißen Punkten unten Links gut zu erkennen. Das Netz sagt hier eher einen dunkleren Grauton als das Label vorher. Um dennoch bewerten zu können, ob das Netz im Schnitt besser als die Baseline ist, wird für beide Vorhersagen der mittlere quadratische Fehler zum Label (im Bild 'timestep 5') berechnet. Das Resultat zeigt für die Baseline einen Fehler von 0.00165 und für das Netz etwa 0.0008. Die Baseline macht im Schnitt also einen doppelt so großen Fehler wie unser Netz. Diese Berechnung wurde für alle 50 Validierungssamples vorgenommen. Das Resultat ist in Abbildung \ref{vglBaseline1} zu sehen.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{pics/mse_baseline.png}
+	\includegraphics[width=\linewidth]{pics/mse_baseline}
 	\caption[Vergleich zwischen Baseline und Netzvorhersage.]{Auf der X-Achse sind die 50 Validierungssamples aufgelistet. Die Y-Achse entspricht dem MSE für ein Sample (Quadratische Abweichung über alle Pixel gemittelt). Für jedes Sample wurde der MSE jeweils für die Vorhersage des Netzes (rot) und der Vorhersage der Baseline (grün) berechnet. Die Performance der Baseline konnte überboten werden.}
 	\label{vglBaseline1}
 \end{figure}
@@ -38,21 +38,19 @@ Die bisher verwendete Architektur ist in Blau eingezeichnet. Der erste Versuch w
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{pics/vgl_lc_optim.png}
-	\caption[Verschiedene UNet optimierungen im Vergleich.]{
-		Um die Performance unserer UNet-Architektur weiter zu steigern wurden unterschiedliche Änderungen versucht. Die blaue Kurve zeigt das bisher verwendete Netz. Ein größerer Kernel am Output-Layer (gelb) verbessert die Performance ein wenig. Eine tiefere Netzwerkarchitektur (grün) steigert die Performance erst bei verwenden von sehr vielen Kernel (rot). Das Austauschen der Aktivierungsfunktionen gegen eine sigmoid-Funktion (violett) ändert außer an der Berechnungsgeschwindigkeit nichts. Das Austauschen der Fehlerfunktion gegen den MAE (braun) sowie das ändern des Optimierers zum Nesterov (pink) zeigen keine Verbesserung. Insgesamt werden nur deutliche Änderungen an der Rechenzeit festgestellt. Die Ergebnisse bleiben von der Performance vergleichbar.
-		}
+	\caption[Verschiedene UNet-Optimierungen im Vergleich]{Um die Performance unserer UNet-Architektur weiter zu steigern wurden unterschiedliche Änderungen versucht. Die blaue Kurve zeigt das bisher verwendete Netz. Ein größerer Kernel am Output-Layer (gelb) verbessert die Performance ein wenig. Eine tiefere Netzwerkarchitektur (grün) steigert die Performance erst bei verwenden von sehr vielen Kernel (rot). Das Austauschen der Aktivierungsfunktionen gegen eine sigmoid-Funktion (violett) ändert außer an der Berechnungsgeschwindigkeit nichts. Das Austauschen der Fehlerfunktion gegen den MAE (braun) sowie das ändern des Optimierers zum Nesterov (pink) zeigen keine Verbesserung. Insgesamt werden nur deutliche Änderungen an der Rechenzeit festgestellt. Die Ergebnisse bleiben von der Performance vergleichbar.}
 	\label{lc_unet_types}
 \end{figure}
 
 % -> Mehrere Zeitschritte vorhersagen
-\subsection{Fünfunddreißig Minuten vorhersage}
+\subsection{Vorhersage von fünfunddreißig Minuten}
 Da die Baseline also mit dieser Architektur geschlagen werden kann, ist das nächste Ziel mehr als nur 5 Minuten vorherzusagen. Die hierfür verwendeten Daten bestehen aus 7 Zeitschritten im Label, also bis zu 35 Minuten in die Zukunft. Die Netzarchitektur muss hierfür lediglich am Output-Layer angepasst werden. Hierzu wird der 1x1 Kernel gegen sieben 1x1 Kernel ausgetauscht. Die Fehlerfunktion bleibt wie bisher der MSE, eine unterschiedliche Gewichtung der Zeitschritte wird nicht vorgenommen.
 Für das Training wird nun auf alle zur Verfügung stehenden Daten zugegriffen. Dies entspricht 7500 Trainings- und 623 Validierungssamples.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{pics/lc_35minMSE.png}
-	\caption[Lernkurve des UNet zur 35 Minuten Radar-Vorhersage.]{Die abgebildete Lernkurve zeigt, dass das Netz erst nach ca. 300 Epochen sich nicht weiter verbessert. Die rechte Abbildung ist ein Ausschnitt aus der linken, bei welcher das fallen der Lernkurve besser sichtbar ist.}
+	\caption[Lernkurve des UNet zur 35 Minuten Radar-Vorhersage]{Die abgebildete Lernkurve zeigt, dass das Netz erst nach ca. 300 Epochen sich nicht weiter verbessert. Die rechte Abbildung ist ein Ausschnitt aus der linken, bei welcher das fallen der Lernkurve besser sichtbar ist.}
 	\label{lc_35minMSE}
 \end{figure}
 
@@ -63,7 +61,7 @@ In den Histogrammen ist die Verteilung der Summe der quadratischen Fehler für a
 Schwarz eingezeichnet ist der Mittelwert, die beiden grauen Linien entsprechen dem 25\%-, bzw 75\%-Quantil. Es ist deutlich zu erkennen, dass der Mittelwert des Fehlers mit zunehmender Zeit größer wird, bzw. nach rechts wandert. Dies war so auch zu erwarten, da mit zunehmender Zeit stets neue Faktoren Einfluss auf das Wetterverhalten haben. Interessanter ist der Vergleich der Spalten. Der Mittelwert des Fehlers ist durchgehend besser bei der Vorhersage des Netzes als bei der Baseline. Mit zunehmender Zeit wird dieser Unterschied allerdings sehr gering.
 
 \begin{figure}[h]
-	\includegraphics[width=\linewidth]{pics/35min_vgl_baseline.png}
+	\includegraphics[width=\linewidth]{pics/35min_vgl_baseline}
 	\caption[Vergleich zwischen Baseline und UNet (35 Minuten Vorhersage)]{Ein Vergleich zwischen Baseline und Vorhersage. In den Spalten sind die Zeitlichen Schritte von 5 bis 35 Minuten Vorhersage. In der oberen Zeile ist die Vorhersage des Netzes und in der unteren die der Baseline abgebildet. Die Histogramme zeigen die Summe der Quadratischen Fehler pro Zeitschritt. Die schwarzen Linien zeigen den Mittelwert der Verteilung, während die grauen Linien das 25\%- sowie das 75\% Quantil darstellen. Mit zunehmender Zeit wandert die Verteilung weiter nach rechts, die Vorhersagen stimmen also weniger mit dem Label überein.}
 	\label{35vglbasepred}
 \end{figure}
@@ -77,13 +75,13 @@ Die Abbildungen zeigen deutlich, dass das Netz die ersten fünf Minuten sehr gen
 	\centering
 	\begin{subfigure}[]{0.9\linewidth} 
 		\centering
-		\includegraphics[width=\linewidth]{pics/dt2.png}
+		\includegraphics[width=\linewidth]{pics/dt2}
 		\caption[]{}\label{fa}
 	\end{subfigure}
 	
 	\begin{subfigure}[]{\linewidth} 
 		\centering
-		\includegraphics[width=\linewidth]{pics/t2.png}
+		\includegraphics[width=\linewidth]{pics/t2}
 		\caption[]{}\label{fb}
 	\end{subfigure}
 	
