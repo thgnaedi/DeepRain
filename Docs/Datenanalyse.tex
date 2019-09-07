@@ -4,7 +4,7 @@ Für das Projekt werden zum einen die tatsächlichen Niederschlagsdaten in Konst
 Wetterradardaten werden von öffentlichen und privaten Anbietern erhoben und sind in unterschiedlichen Qualitäten und unterschiedlicher Datenmenge verfügbar. Der Email-Verkehr mit Meteogroup, einem privaten Wetterdienstleiter zeigte, dass die Daten der Wetterstationen Konstanz Südkurier und Konstanz Dettingen von uns nicht verwendet werden konnten. Die Daten von Windy sind zwar öffentlich zugänglich, jedoch nicht dowloadbar, welches eine Voraussetzung für verwendete Daten ist. Die Daten die Anbieters Kachelmann sind bis ins Jahr 2015 online verfügbar jedoch müssten hier die Nutzungsrechte eindeutig geklärt werden. 
 Die umfangreichsten Radardaten werden von der Deutschen Wetterstation zur Verfügung gestellt, daher wurde sich im Team für die Verwendung dieser Daten entschieden. 
 
-\subsection{Verifizierung der Daten}
+\subsection{Verifizierung der Daten mit statista und Wetterkontor}
 In den Daten des DWD hat die Konstanzer Wetterstation die ID: 02712. Aus dem Zip-File mit der enthaltenen Textdatei können somit die nun aufgezeigten Daten für die Untersuchung entnommen werden. Zu den wichtigsten Informationen gehören hier das Qualitätsniveau der Daten (zwischen 1 und 16) als QN, das Messdatum im Format YYYYMMDDHHMM, die Niederschlagshöhe und den Niederschlagindikator. Die Aktuellen Daten wurden mit einem Python-Script eingelesen und ein paar kleine Statistiken zum Validieren der Daten vorgenommen. Zum Vergleich wurden hierfür die monatlichen Niederschlagsangaben von Statista.com und Wetterkontor.com genommen, allerdings bezogen die sich auf ganz Deutschland.
 \begin{table}[ht]
 \centering
@@ -28,7 +28,8 @@ Dezember  & 79,5  & 78,52  & -0,98  & 1,23\%\\
 \end{table}
 
 Die Historischen Daten des DWDs sind auch Monatlich als Textdatei gespeichert. Für den Vergleich wurde das Jahr 2018 betrachtet. In den historischen Daten fallen neue Spalten im Header auf, diese sind aber \gqq{ungenutzt} bzw. über alle (geprüft auf Jahr 2017) Einträge identisch. Diese sind: QN, RTH\_01 und RWH\_01. Die Messwerte wurden wie auch zuvor monatsweise zusammenaddiert das Ergebnis des Vergleichs ist in Tabelle~\ref{tab:Auswertung} zu sehen. 
-Auffällig ist, dass einige Messwerte sehr gut übereinstimmen. So ist der Niederschlag in den Monaten März und April fast gleich in der referenzierten Messung und der Messung des DWDs. In anderen Monaten wie im Juni ist der relative Fehler mit 26.79\% sehr hoch. Das könnte an gemessenen Extremwerten in den Daten des DWDs liegen, die in der Größenordnung in den Messungen der anderen Anbieter nicht auftauchen.  
+Auffällig ist, dass einige Messwerte sehr gut übereinstimmen. So ist der Niederschlag in den Monaten März und April fast gleich in der referenzierten Messung und der Messung des DWDs. In anderen Monaten wie im Juni ist der relative Fehler mit 26.79\% sehr hoch. Das könnte an gemessenen Extremwerten in den Daten des DWDs liegen, die in der Größenordnung in den Messungen der anderen Anbieter nicht auftauchen.
+Die hierzu verwendeten Skripte und Quellen sind auf github wiederzufinden \footnote{\url{https://github.com/thgnaedi/DeepRain/tree/master/WetterStation_KN}}.  
 
 \subsection{Korrelation der Radardaten mit den Regenmessungen}
 
