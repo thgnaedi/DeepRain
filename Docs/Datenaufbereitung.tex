@@ -1,19 +1,18 @@
 \section{Daten-Aufbereitung}
 
 \subsection{RADOLAN-Daten}
+Die Daten des DWD werden über das Routineverfahren RADOLAN (Radar-Online-Aneichung) erfasst, dass durch eine Kombination von Niederschlagstationen und Wetterradar hochauflösende Niederschlagsdaten produziert. 
 
-Die Daten des DWD werden über das Routineverfahren RADOLAN (Radar-Online-Aneichung) erfasst, dass durch eine Kombination von Niederschlagstationen und Wetterradaren hochauflösende Niederschlagsdaten produziert. 
-
-Die Open-Source Bibliothek wradlib \footnote{\url{https://docs.wradlib.org/en/stable/index.html}} stellt für diese RADOLAN-Daten eine Stereographische Projektion zur Verfügung. Dies bedeutet das die Erdkugel zu einem Koordinatensystem aufgespannt wird, dessen Ursprung im Nordpol liegt. Siehe Abbildung  \ref{rz}.
+Die Open-Source Bibliothek wradlib\footnote{\url{https://docs.wradlib.org/en/stable/index.html}} stellt für diese RADOLAN-Daten eine stereographische Projektion zur Verfügung. Dies bedeutet das die Erdkugel zu einem Koordinatensystem aufgespannt wird, dessen Ursprung im Nordpol liegt (siehe Abbildung~\ref{rz}).
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{pics/RZ_product.PNG}
+	\includegraphics[width=0.8\textwidth]{pics/RZ_product}
 	\caption{Ausschnitt Deutschlands im Koordinatensystem}
 	\label{rz}
 \end{figure}
 
-Der resultierende Ausschnitt für Deutschland kann mit Hilfe von wradlib als 1100 * 900 Array ausgelesen Werten, dessen Werte einer 1 Kilometer Grid-Box entsprechen.
+Der resultierende Ausschnitt für Deutschland kann mit Hilfe von wradlib als 1100x900 Array ausgelesen Werten, dessen Werte einer 1 Kilometer Grid-Box entsprechen.
 
 \subsection{Location Konstanz}
 \label{locKN}
@@ -41,7 +40,7 @@ Die umgewandelten XY-Koordinaten müssen nun innerhalb des Arrays gefunden werde
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{pics/Location.png}
+	\includegraphics[width=0.8\textwidth]{pics/Location}
 	\caption{Location von Konstanz im Ausschnitt Deutschland}
 	\label{fig:location}
 \end{figure}
