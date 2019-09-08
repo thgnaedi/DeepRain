@@ -40,6 +40,5 @@ NetworkTypes/UNet64*/
 *.lof
 *.lot
 *.out
-*.pdf
 *busy*
 *.toc

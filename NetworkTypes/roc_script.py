@@ -13,7 +13,7 @@ def drawROC(class1, class2):
     # Calculate TruePositive and FalsePositives for each threshold
     tps = []
     fps = []
-    for threshold in np.arange(0,1,0.05):
+    for threshold in np.arange(0, 1, 0.05):
         tp = 0
         fp = 0
         tn = 0
@@ -39,13 +39,14 @@ def drawROC(class1, class2):
     auc = getAUCfromROC(tps, fps)
     # plot ROC
     plt.figure("ROC")
-    plt.plot([0,0,1], [0,1,1], color="gray", alpha=0.6, label="AUC = 1")
+    plt.plot([0, 0, 1], [0, 1, 1], color="gray", alpha=0.6, label="AUC = 1")
     plt.plot(tps, fps, label="AUC = {:.3}".format(auc))
-    plt.xlim(-0.02,1.02)
-    plt.ylim(-0.02,1.02)
+    plt.xlim(-0.02, 1.02)
+    plt.ylim(-0.02, 1.02)
     plt.ylabel("P(TP)")
     plt.xlabel("P(FP)")
     plt.legend()
+    plt.savefig("roc.svg")
     plt.show()
     return
 
@@ -60,9 +61,8 @@ def getAUCfromROC(tp, fp):
         h2 = fp[i+1]
         diff = h1-h2
         b = tp[i]-tp[i+1]
-        summ = summ + h2* b         # square
+        summ = summ + h2 * b         # square
         summ = summ + diff * b / 2  # triangle
-
     return summ
 
 
@@ -101,7 +101,7 @@ def main():
     net, offset = load_last_net(netname, _dir=directory)
     assert net is not None
     probabilities_a, probabilities_b = get_probability_lists(net, data=data, label=label)
-    drawROC(probabilities_b, probabilities_a)
+    drawROC(probabilities_a, probabilities_b)
 
 
 if __name__ == '__main__':
