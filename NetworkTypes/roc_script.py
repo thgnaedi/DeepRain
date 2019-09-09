@@ -13,7 +13,7 @@ def drawROC(class1, class2):
     # Calculate TruePositive and FalsePositives for each threshold
     tps = []
     fps = []
-    for threshold in np.arange(0, 1, 0.05):
+    for threshold in np.arange(-0.05, 1.05, 0.025):
         tp = 0
         fp = 0
         tn = 0
