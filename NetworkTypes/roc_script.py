@@ -9,6 +9,7 @@ def drawROC(class1, class2):
     plt.hist(class1, bins=20, alpha=0.5, label='class 1')
     plt.hist(class2, bins=20, alpha=0.5, label='class 2')
     plt.legend(loc='upper right')
+    plt.savefig("ROC-classes.svg")
 
     # Calculate TruePositive and FalsePositives for each threshold
     tps = []
@@ -20,16 +21,16 @@ def drawROC(class1, class2):
         fn = 0
 
         for e in class1:
-            if e <= threshold: # class 1 hit
+            if e <= threshold:  # class 1 hit
                 tn = tn + 1
-            else:           # class 1 miss
+            else:               # class 1 miss
                 fp = fp + 1
         for e in class2:
             if e <= threshold:  # class2 miss
                 fn = fn + 1
             else:           # class2 hit
-                tp = tp+1
-        # get propabilities
+                tp = tp + 1
+        # get probabilities
         tp = tp / len(class2)
         fp = fp / len(class1)
         tps.append(tp)
@@ -46,7 +47,7 @@ def drawROC(class1, class2):
     plt.ylabel("P(TP)")
     plt.xlabel("P(FP)")
     plt.legend()
-    plt.savefig("roc.svg")
+    plt.savefig("ROC.svg")
     plt.show()
     return
 
