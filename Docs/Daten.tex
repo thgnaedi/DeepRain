@@ -22,15 +22,14 @@ Als Label dienen dann $n$ Zeitschritte, für den ersten Versuch sind $n = 1$, sp
 
 \begin{figure}[h]
 	\includegraphics[width=\linewidth]{pics/5Daten_1Label_Radar.png}
-	\caption[Beispielhaftes Trainingssample zur vorhersage von 5 Minuten]{Die Grafiken timestep0 bis timestep4 sind die 5 eingehenden Daten, die als timestamp5 bezeichnete Grafik entspricht dem zu lernenden Label. Die Bilder sind jeweils 5 Minuten voneinander entfernte Radarbilder. Die orangene und rote Linie dient nur zur besseren Darstellung der Bewegung.}
+	\caption[Beispielhaftes Trainingssample zur vorhersage von 5 Minuten]{Die Grafiken timestep 0 bis timestep 4 sind die 5 eingehenden Daten, die als timestamp 5 bezeichnete Grafik entspricht dem zu lernenden Label. Die Bilder sind jeweils 5 Minuten voneinander entfernte Radarbilder. Die orange und rote Linien dienen nur zur besseren Darstellung der Bewegung.}
 	\label{5D1L}
 \end{figure}
 
-Die Daten für eine einfache fünf minutige Vorhersage sind in Abbildung \ref{5D1L} dargestellt.
+Die Daten für eine einfache fünfminütliche Vorhersage sind in Abbildung~\ref{5D1L} dargestellt.
 
 Für das Training können allerdings nicht alle Daten verwendet werden. Zum einen, kommt es vor, dass eine Radarstation keine Daten liefert, solche Bilder eignen sich nicht für das Training. Auch kommt es sehr häufig vor, dass kein Regen stattfindet, die Grafik also komplett schwarz und ohne Struktur ist. Auch solche Samples sind nicht zum Training geeignet. Als letzte Einschränkung gilt, dass über alle fünf eingehenden Zeitschritte ein Mindestmaß an Regen zu sehen sein muss um in das Trainingsset aufgenommen zu werden. Für die Label gibt es keine Einschränkung, da sowohl die Fortbewegung von Regen, als auch das verschwinden gelernt werden soll. Jeder Zeitschritt wird maximal einmal in das Trainingsset aufgenommen, was einmal als Label verwendet wurde, wird keinesfalls in einem anderen Sample als als Eingabedatum verwendet. Beim Aufteilen des Sets zwischen Trainings und Validierungsset ist es wichtig, dass nicht zufällige Samples ausgewählt werden, damit garantiert ist, dass keine ähnliche Wetterlage bereits gesehen wurde.
 Die so entstandenen Daten werden vor Eingabe in das Netz noch auf Werte zwischen 0 und 1 Normiert. Ab jetzt können die Daten für das Trainieren verwendet werden.
-
 
 
 \subsection{Herausforderungen in diesem Kapitel}

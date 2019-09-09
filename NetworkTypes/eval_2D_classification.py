@@ -1,12 +1,12 @@
 from Data.evaluate_Network_on_realData import eval_trainlogfile
 from NetworkTypes.extendet_CNN_test import load_last_net
 import NetworkTypes.loss_function_test_etienne
-import Data.evaluate_Network_on_realData
 import numpy as np
 import matplotlib.pyplot as plt
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 
 def correlation_plots(_true, _pred, classnames = ["kein Regen", "Regen", "stark Regen"]):
     samples, x, y, classes = _true.shape
