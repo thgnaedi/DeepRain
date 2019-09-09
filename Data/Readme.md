@@ -4,7 +4,7 @@
 Das Skript ```DWDtoPNGScript.py``` konvertiert die DWD-Radardaten nach PNG und spreizt dabei die Daten auf einen Bereich von 0 bis 255, damit die Daten als 8-bit PNGs gespeichert werden können. Dafür werden 2 Durchläufe benötigt. Im ersten Durchlauf wird das Maximum bestimmt, um die Daten richtig skalieren zu können (das Minimum wird als 0/kein Regen angenommen).
 
 ## Benutzung
-Dem Skript muss der Ordner mit dem entpakten Radardaten übergenen werden (siehe [DWD-Crawler Readme0](https://github.com/thgnaedi/DeepRain/blob/master/DWD_Crawler/README.md)), dazu noch das Verzeichnis, in dem die PNGs gespeichert werden sollen.
+Dem Skript muss der Ordner mit dem entpakten Radardaten übergenen werden (siehe [DWD-Crawler Readme](https://github.com/thgnaedi/DeepRain/blob/master/DWD_Crawler/README.md)), dazu noch das Verzeichnis, in dem die PNGs gespeichert werden sollen.
 
 Argument    | Bedeutung
 ------------|--------
