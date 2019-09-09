@@ -25,7 +25,7 @@
 \ExecuteOptions{english}
 \ProcessOptions\relax
 
-\LoadClass[11pt]{book}
+\LoadClass[10pt]{book}
 
 \RequirePackage{setspace}
 \onehalfspacing
@@ -488,7 +488,7 @@
     {0pt}
     {\Huge\color{title}}
 %% Separate the title from the text by two empty lines.
-\titlespacing{\part}{0pt}{0pt}{2\baselineskip}
+\titlespacing{\part}{0pt}{0pt}{1\baselineskip}
 %% In the table of contents, the part name is preceded by an empty line, printed
 %% in bold, and not followed by a line of dots.
 \dottedcontents{part}[0em]{\vspace{\baselineskip}\bfseries}{1.5em}{0pc}
@@ -512,7 +512,7 @@
     {0pt}
     {\color{title}}
 %% Sections are preceded by an empty line.
-\titlespacing{\section}{0pt}{2\baselineskip}{1.5\baselineskip}
+\titlespacing{\section}{0pt}{0.75\baselineskip}{0.25\baselineskip}
 %% In the table of contents, section names are followed by a line of dots 8pt
 %% apart.
 \dottedcontents{section}[3.8em]{}{2.3em}{8pt}
