@@ -1,17 +1,17 @@
 \section{Klassifizierung}
 Statt die genaue Regenmenge in 35 Minuten vorherzusagen, stellten wir drei Kategorien auf: kein Regen ($= 0mm$), wenig Regen ($\leq 8mm$) und viel Regen ($> 8mm$). Diese Kategorien haben wir als One-Hot-Vector kodiert. `[1, 0, 0]` entspricht hierbei kein Regen, sodass man aus der ersten Dimension der Vorhersage einfach ein Vorschaubild generieren kann aus dem man gleich feststellen kann, ob es am jeweiligen Pixel regnet oder nicht.
 
-Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur \gqq{kein Regen} vorhergesagt. Stattdessen wurde als Loss-Funktion die \gqq{Categorical Crossentropy} von Keras verwendet; die binäre Crossentropy können wir nicht verwenden, weil wir mehr als zwei Kategorien verwenden. Die \gqq{Categorical Crossentropy} funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
+Für das Training mit Kategorien kann man nicht mehr den MSE verwenden, hier würde selbst nach 80 Epochen nur \gqq{kein Regen} vorhergesagt. Stattdessen wurde als Loss-Funktion die \gqq{Categorical Crossentropy} von Keras verwendet. Die binäre Crossentropy können wir nicht verwenden, da wir mehr als zwei Kategorien verwenden. Die \gqq{Categorical Crossentropy} funktioniert relativ gut, aber es wird ein Blob vorhersagt, der etwas über den Bereich ragt, in dem es eigentlich regnet.
 
 Danach wurde noch die Aktivierungsfunktion für den Output-Layer Sigmoid durch Softmax ersetzt. Dadurch erscheint das Vorschaubild etwas verwaschener, aber der Blob um das Regengebiet wird kleiner und die Differenz zum Referenzbild wird kleiner.
 
-Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert, verbessert sich auch die Kategorisierung: der Blob nähert sich weiter dem Regengebiet aus dem zu vorhersagendem Bild an, ist aber immer noch merkbar größer und franst an den kanten aus.
+Wenn man die Aktivierungsfunktion der Hidden-Layer (von ReLu) zu Tanh verändert, verbessert sich auch die Kategorisierung: der Blob nähert sich weiter dem Regengebiet aus dem zu vorhersagendem Bild an, ist aber immer noch merkbar größer und franst an den Kanten aus.
 
 Als nächstes wird die Metrik \gqq{categorical\_accuracy} verwendet, um die Vorhersage zu überwachen. Dadurch kann der Fortschritt beim Trainieren besser überwacht werden.
 
 
 \subsection{Training}
-Für das Training wurden alle Daten der 18 Jahre verwendet, partitioniert in Trainings- und Evaluationsdaten. Als Lossfunktion wurde der MSE verwendet, der den Unterschied über alle Pixel kumuliert, weswegen so hohe Werte in den Abbildungen vorkommen (1100x900 Pixel). Da das Training auf der GPU weniger al 10~Sekunden pro Epoche dauert, wurden gleich 3072 Epochen trainiert.
+Für das Training wurden alle Daten der 18 Jahre verwendet, partitioniert in Trainings- und Evaluationsdaten. Als Lossfunktion wurde der MSE verwendet, der den Unterschied über alle Pixel kumuliert, weswegen so hohe Werte in den Abbildungen vorkommen (1100x900 Pixel). Da das Training auf der GPU weniger als 10~Sekunden pro Epoche dauert, wurden gleich 3072 Epochen trainiert.
 
 In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinander dargestellt, links steht das Training des Netzes mit Softmax als Aktivierungsfunktion des Hidden Layer und rechts ist das selbe Netz mit TanH als Aktivierungsfunktion. Man sieht jedoch, dass es ab etwa 1500~Epochen (x-Achse) keine Verbesserungen mehr gibt.
 
@@ -29,7 +29,7 @@ In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinande
 \caption{Lernkurve (Hidden layer: Tanh)}
 \label{fig:lernkurveTanh}
 \end{subfigure}%
-\caption[Lernkurven verschiedener Aktivierungsfkt. der Hidden Layer]{Gegenüberstellung zweier Lernkurven von verschiedenen Aktivierungsfunktionen der Hidden Layer. Auf der Y-Achse ist der kumulierte MSE über alle Pixel. Ab etwa der tausendsten Epoche gibt es kaum noch eine Verbesserung. Bei Tanh flacht die Kurve schneler ab.}
+\caption[Lernkurven verschiedener Aktivierungsfkt. der Hidden Layer]{Gegenüberstellung zweier Lernkurven von verschiedenen Aktivierungsfunktionen der Hidden Layer. Auf der Y-Achse ist der kumulierte MSE über alle Pixel. Ab etwa der tausendsten Epoche gibt es kaum noch eine Verbesserung. Bei Tanh flacht die Kurve schneller ab.}
 \label{fig:lernkurven}
 \end{figure}
 
@@ -38,7 +38,7 @@ In Abbildung~\ref{fig:lernkurven} sind die Lernkurven des Trainings nebeneinande
 \subsection{Auswertung}
 Zu den Netzen mit den verschiedenen Aktivierungsfunktionen wurden jeweils eine Confustion-Matrix erstellt (siehe Tabellen~\ref{tab:confusionSoftmax} und~\ref{tab:confusionTanh}). An beiden Matrizen kann man sehen, dass beide Aktivierungsfunktionen für einzelne Pixel statistisch ähnliche Ergebnisse liefern.
 
-Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,1\% respektive 96,3\% auch tatsächlich kein Regen eintrifft. Wird wenig Regen vorhergesagt, ist die Unsicherheit recht groß: zu rund 20\% regnet es gar nicht oder zu etwa 16\% regnet es stark. Zu einem Fünftel kann es also sein, dass hier die Vorhersage \gqq{Regen} nicht eintrifft. Wird starker Regen vorausgesagt, trifft zu gut 68\% auch starker Regen ein, zu fast 26\% wenig Regen oder gut 5\% kein Regen. Hier trifft die Vorhersage \gqq{Regen} also zu 95\% ein.
+Bei beiden Matrizen gleicht sich, dass falls kein Regen vorhergesagt wird, in 96,1\% respektive 96,3\% auch tatsächlich kein Regen eintrifft. Wird wenig Regen vorhergesagt, ist die Unsicherheit recht groß: zu rund 20\% regnet es gar nicht oder zu etwa 16\% regnet es stark. Zu einem Fünftel kann es also sein, dass hier die Vorhersage \gqq{Regen} nicht eintrifft. Wird starker Regen vorausgesagt, trifft zu gut 68\% auch starker Regen ein, zu fast 26\% wenig Regen oder gut 5\% kein Regen. Hier trifft die Vorhersage \gqq{Regen} also zu 95\% ein.
 
 \begin{table}[ht]
 \centering
@@ -50,7 +50,7 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
     & \textbf{Wenig Regen} & 81116 (3,5\%)       & 106434 (63,4\%)      & 17077 (25,9\%)\\
     & \textbf{Viel Regen}  & 9695 (0,4\%)        & 27930 (16,7\%)       & 45166 (68,4\%)\\
 \end{tabular}
-\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Softmax)]{Confustion-Matrix zur 35 minuten Regenvorhersage (Drei Kategorien, Aktivierungsfunktion der Hidden Layer: Softmax), Vorhersage für kein Regen sehr gut, die für wenig und viel Regen sind unsicherer.}
+\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Softmax)]{Confustion-Matrix zur 35 Minuten Regenvorhersage (drei Kategorien, Aktivierungsfunktion der Hidden Layer: Softmax), Vorhersage für kein Regen sehr gut, die für wenig und viel Regen sind unsicherer.}
 \label{tab:confusionSoftmax}
 \end{table}
 
@@ -64,7 +64,7 @@ Bei beiden Matrizen ist gleich, dass, falls kein Regen vorhergesagt wird, in 96,
     & \textbf{Wenig Regen} & 76988 (3,3\%)       & 110399 (63,5\%)      & 17240 (25,8\%)\\
     & \textbf{Viel Regen}  & 8849 (0,4\%)        & 27969 (16,1\%)       & 45973 (68,8\%)\\
 \end{tabular}
-\caption[Confustion-Matrix (Drei Kategorien, Hidden Layer: Tanh)]{Confustion-Matrix zur 35 minuten Regenvorhersage (Drei Kategorien, Aktivierungsfunktion Hidden Layer: Tanh), die Werte sind ähnlich wie die der Aktivierungsfunktion Softmax (Tabelle~\ref{tab:confusionSoftmax}).}
+\caption[Confustion-Matrix (drei Kategorien, Hidden Layer: Tanh)]{Confustion-Matrix zur 35 Minuten Regenvorhersage (drei Kategorien, Aktivierungsfunktion Hidden Layer: Tanh), die Werte sind ähnlich wie die der Aktivierungsfunktion Softmax (Tabelle~\ref{tab:confusionSoftmax}).}
 \label{tab:confusionTanh}
 \end{table}
 
@@ -90,7 +90,7 @@ Das UNet mit TanH als Aktivierungsfunktion der Hidden Layer erzeugt größere (u
 
 
 \subsubsection{Training mit zwei Kategorien}
-Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / Kein Regen) durchzuführen um festzustellen, ob die Vorhersage auf diese Weise besser funktioniert als die mit den drei bisherigen Kategorien. Dazu trainierten wir noch einmal das Netz mit zwei Kategorien und stellen die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategoriesThresholdZero}). Bei einem Threshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht; und falls Regen vorhergesagt wurde regnet es zu gut 80\%.
+Daraufhin versuchten wir die Vorhersage mit nur zwei Kategorien (Regen / kein Regen) durchzuführen um festzustellen, ob die Vorhersage auf diese Weise besser funktioniert als die mit den drei bisherigen Kategorien. Dazu trainierten wir noch einmal das Netz mit zwei Kategorien und stellen die Confusion Matrix auf (siehe Tabelle~\ref{tab:confusionTwoCategoriesThresholdZero}). Bei einem Threshold von 0 erhält man fast gleiche Wahrscheinlichkeiten wie bei 3 Kategorien für Regen und Kein Regen: Falls kein Regen vorhergesagt wurde, regnet es zu 96\% nicht. Falls Regen vorhergesagt wurde, regnet es zu gut 80\%.
 
 \begin{table}[ht]
 \centering
@@ -199,7 +199,7 @@ Erhöht man den Threshold weiter auf 4, verdeutlicht sich der Trend aus der letz
 %\end{table}
 
 Man sieht also, dass die Vorhersage ob Regen eintrifft oder nicht, bei drei Kategorien und zwei Kategorien (bei einem Threshold von 0) fast gleich ausfällt und  die Erhöhung des Thresholds die Genauigkeit senkt. Die genaue Regenmenge vorauszusagen hat sich als schwierig herausgestellt, aber man weiß zumindest (fast) sicher, dass man, wenn kein Regen vorhergesagt wird, nicht nass wird.
-Da das Datenset sehr unbalanciert ist ist die Trefferquote nur bedingt aussagekräftig. Auch ein Klassifikator, welcher immer nur kein Regen vorhersagt hätte eine gute Trefferrate. Um dieser Eingenschaft entgegen zu wirken, wird auch ein ROC analyse durchgeführt.
+Da das Datenset sehr unbalanciert ist, ist die Trefferquote nur bedingt aussagekräftig. Auch ein Klassifikator, welcher immer nur kein Regen vorhersagt hätte eine gute Trefferrate. Um dieser Eingenschaft entgegen zu wirken, wird auch ein ROC-Analyse durchgeführt.
 
 \subsection{ROC-Kurve bei zwei Kategorien}
 Zur Überprüfung des Verhaltens der Genauigkeit bei Anpassung des Thresholds wird eine Receiver Operating Characteristic-Kurve (ROC) verwendet (siehe Abbildung~\ref{roc}). Diese dient zum Vergleich der Confusion Matrizen mit verschiedenen Thresholds und damit der Performance des Netzes.
@@ -233,7 +233,7 @@ Wie bereits vermutet, verschlechtert sich die Genauigkeit mit einer Erhöhung ei
 Außerdem kann dadurch nachgewiesen werden, dass die Genauigkeit höher als beim zufälligen Auswählen ist.
 
 \subsubsection{ROC-Kurve bezüglich dem beste Netz}
-Da sich gezeigt hat, dass der Threshold 0 sich am besten Eignet, wird nun die ROC auf die Ausgabe des Netzes, welches mit einem Threshold von 0 trainiert wurde, angewandt. Hierzu wird jeweils die Wahrscheinlichkeit, für die Klasse \gqq{Regen} ausgewertet. Pixel welche als Regen klassifiziert sind haben hier ideal einen Wert nahe bei 1, regenfreie Pixel idealerweise einen Wert nahe bei 0. Wenn die beiden Klassen fehlerfrei voneinander zu trennen sind, ergibt sich daraus eine Area under the Curve (AUC) von 1. Bei einem Klassifikator, welcher die Klassen nicht trennen kann, erreicht eine AUC von 0,5. in unserem Fall (Abbildung~\ref{roc2}) wird eine AUC von 0,955 erreicht, was auf ein recht gutes unterteilen der Klassen hinweist. Unser Klassifikator ist nicht ganz ideal, aber für eine 35 Minuten vorhersage doch recht zuverlässig.
+Da sich gezeigt hat, dass der Threshold 0 sich am besten eignet, wird nun die ROC auf die Ausgabe des Netzes, welches mit einem Threshold von 0 trainiert wurde, angewandt. Hierzu wird jeweils die Wahrscheinlichkeit, für die Klasse \gqq{Regen} ausgewertet. Pixel welche als Regen klassifiziert sind haben hier ideal einen Wert nahe bei 1, regenfreie Pixel idealerweise einen Wert nahe bei 0. Wenn die beiden Klassen fehlerfrei voneinander zu trennen sind, ergibt sich daraus eine Area under the Curve (AUC) von 1. Bei einem Klassifikator, welcher die Klassen nicht trennen kann, erreicht eine AUC von 0,5. in unserem Fall (Abbildung~\ref{roc2}) wird eine AUC von 0,955 erreicht, was auf ein recht gutes unterteilen der Klassen hinweist. Unser Klassifikator ist nicht ganz ideal, aber für eine 35 Minuten vorhersage doch recht zuverlässig.
 
 \begin{figure}[ht]
 	\centering
@@ -245,7 +245,7 @@ Da sich gezeigt hat, dass der Threshold 0 sich am besten Eignet, wird nun die RO
 
 
 \subsection{Vergleich zu einfacher Klassifizierung mittels CNN}
-Ein sehr ähnlicher Test wurde auch mit einem einfachen CNN durchgeführt. Hierbei wurden die selben Eingangsdaten verwendet. Als Label wurde allerdings nur eine einfache Klassifizierung für den 'Konstanzpixel' vorgenommen. Im Gegensatz zu dem UNet muss das CNN also lediglich für einen Pixel eine Klassifizierung vornehmen. Das Ergebnis dieses Versuchs zeigt, dass das CNN für eine vergleichsweise einfachere Aufgabe eine ähnliches bzw. leicht schlechteres Ergebnis liefert. Die Auswertung ist in Tabelle~\ref{tab:confusionCNNkonstanz} abgebildet. Es zeigt sich, eine deutliche Schwäche bei der vorhersage von Regen, hier sind lediglich 55\% der vorhersagen korrekt. auch bei der Klasse \gqq{kein Regen} ist das UNet zuverlässiger.
+Ein sehr ähnlicher Test wurde auch mit einem einfachen CNN durchgeführt. Hierbei wurden die selben Eingangsdaten verwendet. Als Label wurde allerdings nur eine einfache Klassifizierung für den 'Konstanzpixel' vorgenommen. Im Gegensatz zu dem UNet muss das CNN also lediglich für einen Pixel eine Klassifizierung vornehmen. Das Ergebnis dieses Versuchs zeigt, dass das CNN für eine vergleichsweise einfachere Aufgabe eine ähnliches bzw. leicht schlechteres Ergebnis liefert. Die Auswertung ist in Tabelle~\ref{tab:confusionCNNkonstanz} abgebildet. Es zeigt sich, eine deutliche Schwäche bei der Vorhersage von Regen, hier sind lediglich 55\% der vorhersagen korrekt. Auch bei der Klasse \gqq{kein Regen} ist das UNet zuverlässiger.
 
 \begin{table}[ht]
 \centering
@@ -262,8 +262,8 @@ Ein sehr ähnlicher Test wurde auch mit einem einfachen CNN durchgeführt. Hierb
 
 
 \subsection{Herausforderungen in diesem Kapitel}
-In diesem Kapitel gab es zwei große Herausforderungen: zum einen war es schwierig die richtigen Kategorien zu finden, und zum anderen musste sich herausstellen, wie sich die verschiedenen Aktivierungsfunktionen auswirken.
+In diesem Kapitel gab es zwei große Herausforderungen: Zum Einen war es schwierig die richtigen Kategorien zu finden, und zum Anderen musste sich herausstellen, wie sich die verschiedenen Aktivierungsfunktionen auswirken.
 
-Die drei Kategorien haben sich als suboptimal herausgestellt, da vor allem die dritte Klasse deutlich zu wenig Samples für ein sinnvolles Training besitzt. Mit zwei Kategorien hingegen können wir zuverlässige Vorhersagen bezüglich Regen oder kein Regen geben.
+Die drei Kategorien haben sich als suboptimal herausgestellt, da vor allem die dritte Klasse bei Weitem nicht genügend Samples für ein sinnvolles Training besitzt. Mit zwei Kategorien hingegen können wir zuverlässige Vorhersagen bezüglich Regen oder kein Regen geben.
 
 Die Aktivierungsfunktionen haben sich nur auf die Form der Blobs der Niederschlagsmengen ausgewirkt (Abbildung~\ref{fig:activatinHidden}), aber weniger auf die Regen-Wahrscheinlichkeit der einzelnen Punkte (siehe Tabellen~\ref{tab:confusionSoftmax} und \ref{tab:confusionTanh}).
