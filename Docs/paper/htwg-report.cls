@@ -388,7 +388,7 @@
         \node at (139.8mm,-37mm)[anchor=north west, fill=htwg-dark-blue]{
             \begin{minipage}[t]{55mm}
                 \begin{flushleft}
-                    \color{htwg-white}\scriptsize\textbf{Eingereicht von}
+                    \color{htwg-white}\scriptsize\textbf{Submitted by}
                     \linebreak
                     \color{htwg-white}\scriptsize{\verfasserA}
                     \linebreak
