@@ -39,10 +39,10 @@
 \input{extended_abstract}
 \twocolumn
 \section*{Data}
-We are using radar Data from the Climate Data Center of the DWD\footnote{\url{https://www.dwd.de/DE/klimaumwelt/cdc/cdc_node.html}}. Here are radarimages since 2004. 
-This data has to be Downloaded and converted to png this is done by our Crawler\footnote{\url{https://github.com/thgnaedi/DeepRain/tree/master/DWD_Crawler}} and Converter\footnote{\url{https://github.com/thgnaedi/DeepRain/blob/master/Data/DWDtoPngScript.py}}.
-The rainfall images then are tailored and scaled. Unattraktive images are then rejected that only interesting images are used for the training.
-The images are grayscale png's. As network input five temporally consecutive of them are combined to a 3D tensor as input. The label consists of seven of them.
+We are using radar data from the Climate Data Center of the DWD\footnote{\url{https://www.dwd.de/DE/klimaumwelt/cdc/cdc_node.html}}. There are radar images from the years 2004 until 2017.
+This data has to be downloaded and converted to png, this is done by our crawler\footnote{\url{https://github.com/thgnaedi/DeepRain/tree/master/DWD_Crawler}} and converter\footnote{\url{https://github.com/thgnaedi/DeepRain/blob/master/Data/DWDtoPngScript.py}}.
+The rainfall images then are tailored and scaled. Unattractive images are then rejected, and only interesting images are used for the training.
+The resulting images are grayscale PNG files. As network input five temporally consecutive of them are combined to a 3D tensor. The label consists of seven of them.
 
 \section*{Architecture}
 To predict precipitation either with regression or classification we are using a UNet.
@@ -66,20 +66,20 @@ The result of this task is shown in the following graphics.
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{../pics/dt5}
-\caption{The input is a 64x64x5 Tensor, containing the last 25 minutes, with the following content}
+\caption{The input is a 64x64x5 tensor containing the last 25 minutes}
 \end{figure}
 
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{../pics/t5}
-\caption{The Labels are seven timesteps to predict, from 5 minutes till 35 minutes into the future. The result is shown here. In the upper row we can see the seven timesteps in the Labels. White means a lot rainfall while black is no rainfall.
+\caption{The labels are seven timesteps to predict, from 5 minutes till 35 minutes into the future. The result is shown here. In the upper row we can see the seven timesteps in the Labels. White means a lot rainfall while black is no rainfall.
 The second row contains the labels for this input. In the last row are the predictions of our model.}
 \end{figure}
 
 The predicted values are very close to the label for a difference of only 5 minutes to the input data. The further the time progresses, the worse the prediction becomes.
 In the last image it looks like the resolution of the output has been drastically decreased compared to the first output. 
-In fact the resolution is the same we can say that this is an indication of uncertainty in the Network.
+In fact the resolution is the same we can say that this is an indication of uncertainty in the network.
 Over time, the movement of the rainfall is well predicted. Even the tiny spot in the top left of images can be predicted.
 Even if the area of rainfall increases much faster than in the labels, the center is still well predicted and close to the center of the label.
 
