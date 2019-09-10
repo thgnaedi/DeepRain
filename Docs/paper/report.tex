@@ -41,7 +41,7 @@
 \section*{Data}
 We are using radar Data from the Climate Data Center of the DWD\footnote{\url{https://www.dwd.de/DE/klimaumwelt/cdc/cdc_node.html}}. Here are radarimages since 2004. 
 This data has to be Downloaded and converted to png this is done by our Crawler\footnote{\url{https://github.com/thgnaedi/DeepRain/tree/master/DWD_Crawler}} and Converter\footnote{\url{https://github.com/thgnaedi/DeepRain/blob/master/Data/DWDtoPngScript.py}}.
-The rainfall images then are tailored and scaled. Unattraktive images are then rejected that only interessting images are used for the training.
+The rainfall images then are tailored and scaled. Unattraktive images are then rejected that only interesting images are used for the training.
 The images are grayscale png's. As network input five temporally consecutive of them are combined to a 3D tensor as input. The label consists of seven of them.
 
 \section*{Architecture}
@@ -98,7 +98,7 @@ The gray spots can be rainfall or not depending on the propability of the other 
 Here we can see that the big black spots (no difference between prediction and label) are at the no rainfall labels. This can be explained later. 
 The network has a high accuracy by predicting rainfree pixels. this can be shown in the follwing ROC-image. 
 By evaluating the confusion matrix for three class classification, you can recognize that the last class (heavy rainfall) is higly undersampled. 
-There are much more rainfall pixels and even more no rainfall pixels in the Dataset. To increase the the performance we tried over and undersampling, but both tecniques didnt work well for our scenario.
+There are much more rainfall pixels and even more no rainfall pixels in the dataset. To increase the the performance we tried over and undersampling, but both tecniques didnt work well for our scenario.
 Finally we changed the problem to a two clas classification with a threshold of 0, so the classes are 'no rainfall' and 'rainfall'.
 
 
