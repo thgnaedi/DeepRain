@@ -9,7 +9,7 @@ predict short term precipitation for 35 minutes for an area around Constance.
 
 #### Results:
 * can be read from our english paper [here on github](https://github.com/thgnaedi/DeepRain/blob/master/Docs/paper/report.pdf)
-* or in full length in ur german report [here on github](https://github.com/thgnaedi/DeepRain/blob/master/Docs/Langdokumentation.pdf)
+* or in our full length german report [here on github](https://github.com/thgnaedi/DeepRain/blob/master/Docs/Langdokumentation.pdf)
 
 
 
