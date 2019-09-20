@@ -1,22 +1,25 @@
-# Datenverarbeitung
+# Data processing
+The radar data has to be converted to PNG files to be easily usable and further processed.
 
 ## DWD to PNG
-Das Skript ```DWDtoPNGScript.py``` konvertiert die DWD-Radardaten nach PNG und spreizt dabei die Daten auf einen Bereich von 0 bis 255, damit die Daten als 8-bit PNGs gespeichert werden können. Dafür werden 2 Durchläufe benötigt. Im ersten Durchlauf wird das Maximum bestimmt, um die Daten richtig skalieren zu können (das Minimum wird als 0/kein Regen angenommen).
+The script ```DWDtoPNGScript.py``` converts the radar data from the DWD to PNG and spread the values to a range of 0 to 255 so that they can be saved as 8-bit PNGs.
 
-Es wird ebenfalls eine CSV-Datei mit Metadaten angelegt, die für jede Datei mit Radardaten dessen Minimum und Maximum enthält. Dadurch kann bei einem zukünftigem Aufruf die Bestimmung die Bestimmung der Werte für die entsprechenden Dateien entfallen (es wird Zeit gespart). 
+To passes are needed for this process. While the first pass the minimum and maximum are determined, to scale the values correctly. The second pass actually converts the radar data to PNG files.
 
-## Benutzung
-Dem Skript muss der Ordner mit dem entpakten Radardaten übergenen werden (siehe [DWD-Crawler Readme](https://github.com/thgnaedi/DeepRain/blob/master/DWD_Crawler/README.md)), dazu noch das Verzeichnis, in dem die PNGs gespeichert werden sollen.
+Also a CSV file will be created with the min and max of each radar data file. So the metadata computation can be skipped on the next run.
 
-Es kann explizit der Name der anzulegenden Metadaten-Datei angegeben werden. Falls nicht, wird automatisch im Verzeichnis des Scripts ```radolan_metadata.csv``` angelegt.
+## Usage
+The script must be run from command line and take at least two arguments: the directory with uncompressed radar data files ([DWD-Crawler Readme](https://github.com/thgnaedi/DeepRain/blob/master/DWD_Crawler/README.md)), and the directory where to save the PNG in.
 
-Der Faktor, mit dem die Daten multipliziert werden, ist normalerweise 1. Jedoch hat sich zum Trainieren der Wert 4 als nützlich herausgestellt.
+The name of the metadata file can be specified explicitly with parameter ```-m```, otherwise the file ```radolan_metadata.csv``` will be created in the current working directory. 
+ 
+A factor can be provided to multiply the data with, normally it is 1. But the value 4 may help with training of the net.
 
 Argument    | Bedeutung
 ------------|--------
--h          | Hilfe mit Beschreibung und Kommandozeilenoptionen         | Only unpacks already downloaded files (use with -z, do not use with -d)
--i \<dir\>  | Verzeichnis mit den (unkomprimierten) DWD-Binärdateien
--o \<dir\>  | Verzeichnis in dem die PNGs gespeichert werden sollen
--m \<file\> | Datei in/aus der die Metadaten der DWD-Binärdateien gespeichert/gelesen werden sollen
--c          | Flag das bestimmt, ob Metadaten zu neuen Dateien berechnet werden sollen oder nicht (überspringt ersten Durchlauf)
--f <number> | Faktor, mit dem jedes Datum multipliziert wird (Werte höher als 1 können die Vorhersage des Netzes verbessern)
+-h          | Prints a help screen ith description nd command line options
+-i \<dir\>  | Directory with uncompressed radar data
+-o \<dir\>  | Directory where to save the PNG in
+-m \<file\> | Metadata file
+-c          | Convert only (skip first pass)
+-f <number> | Factor, to multiply all data with
