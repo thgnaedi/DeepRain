@@ -108,10 +108,14 @@ def query_metadata_file(filename):
         for row in reader:
             if len(row) == 0:
                 continue
-            if float(row[1]) < minimum:
-                minimum = float(row[1])
-            if float(row[2]) > maximum:
-                maximum = float(row[2])
+            try:
+                if float(row[1]) < minimum:
+                    minimum = float(row[1])
+                if float(row[2]) > maximum:
+                    maximum = float(row[2])
+            except ValueError:
+                logger.error("Not a valid number in line: {}".format(row))
+                continue
     return minimum, maximum
 
 
