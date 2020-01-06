@@ -12,10 +12,19 @@ class Data_converter():
     def __init__(self, path, max_num_samples, n_data, n_label, start_img=None, subimg_startpos=None, subimg_shape=None,
                  output_shape=None, silent=False, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png", invalid_value=-1):
         """
-        start_img       Derzeit nicht verwendet, spaeter sollen nur Bilder nach diesem Zeitpunkt verwendet werden.
-        subimg_startpos tupel mit x,y Koordinate bei welcher der zu generierende Bildausschnitt beginnen soll.
-        subimg_shape    tupel der groeße, welche der Bildausschnitt haben soll.
-        output_shape    groeße, welches das Ausgegebene Bild haben soll. Bildausschnitt wird dann noch skaliert. None, tuple or int
+		Object to create sampleBundles (.sb File) from given path and parameters.
+		path			Directory with radar images
+		max_num_samples	collection progress will stop if number of samples reached max or no more images are avaliable in the given path
+		n_data			number of images/timesteps for input data (n_data=5 means 5 consecutive pictures are used as input)
+		n_label			number of images/timesteps for output data
+        start_img       not implemented yet, set this to None
+        subimg_startpos tupel with x,y coordinates were subimage sould be taken from
+        subimg_shape    tupel with shape of the selected subimage, can also be None
+        output_shape    None, tuple or int, shape for images, can be used to rescale the selected subimage.
+		silent			True means no print messages
+		pre				offset for imagenames, should be changed, if PNGs are renamed
+		post			see post just after timestep
+		invalid_value	int, pixels with this value will be repaced by zero (can be used to remove pixels without radardata at the edges)
         """
         assert os.path.exists(path)
         if start_img is not None:
