@@ -17,6 +17,9 @@ NetworkTypes/Net_with_BNorm/
 NetworkTypes/Net_without_BNorm/
 NetworkTypes/UNet64*/
 
+Docs/Jahresbericht/
+Docs/Unet64_traindata/
+
 *.log
 *.txt
 *.csv
