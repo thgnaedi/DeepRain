@@ -42,7 +42,16 @@ def train_model(model, diffToLabel=2, batch_size=100, epochs = 4, savename=None,
 
 
 def eval_model(modelname, diffToLabel, rescale=False):
+    """
+
+    :param modelname:   Path to .h5 File were model is stored
+    :param diffToLabel: additional Padding
+    :param rescale:     Flag, if True Output will be scaled between 0 and 1
+    :return:            None
+    """
     model = load_model(modelname+'.h5')
+
+    # generates an synthetic sample:
     data, label = generate_one_sample((100, 100), N_INPUTS, schrittweite=10, pad=diffToLabel)
     prediction = model.predict(np.expand_dims(data, axis=0))
     # plot_6_images(data, label)
@@ -51,22 +60,23 @@ def eval_model(modelname, diffToLabel, rescale=False):
 
 
 def eval_all():
-    simple = ('01_CNN_simple', 2)
-    simple2 = ("03_CNN_simple_5x5_5x5_2epoch", 4)
-    simple3 = ("04_CNN_simple_5x5_5x5_4epoch", 4)
-    simple4 = ("05_CNN_simple_5x5_5x5_2epoch_KLD", 4)
-    deeper = ("02_CNN_deeper_2epoch", 5)  # 0.0229 #Test accuracy: 0.002
-    deeper2 = ("06_CNN_deeper_2epoch_10k", 5)  # 0.0175 #Test accuracy: 0.0
+    simple = ('oldNetworks/01_CNN_simple', 2)
+    simple2 = ("oldNetworks/03_CNN_simple_5x5_5x5_2epoch", 4)
+    simple3 = ("oldNetworks/04_CNN_simple_5x5_5x5_4epoch", 4)
+    simple4 = ("oldNetworks/05_CNN_simple_5x5_5x5_2epoch_KLD", 4)
+    deeper = ("oldNetworks/02_CNN_deeper_2epoch", 5)  # 0.0229 #Test accuracy: 0.002
+    deeper2 = ("oldNetworks/06_CNN_deeper_2epoch_10k", 5)  # 0.0175 #Test accuracy: 0.0
     all = [simple, simple2, simple3, simple4, deeper, deeper2]
     for  net in all:
-        eval_model(net[0],net[1])
-
-    eval_model(net[0], net[1], rescale=True)
+        try:
+            eval_model(net[0],net[1])
+        except OSError as e:
+            print("Skipping Network", e)
     return
 
 
 if __name__ == '__main__':
-    bool_Train = True
+    bool_Train = False
     #eval_model("CNN_deeper_1epoch_25k", 5)
     #Train:
     if bool_Train:
