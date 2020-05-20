@@ -26,9 +26,6 @@ logger.addHandler(stream_handler)
 FTP_DIRECTORY = "/climate_environment/CDC/grids_germany/{}/radolan/historical/bin/"
 host_protocol = "ftp://"
 host_url = "ftp-cdc.dwd.de"
-#host_url = "ftp://opendata.dwd.de"
-#host_directory = "pub/CDC/grids_germany/hourly/radolan/historical/bin/"
-#host_directory = "/climate_environment/CDC/grids_germany/hourly/radolan/historical/bin/"
 host_directory = FTP_DIRECTORY.format("hourly")
 local_directory = "./"
 
@@ -149,8 +146,11 @@ def ftp_dir(ftp, directory):
     return [(line[0].upper() == 'D', line.rsplit()[-1]) for line in dir_listing]
 
 
-def ftp_dir_year(ftp, directory_file_list):
+def ftp_dir_year(ftp, directory_file_list, year=None):
     for df in directory_file_list:
+        if year is not None:
+            if df[1] != year:   # skipping unnecessary years
+                continue
         if df[0]:
             current_directory = df[1]
             file_list = ftp_file(ftp, current_directory)
@@ -164,17 +164,19 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
 
     logger.info("Doing: ")
 
-    #ToDo: year selection currently only used with minutely = True
-    #ToDo: minutely Download has to be fixed
-    #ToDo: Error handling for ftp/http connections
+    #ToDo: minutely Download has to be fixed why not also using FTP here?
 
     if download:
         if not minutely:
             logger.info("Downloading hourly files")
             os.chdir(download_dir)
-            ftp_session = FTP(host_url)
-            ftp_session.login()
-            ftp_dir_year(ftp_session, ftp_dir(ftp_session, host_directory))
+            try:
+                ftp_session = FTP(host_url)
+                ftp_session.login()
+            except Exception as e:
+                logger.error("FTP Session for {} failed. \nException:{}".format(host_url,e))
+                return
+            ftp_dir_year(ftp_session, ftp_dir(ftp_session, host_directory), year)
             ftp_session.close()
         else:
             logger.info("Downloading minutely files")
@@ -194,6 +196,8 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
         else:
             print("Uncompressing minutely files")
             daily_uncompress(download_dir, out_directory, year)
+
+    logger.info("Crawler finished!")
 
 
 if __name__ == "__main__":
@@ -249,4 +253,4 @@ if __name__ == "__main__":
              unpack=not args.downloadOnly,
              minutely=args.minutely,
              year=args.year)
-    logger.info("Crawler finished!")
+
