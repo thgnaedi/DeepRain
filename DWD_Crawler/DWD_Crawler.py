@@ -23,62 +23,61 @@ stream_handler.setLevel(logging.INFO)
 logger.addHandler(stream_handler)
 
 
-FTP_DIRECTORY = "/climate_environment/CDC/grids_germany/{}/radolan/historical/bin/"
 host_protocol = "ftp://"
 host_url = "ftp-cdc.dwd.de"
-host_directory = FTP_DIRECTORY.format("hourly")
+host_directory = "/climate_environment/CDC/grids_germany/hourly/radolan/historical/bin/"
 local_directory = "./"
 
 minutely_host_protocol = "https://"
 #minutely_host_url = "opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/"
-minutely_host_url = FTP_DIRECTORY[1:].format("5_minutes")
+minutely_host_url = "/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/"
 minutely_year_begin = 2001
 minutely_year_end = 2018
 minutely_filename_prefix = "YW2017.002_"
 minutely_filename_end = ".tar"
 
 
-def daily_uncompress(archive_directory, target_directory, year=None):
-    temp_dir_name = "tmp_" + str(uuid.uuid4())
-    os.chdir(archive_directory)
-    if not os.path.isdir(temp_dir_name):
-        os.mkdir(temp_dir_name)
+#def daily_uncompress(archive_directory, target_directory, year=None):
+#    temp_dir_name = "tmp_" + str(uuid.uuid4())
+#    os.chdir(archive_directory)
+#    if not os.path.isdir(temp_dir_name):
+#        os.mkdir(temp_dir_name)
 
-    if not year:
-        archive_wildcard = minutely_filename_prefix + "*.tar"
-    else:
-        archive_wildcard = minutely_filename_prefix + str(year) + "*.tar"
+#    if not year:
+#        archive_wildcard = minutely_filename_prefix + "*.tar"
+#    else:
+#        archive_wildcard = minutely_filename_prefix + str(year) + "*.tar"
 
-    for file in glob.glob(archive_wildcard):
-        uncompress_tarfile(archive_directory + '/' + file, "./" + temp_dir_name)
+#    for file in glob.glob(archive_wildcard):
+#        uncompress_tarfile(archive_directory + '/' + file, "./" + temp_dir_name)
 
     # Move to tmp directory and uncompress archives to target
-    os.chdir(temp_dir_name)
-    logger.info("Uncompressing .tar.gz files in " + os.getcwd())
-    for file in glob.glob("*.tar.gz"):
-        uncompress_targzfile(file, target_directory)
-    logger.info("Removing temp folder")
-    os.chdir("..")
-    shutil.rmtree("./" + temp_dir_name)
+#    os.chdir(temp_dir_name)
+#    logger.info("Uncompressing .tar.gz files in " + os.getcwd())
+#    for file in glob.glob("*.tar.gz"):
+#        uncompress_targzfile(file, target_directory)
+#    logger.info("Removing temp folder")
+#    os.chdir("..")
+#    shutil.rmtree("./" + temp_dir_name)
 
 
-def daily_download_years(target_directory):
-    for year in range(minutely_year_begin, minutely_year_end + 1):
-        daily_download_months(year, target_directory)
+#def daily_download_years(target_directory):
+#    for year in range(minutely_year_begin, minutely_year_end + 1):
+#        daily_download_months(year, target_directory)
 
 
-def daily_download_months(year, target_directory):
-    for month in range(1, 13):
-        daily_filename = minutely_filename_prefix + str(year) + str(month).zfill(2) + minutely_filename_end
-        url_complete = minutely_host_protocol + minutely_host_url + str(year) + '/' + daily_filename
-        if os.path.isfile(target_directory + daily_filename):
-            logger.info("File already downloaded: " + daily_filename)
-            continue
-        logger.info("Downloading: " + url_complete)
-        r = requests.get(url_complete, stream=True)
-        r.raw.decode_content = True
-        with open(target_directory + daily_filename, 'wb') as file:
-            file.write(r.content)
+#def daily_download_months(year, target_directory):
+#    for month in range(1, 13):
+#        daily_filename = minutely_filename_prefix + str(year) + str(month).zfill(2) + minutely_filename_end
+#        url_complete = minutely_host_protocol + minutely_host_url + str(year) + '/' + daily_filename
+#        if os.path.isfile(target_directory + daily_filename):
+#            logger.info("File already downloaded: " + daily_filename)
+#            continue
+#        logger.info("Downloading: " + url_complete)
+#        r = requests.get(url_complete, stream=True)
+#        r.raw.decode_content = True
+#        with open(target_directory + daily_filename, 'wb') as file:
+#            file.write(r.content)
 
 
 def gunzip(file_path, output_path):
@@ -161,10 +160,8 @@ def ftp_dir_year(ftp, directory_file_list, year=None):
 def main(download_dir="./", out_directory="./", download=True, unpack=True, minutely=True, year=None):
     logger.info("Downloads are at: " + download_dir)
     logger.info("Uncompressing to: " + out_directory)
-
     logger.info("Doing: ")
 
-    #ToDo: minutely Download has to be fixed why not also using FTP here?
 
     if download:
         if not minutely:
@@ -179,15 +176,25 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             ftp_dir_year(ftp_session, ftp_dir(ftp_session, host_directory), year)
             ftp_session.close()
         else:
+            #logger.info("Downloading minutely files")
+            #if not year:
+            #    daily_download_years(download_dir)
+            #else:
+            #    num_year = int(year)
+            #    if minutely_year_begin <= num_year <= minutely_year_end:
+            #        daily_download_months(num_year, download_dir)
+            #    else:
+            #        logger.info("Year not available for download: " + str(year))
             logger.info("Downloading minutely files")
-            if not year:
-                daily_download_years(download_dir)
-            else:
-                num_year = int(year)
-                if minutely_year_begin <= num_year <= minutely_year_end:
-                    daily_download_months(num_year, download_dir)
-                else:
-                    logger.info("Year not available for download: " + str(year))
+            os.chdir(download_dir)
+            try:
+                ftp_session = FTP(host_url)
+                ftp_session.login()
+            except Exception as e:
+                logger.error("FTP Session for {} failed. \nException:{}".format(host_url, e))
+                return
+            ftp_dir_year(ftp_session, ftp_dir(ftp_session, minutely_host_url), year)
+            ftp_session.close()
 
     if unpack:
         if not minutely:
@@ -196,6 +203,7 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
         else:
             print("Uncompressing minutely files")
             daily_uncompress(download_dir, out_directory, year)
+            uncompress_monthly_all(download_dir, out_directory)
 
     logger.info("Crawler finished!")
 
