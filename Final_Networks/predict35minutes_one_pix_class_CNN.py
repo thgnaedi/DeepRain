@@ -3,8 +3,9 @@ from Final_Networks.predict35minutes_MSE import generate_Data_5_7
 from extendet_CNN_test import train_realdata
 from NetworkTypes.networkBox import get_CNN_classification
 from random import shuffle
+import NetworkTypes.tfModels as tfM
 
-def generate_classification(neigbours, print_hist=False, threshold=0.05, only_2004=False, offset=623, duplications=0):
+def generate_classification(neigbours, print_hist=False, threshold=0.05, only_2004=False, offset=623, duplications=0, two_class=False):
     path = "..\\Data\\samplebundles\\{}_5in_7out_64x64_without_border"
     train, test = generate_Data_5_7(path, only_2004=only_2004)  # 13000 = 4569 18000 = 2904
 
@@ -24,29 +25,53 @@ def generate_classification(neigbours, print_hist=False, threshold=0.05, only_20
     flattened_pos = 14174  # flattened id for [31][40][6] #6*64*64+posX*64+posY
     new_label = []
     new_data = []
-    countarray = np.zeros(3)
-    countarray2 = np.zeros(3)
+    if two_class:
+        countarray = np.zeros(2)
+        countarray2 = np.zeros(2)
+    else:
+        countarray = np.zeros(3)
+        countarray2 = np.zeros(3)
+
+
     for i in range(len(all_data)):
+        if neigbours:
+            value = max(all_label[i][13726], all_label[i][14167], all_label[i][14174], all_label[i][14181], all_label[i][14622])
+        else:
+            value = all_label[i][flattened_pos]
         n_duplications=1
         if i == 623:
-            countarray2 = np.zeros(3)
-        tmp = np.zeros(3)
-        if all_label[i][flattened_pos] == 0:
+            if two_class:
+                countarray2 = np.zeros(2)
+            else:
+                countarray2 = np.zeros(3)
+        if two_class:
+            tmp = np.zeros(2)
+        else:
+            tmp = np.zeros(3)
+
+        if value == 0:
             tmp[0] = 1
             countarray[0] += 1
             countarray2[0] += 1
-        elif all_label[i][flattened_pos] < threshold:
+        elif value < threshold:
             if (i >= offset):
                 n_duplications +=duplications
             tmp[1] = 1
             countarray[1] += n_duplications
             countarray2[1] += n_duplications
         else:
-            if (i >= offset):
-                n_duplications +=duplications
-            tmp[2] = 1
-            countarray[2] += n_duplications
-            countarray2[2] += n_duplications
+            if two_class:
+                if (i >= offset):
+                    n_duplications += duplications
+                tmp[1] = 1
+                countarray[1] += n_duplications
+                countarray2[1] += n_duplications
+            else:
+                if (i >= offset):
+                    n_duplications +=duplications
+                tmp[2] = 1
+                countarray[2] += n_duplications
+                countarray2[2] += n_duplications
 
 
         for j in range(n_duplications):
@@ -70,12 +95,13 @@ if __name__ == '__main__':
     #ToDo: Daten sammeln bzw. Umwandeln mit Nachbarschaftspixeln statt nur dem Konstanz pixel und kn = max (alle in range)
 
     ### Netz erstellen:
-    model = get_CNN_classification(input_shape=(64, 64, 5))
+    #model = get_CNN_classification(input_shape=(64, 64, 5))
+    model2 = tfM.UNet64(input_shape=(64, 64, 5), simpleclassification=2, lossfunction="categorical_crossentropy", metrics=['accuracy'])
 
     ### Training vorbereiten:
-    data, label = generate_classification(False, print_hist=True, duplications=2)
+    data, label = generate_classification(neigbours=True, print_hist=True, duplications=2, two_class=True)
     print("sollte sein (8123,3):",label.shape)
 
     ## Training starten:
-    train_realdata(model, samplebundle=None, n_epoch=15, savename="CNN_classification_2duplications", channelsLast=True, use_logfile=True,
+    train_realdata(model2, samplebundle=None, n_epoch=150, savename="UNet_classification_2duplications_neighbours_2classes", channelsLast=True, use_logfile=True,
                    load_last_state=True, n_testsamples=623, data=data, label=label, _eval_output=False)
