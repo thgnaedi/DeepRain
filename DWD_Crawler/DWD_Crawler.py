@@ -23,13 +23,18 @@ stream_handler.setLevel(logging.INFO)
 logger.addHandler(stream_handler)
 
 
+FTP_DIRECTORY = "/climate_environment/CDC/grids_germany/{}/radolan/historical/bin/"
 host_protocol = "ftp://"
 host_url = "ftp-cdc.dwd.de"
-host_directory = "pub/CDC/grids_germany/hourly/radolan/historical/bin/"
+#host_url = "ftp://opendata.dwd.de"
+#host_directory = "pub/CDC/grids_germany/hourly/radolan/historical/bin/"
+#host_directory = "/climate_environment/CDC/grids_germany/hourly/radolan/historical/bin/"
+host_directory = FTP_DIRECTORY.format("hourly")
 local_directory = "./"
 
 minutely_host_protocol = "https://"
-minutely_host_url = "opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/"
+#minutely_host_url = "opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/"
+minutely_host_url = FTP_DIRECTORY[1:].format("5_minutes")
 minutely_year_begin = 2001
 minutely_year_end = 2018
 minutely_filename_prefix = "YW2017.002_"
@@ -156,6 +161,9 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
 
     logger.info("Doing: ")
 
+    #ToDo: year selection currently only used with minutely = True
+    #ToDo: minutely Download has to be fixed
+
     if download:
         if not minutely:
             logger.info("Downloading hourly files")
@@ -221,7 +229,7 @@ if __name__ == "__main__":
     logger.info("5 minutely files: ")
     logger.info("True" if args.minutely else "False")
 
-    logger.info("Download YEAR: " + "ALL" if not args.year else str(args.year))
+    logger.info("Download YEAR: " + ("ALL" if not args.year else str(args.year)))
 
     down_dir = "./" if args.down_directory is None else os.path.join(args.down_directory, '')
     out_dir = "./" if args.out_directory is None else os.path.join(args.out_directory, '')

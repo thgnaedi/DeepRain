@@ -20,4 +20,4 @@ Argument      | Action
 -z \<dir\>    | Expects a directory, in which the tars will be downloaded
 -o \<dir\>    | Expects a directory, in which the radar files will be extracted to
 -m            | Download files with the resolution of 5 minutes, instead of resolution of 1 hour
--y \<number\> | Specify a single year (instead of all years) to download or extract
+-y \<number\> | Specify a single year (instead of all years) to download or extract (currently only working fpr 5 minutes resolution)
