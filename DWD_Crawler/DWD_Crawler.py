@@ -103,7 +103,10 @@ def uncompress_targzfile(tar_file_path, destination):
     if tarfile.is_tarfile(tar_file_path):
         logger.info("Uncompressing tar.gz file: " + tar_file_path)
         file = tarfile.open(tar_file_path, "r:gz")
-        file.extractall(destination)
+        try:
+            file.extractall(destination)
+        except:
+            logger.error("Extraction failed for: {}".format(tar_file_path))
     else:
         logger.error("Error uncompressing tar.gz file: " + tar_file_path)
 
@@ -111,7 +114,7 @@ def uncompress_targzfile(tar_file_path, destination):
 def uncompress_monthly_all(source_path, destination_path):
     os.chdir(source_path)
     for file in glob.glob("*.tar.gz"):
-        subdir = destination_path + '/' + file
+        subdir = os.path.join(destination_path, file[:-7])  #-7 = folder without .tar.gz!
         if not os.path.exists(subdir):
             os.makedirs(subdir)
         uncompress_targzfile(file, subdir)
@@ -163,6 +166,7 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
 
     #ToDo: year selection currently only used with minutely = True
     #ToDo: minutely Download has to be fixed
+    #ToDo: Error handling for ftp/http connections
 
     if download:
         if not minutely:
