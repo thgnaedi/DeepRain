@@ -172,7 +172,7 @@ if __name__ == "__main__":
                         action="store_true")
     parser.add_argument("-y", "--year",
                         dest="year",
-                        help="Specify the year to be downloaded. ONLY WORKS with option: -m")
+                        help="Specify the year to be downloaded.")
 
     logger.info("All Arguments initialized")
 
