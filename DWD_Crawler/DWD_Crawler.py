@@ -6,9 +6,7 @@ import gzip
 import shutil
 import tarfile
 import os
-import requests
 import logging
-import uuid
 
 
 logger = logging.getLogger("DWD Crawler (script)")
@@ -22,63 +20,12 @@ stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
 logger.addHandler(stream_handler)
 
-
-host_protocol = "ftp://"
 host_url = "ftp-cdc.dwd.de"
 host_directory = "/climate_environment/CDC/grids_germany/hourly/radolan/historical/bin/"
-local_directory = "./"
 
-minutely_host_protocol = "https://"
-#minutely_host_url = "opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/"
 minutely_host_url = "/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/"
 minutely_year_begin = 2001
-minutely_year_end = 2018
-minutely_filename_prefix = "YW2017.002_"
-minutely_filename_end = ".tar"
-
-
-#def daily_uncompress(archive_directory, target_directory, year=None):
-#    temp_dir_name = "tmp_" + str(uuid.uuid4())
-#    os.chdir(archive_directory)
-#    if not os.path.isdir(temp_dir_name):
-#        os.mkdir(temp_dir_name)
-
-#    if not year:
-#        archive_wildcard = minutely_filename_prefix + "*.tar"
-#    else:
-#        archive_wildcard = minutely_filename_prefix + str(year) + "*.tar"
-
-#    for file in glob.glob(archive_wildcard):
-#        uncompress_tarfile(archive_directory + '/' + file, "./" + temp_dir_name)
-
-    # Move to tmp directory and uncompress archives to target
-#    os.chdir(temp_dir_name)
-#    logger.info("Uncompressing .tar.gz files in " + os.getcwd())
-#    for file in glob.glob("*.tar.gz"):
-#        uncompress_targzfile(file, target_directory)
-#    logger.info("Removing temp folder")
-#    os.chdir("..")
-#    shutil.rmtree("./" + temp_dir_name)
-
-
-#def daily_download_years(target_directory):
-#    for year in range(minutely_year_begin, minutely_year_end + 1):
-#        daily_download_months(year, target_directory)
-
-
-#def daily_download_months(year, target_directory):
-#    for month in range(1, 13):
-#        daily_filename = minutely_filename_prefix + str(year) + str(month).zfill(2) + minutely_filename_end
-#        url_complete = minutely_host_protocol + minutely_host_url + str(year) + '/' + daily_filename
-#        if os.path.isfile(target_directory + daily_filename):
-#            logger.info("File already downloaded: " + daily_filename)
-#            continue
-#        logger.info("Downloading: " + url_complete)
-#        r = requests.get(url_complete, stream=True)
-#        r.raw.decode_content = True
-#        with open(target_directory + daily_filename, 'wb') as file:
-#            file.write(r.content)
-
+minutely_year_end = 2019
 
 def gunzip(file_path, output_path):
     logger.info("Uncompressing gz file: " + file_path)
@@ -86,19 +33,18 @@ def gunzip(file_path, output_path):
         shutil.copyfileobj(compressed, file_out)
 
 
-def uncompress_tarfile(tar_file_path, destination):
-    if tarfile.is_tarfile(tar_file_path):
-        logger.info("Uncompressing tar file: " + tar_file_path)
-        file = tarfile.open(tar_file_path, "r|")
-        file.extractall(destination)
-    else:
-        logger.error("Error uncompressing tar file: " + tar_file_path)
 
-
-def uncompress_targzfile(tar_file_path, destination):
+def uncompress_targzfile(tar_file_path, destination, method="r:gz"):
+    """
+    Extracting archive File to destination
+    :param tar_file_path:   path to archive File (.tar, .tar.gz, ...)
+    :param destination:     directory to extract archive
+    :param method:          r:gz for .tar.gz r for tar etc, modes can be found in tarfile.open description
+    :return:
+    """
     if tarfile.is_tarfile(tar_file_path):
         logger.info("Uncompressing tar.gz file: " + tar_file_path)
-        file = tarfile.open(tar_file_path, "r:gz")
+        file = tarfile.open(tar_file_path, method)
         try:
             file.extractall(destination)
         except:
@@ -107,13 +53,19 @@ def uncompress_targzfile(tar_file_path, destination):
         logger.error("Error uncompressing tar.gz file: " + tar_file_path)
 
 
-def uncompress_monthly_all(source_path, destination_path):
+def uncompress_all(source_path, destination_path, archiveFormat = "*.tar.gz"):
     os.chdir(source_path)
-    for file in glob.glob("*.tar.gz"):
-        subdir = os.path.join(destination_path, file[:-7])  #-7 = folder without .tar.gz!
+    for file in glob.glob(archiveFormat):
+        subdir = os.path.join(destination_path, file[:-(len(archiveFormat)-1)])  #-7 = folder without .tar.gz!
         if not os.path.exists(subdir):
             os.makedirs(subdir)
-        uncompress_targzfile(file, subdir)
+        if archiveFormat.endswith(".gz"):   #*.tar.gz
+            uncompress_targzfile(file, subdir)
+        elif archiveFormat.endswith(".tar"):    #*.tar
+            uncompress_targzfile(file, subdir, "r|")
+        else:
+            logger.error("unsupported format for uncompress_all found, nothing to do here!")
+    return
 
 
 def download_with_new_connection(ftp, filename):
@@ -176,15 +128,6 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             ftp_dir_year(ftp_session, ftp_dir(ftp_session, host_directory), year)
             ftp_session.close()
         else:
-            #logger.info("Downloading minutely files")
-            #if not year:
-            #    daily_download_years(download_dir)
-            #else:
-            #    num_year = int(year)
-            #    if minutely_year_begin <= num_year <= minutely_year_end:
-            #        daily_download_months(num_year, download_dir)
-            #    else:
-            #        logger.info("Year not available for download: " + str(year))
             logger.info("Downloading minutely files")
             os.chdir(download_dir)
             try:
@@ -199,11 +142,10 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
     if unpack:
         if not minutely:
             print("Uncompressing hourly files")
-            uncompress_monthly_all(download_dir, out_directory)
+            uncompress_all(download_dir, out_directory)
         else:
             print("Uncompressing minutely files")
-            daily_uncompress(download_dir, out_directory, year)
-            uncompress_monthly_all(download_dir, out_directory)
+            uncompress_all(download_dir, out_directory, archiveFormat="*.tar")
 
     logger.info("Crawler finished!")
 
@@ -252,8 +194,7 @@ if __name__ == "__main__":
 
     if args.downloadOnly and args.unpackOnly:
         logger.error("Contradicting arguments: downloadOnly AND unpackOnly")
-        logger.info("YOU wanted me to do nothing!!!")
-        logger.info("Exiting now - tschau!")
+        logger.info("youse only one of them, or noone to download and extract")
     else:
         main(download_dir=down_dir,
              out_directory=out_dir,
