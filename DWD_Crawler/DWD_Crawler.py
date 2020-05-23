@@ -27,12 +27,6 @@ minutely_host_url = "/climate_environment/CDC/grids_germany/5_minutes/radolan/re
 minutely_year_begin = 2001
 minutely_year_end = 2019
 
-def gunzip(file_path, output_path):
-    logger.info("Uncompressing gz file: " + file_path)
-    with gzip.open(file_path, "rb") as compressed, open(output_path, "wb") as file_out:
-        shutil.copyfileobj(compressed, file_out)
-
-
 
 def uncompress_targzfile(tar_file_path, destination, method="r:gz"):
     """
@@ -54,6 +48,13 @@ def uncompress_targzfile(tar_file_path, destination, method="r:gz"):
 
 
 def uncompress_all(source_path, destination_path, archiveFormat = "*.tar.gz"):
+    """
+    extracts all archive Files in given directory
+    :param source_path:         source dir containing archives
+    :param destination_path:    target dir for extractes archives
+    :param archiveFormat:       file ending (*.tar for 5 minute steps)
+    :return:
+    """
     os.chdir(source_path)
     for file in glob.glob(archiveFormat):
         subdir = os.path.join(destination_path, file[:-(len(archiveFormat)-1)])  #-7 = folder without .tar.gz!
@@ -110,6 +111,16 @@ def ftp_dir_year(ftp, directory_file_list, year=None):
 
 
 def main(download_dir="./", out_directory="./", download=True, unpack=True, minutely=True, year=None):
+    """
+    complete process (download/extract binarys from DWD)
+    :param download_dir:    target directory for archive files
+    :param out_directory:   target directory for binary files (extracted archives)
+    :param download:        bool, True = copy files from ftp server
+    :param unpack:          bool, True = extract local archive files
+    :param minutely:        bool, True = 5 minute resolution of radar Data will be used
+    :param year:            optional int to download only a single year
+    :return:
+    """
     logger.info("Downloads are at: " + download_dir)
     logger.info("Uncompressing to: " + out_directory)
     logger.info("Doing: ")
