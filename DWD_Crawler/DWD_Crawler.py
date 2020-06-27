@@ -53,20 +53,23 @@ def uncompress_all(source_path, destination_path, archiveFormat = "*.tar.gz"):
     :param source_path:         source dir containing archives
     :param destination_path:    target dir for extractes archives
     :param archiveFormat:       file ending (*.tar for 5 minute steps)
-    :return:
+    :return:                    created subdirs
     """
     os.chdir(source_path)
+    subdirs = []
     for file in glob.glob(archiveFormat):
         subdir = os.path.join(destination_path, file[:-(len(archiveFormat)-1)])  #-7 = folder without .tar.gz!
         if not os.path.exists(subdir):
             os.makedirs(subdir)
         if archiveFormat.endswith(".gz"):   #*.tar.gz
             uncompress_targzfile(file, subdir)
+            subdirs.append(subdir)
         elif archiveFormat.endswith(".tar"):    #*.tar
             uncompress_targzfile(file, subdir, "r|")
+            subdirs.append(subdir)
         else:
             logger.error("unsupported format for uncompress_all found, nothing to do here!")
-    return
+    return subdirs
 
 
 def download_with_new_connection(ftp, filename):
@@ -151,12 +154,17 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             ftp_session.close()
 
     if unpack:
+        subdirs = None
         if not minutely:
             print("Uncompressing hourly files")
-            uncompress_all(download_dir, out_directory)
+            subdirs = uncompress_all(download_dir, out_directory)
         else:
             print("Uncompressing minutely files")
-            uncompress_all(download_dir, out_directory, archiveFormat="*.tar")
+            subdirs = uncompress_all(download_dir, out_directory, archiveFormat="*.tar")
+
+        for subdir in subdirs:  # uncompressed archives are still just a folder with archives ...
+            uncompress_all(subdir, subdir)  # ... uncompress those archives too
+            print("unpacked:", subdir)
 
     logger.info("Crawler finished!")
 
