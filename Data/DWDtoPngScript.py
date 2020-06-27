@@ -48,8 +48,8 @@ def get_maximum_for_file_generator(file_list):
         try:
             (file, current_min, current_max) = get_metadata_for_file(path_to_file)
             yield (file, current_max)
-        except Exception:
-            logger.error("File corrupt: " + path_to_file)
+        except Exception as e:
+            logger.error("File corrupt: " + path_to_file + str(e))
 
 
 def get_metadata_for_file(path_to_file):
@@ -266,6 +266,9 @@ if __name__ == '__main__':
         logger.info("Not compute Metadata!")
     else:
         logger.info("Compute Metadata")
+    if args.metadata_file is None:
+        logger.info("no metadata file path given, using default one")
+        args.metadata_file = "radolan_metadata.csv"
 
     # Test if arguments are valid
     if not os.path.isdir(in_dir):
