@@ -57,7 +57,7 @@ Die Aktuellen Daten werden mit dem [Python-Script](https://github.com/thgnaedi/D
 | 2018 - 10 | Konstanz | 33,5 L/m² | [wetterkontor.de](https://www.wetterkontor.de/de/wetter/deutschland/monatswerte.asp?y=2018&m=10) |
 
 #### Vergleich mit Messwerten aus .txt File:
-![=)](https://github.com/thgnaedi/DeepRain/blob/DataUnderstanding/WetterStation_KN/result.JPG)
+![=)](https://github.com/thgnaedi/DeepRain/blob/master/WetterStation_KN/result.JPG)
 
 * Messwerte stimmen teilweise sehr gut überein
 * Einige Monate sind weit daneben
