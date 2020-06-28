@@ -42,12 +42,13 @@ def get_maximum_for_file(path_to_file):
     return get_metadata_for_file(path_to_file, onlyMax=True)
 
 
-def get_maximum_for_file_generator(file_list, quantile=1):
+def get_quantile_from_distribution(file_list, quantile=1):
     if quantile > 1:
         quantile = 1
     global_hist = None      # Histogram over all files
     global_edges = None     # edges of the histogram
 
+    #compute hist for every file and add to global hist
     for path_to_file in file_list:
         try:
             file, hist, binedges, current_max = get_metadata_for_file(path_to_file)
@@ -91,7 +92,8 @@ def get_metadata_for_file(path_to_file, onlyMax=False):
     hist, binedges = np.histogram(data, bins=500, range=(0,5))
 
     counter_files += 1
-    logger.info("Computed metadata for file: " + path+'/'+file+" ("+str(counter_files)+'/'+str(total_files)+")")
+    if(counter_files%50 == 0):
+        logger.info("Computed metadata for file: " + path+'/'+file+" ("+str(counter_files)+'/'+str(total_files)+")")
 
     return file, hist, binedges, current_max
 
@@ -102,12 +104,15 @@ def read_radolan(radfile):
 
 
 def save_png_grayscale_8bit(image_data, filename, factor=1):
+    global counter_files
+
     image_data_8bit = image_data.astype(np.uint8)
     image_data_8bit *= int(factor)
     full_filename = filename + ".png"
     cv2.imwrite(full_filename, image_data_8bit)
-    logger.info("Saved image file: " + full_filename)
-
+    counter_files += 1
+    if(counter_files % 50 == 0):
+        logger.info("({}/{}) Saved image file: {}".format(counter_files, total_files, full_filename))
 
 # Array-Like, max of all data
 def normalize(data, absolute_max):
@@ -116,77 +121,6 @@ def normalize(data, absolute_max):
     data *= factor
     data[data > MAXVALUE] = MAXVALUE
     return data
-
-
-def query_files_with_metadata(filename):
-    filenames = []
-
-    if not os.path.isfile(filename):
-        return filenames
-
-    with open(filename, 'r') as infile:
-        reader = csv.reader(infile, delimiter=",", quotechar='"')
-        for row in reader:
-            if len(row) > 0:
-                filenames.append(row[0])
-    return filenames
-
-
-def query_metadata_file(filename):
-    with open(filename, 'r') as infile:
-        reader = csv.reader(infile, delimiter=",", quotechar='"')
-        minimum = 999999999
-        maximum = 0
-        for row in reader:
-            if len(row) == 0:
-                continue
-            try:
-                if float(row[1]) < minimum:
-                    minimum = float(row[1])
-                if float(row[2]) > maximum:
-                    maximum = float(row[2])
-            except ValueError:
-                logger.error("Not a valid number in line: {}".format(row))
-                continue
-    return minimum, maximum
-
-
-def update_metadata_file(metadata_file_name, new_row_entry):
-    with open(metadata_file_name, 'a') as outfile:
-        writer = csv.writer(outfile, delimiter=",")
-        writer.writerow(new_row_entry)
-
-
-def update_metadata_file_with_max(metadata_file_name, parsed_file_name, parsed_file_max):
-    values_to_write = [parsed_file_name, 0, parsed_file_max]
-    update_metadata_file(metadata_file_name, values_to_write)
-
-
-def update_metadata_file_multiple_entries(metadata_file_name, new_row_entries_list):
-    with open(metadata_file_name, 'a') as outfile:
-        writer = csv.writer(outfile, delimiter=",")
-        for row in new_row_entries_list:
-            writer.writerow(row)
-
-
-def clean_csv(filename):
-    #ToDo unused!
-    os.rename(filename, filename + ".BAK")
-
-    num_unique_lines = 0
-    num_total_lines = 0
-    seen = set()
-    with open(filename + ".BAK", 'r') as in_file, open(filename, 'w') as out_file:
-        for line in in_file:
-            num_total_lines += 1
-            if line in seen:
-                continue
-            num_unique_lines += 1
-            seen.add(line)
-            out_file.write(line)
-    logger.info("Cleanup metadata: {} unique entries, {} entries removed"
-                .format(num_unique_lines, num_total_lines - num_unique_lines))
-
 
 def get_timestamp_for_bin_filename(bin_file_name):
     if(not bin_file_name.endswith("---bin")):   #ignore archive files or previously created images
@@ -198,12 +132,10 @@ def get_timestamp_for_bin_filename(bin_file_name):
 
 
 # ToDo: remove unused parameters (metadatafile etc.)
-def main(in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1, maximum_value=None):
+def main(in_dir, out_dir, quantile, maximum_value=None):
     global counter_files, total_files
     warnings.filterwarnings('ignore')
 
-    if factor is None:
-        factor = 1
     quantile = float(quantile)
 
     # Path to DATA location (Change to match Crwaler)
@@ -212,9 +144,9 @@ def main(in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_met
 
     # First pass: get max value with quantile and probability distribution (if not given as parameter)
     if maximum_value is None:
-        already_parsed_files = query_files_with_metadata(metadata_file)
 
         files_to_be_parsed = []
+        # collect all files to parse
         for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
             total_files += len(files)
             for file in files:
@@ -222,17 +154,13 @@ def main(in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_met
                     logger.info("Skipping png (" + str(counter_files) + '/' + str(len(files)) + ")")
                     total_files -= 1
                     continue
-                if file in already_parsed_files:
-                    total_files -= 1
-                    continue
-
                 # Add filenames to be parsed to list
                 files_to_be_parsed.append(subdir + '/' + file)
 
         logger.info("Files to parse: " + str(len(files_to_be_parsed)))
 
         # get maximum value from histogram
-        maximum_value = get_maximum_for_file_generator(files_to_be_parsed, quantile=quantile)
+        maximum_value = get_quantile_from_distribution(files_to_be_parsed, quantile=quantile)
     else:
         maximum_value = float(maximum_value)
 
@@ -240,11 +168,11 @@ def main(in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_met
     total_files = 0
     counter = 0
     abs_min = 0
-    abs_max = maximum_value #ToDo maximum value or given value by parameter
+    abs_max = maximum_value
 
     logger.info("Minimum: {} / Maximum: {}".format(abs_min, abs_max))
-    #ToDo: reduce prints in Step1 and 2
-    
+    counter_files = 0
+
     # 2nd pass - save scaled images with generated metadata
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         total_files += len(files)
@@ -264,7 +192,7 @@ def main(in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_met
             data, attrs = read_radolan(subdir + '/' + file)
 
             data = normalize(data, abs_max)
-            save_png_grayscale_8bit(data, image_file_path, factor)
+            save_png_grayscale_8bit(data, image_file_path)
             counter += 1
 
 
@@ -285,20 +213,6 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--outputDir",
                         dest="out_directory",
                         help="Target directory for PNG files.")
-    parser.add_argument("-m", "--metadataFile",
-                        dest="metadata_file",
-                        help="Specify the file to save and load metadata.")
-    parser.add_argument("-n", "--not-compute-metadata",
-                        dest="not_compute_metadata",
-                        help="Does not compute metadata for new files, but reads only metadata from given file.",
-                        action="store_true")
-    parser.add_argument("-c", "--compute-metadata",
-                        dest="compute_metadata",
-                        help="Explicitly compute metadata for new files.",
-                        action="store_true")
-    parser.add_argument("-f", "--factor",
-                        dest="factor",
-                        help="Specify a factor to multiply with each data element.")
     parser.add_argument("-q", "--quantile",
                         dest="quantile",
                         help="Specify a quantile to calc the max value")
@@ -312,38 +226,19 @@ if __name__ == '__main__':
     out_dir = "./" if args.out_directory is None else args.out_directory
     logger.info("DWD data directory: {}".format(str(in_dir)))
     logger.info("PNG image directory: {}".format(str(out_dir)))
-    logger.info("Metadata file: {}".format(str(args.metadata_file)))
 
+    # Test if arguments are valid
     if(args.quantile is not None and is_number(args.quantile)):
         logger.info("Quantile: {}".format(args.quantile))
     else:
         logger.info("using default quantile = 1.0 -> all Data will be used")
         args.quantile = "1"
-
-    if args.not_compute_metadata:
-        logger.info("Not compute Metadata!")
-    else:
-        logger.info("Compute Metadata")
-    if args.metadata_file is None:
-        logger.info("no metadata file path given, using default one")
-        args.metadata_file = "radolan_metadata.csv"
-
-    # Test if arguments are valid
     if not os.path.isdir(in_dir):
         logger.error("Input directory is not valid: Aborting!")
         sys.exit(-1)
     if not os.path.isdir(out_dir):
         logger.error("Output directory is not valid: Aborting!")
         sys.exit(-1)
-    if not os.path.isfile(args.metadata_file) and args.not_compute_metadata:
-        logger.error("No valid metadata file given and should not compute metadata: Aborting!")
-        sys.exit(-1)
-    if args.not_compute_metadata and args.compute_metadata:
-        logger.error("To compute and not to compute metadata?!? Aborting!!!")
-        sys.exit(-1)
-    if args.factor is not None and not is_number(args.factor):
-        logger.error("Factor is not a valid number: {} !!! Aborting!!!".format(args.factor))
-        sys.exit(-1)
 
     #in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1, maximum_value=None
-    main(in_dir, out_dir, args.quantile, args.metadata_file, args.not_compute_metadata, args.factor, args.value)
+    main(in_dir, out_dir, args.quantile, args.value)
