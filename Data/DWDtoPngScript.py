@@ -37,33 +37,63 @@ stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
 logger.addHandler(stream_handler)
 
-
+#ToDo unused and remove? or used in a notebook?
 def get_maximum_for_file(path_to_file):
-    (file, current_min, current_max) = get_metadata_for_file(path_to_file)
-    return current_max
+    return get_metadata_for_file(path_to_file, onlyMax=True)
 
 
-def get_maximum_for_file_generator(file_list):
+def get_maximum_for_file_generator(file_list, quantile=1):
+    if quantile > 1:
+        quantile = 1
+    global_hist = None      # Histogram over all files
+    global_edges = None     # edges of the histogram
+
     for path_to_file in file_list:
         try:
-            (file, current_min, current_max) = get_metadata_for_file(path_to_file)
-            yield (file, current_max)
+            file, hist, binedges, current_max = get_metadata_for_file(path_to_file)
+            if current_max < 0:
+                # broken or empty file (no radar station)
+                os.remove(path_to_file)
+                continue
+            if(global_edges is None):
+                global_edges = binedges
+                global_hist = hist
+            else:
+                global_hist += hist
         except Exception as e:
             logger.error("File corrupt: " + path_to_file + str(e))
 
+    # collected all informations, now calc scale info:
 
-def get_metadata_for_file(path_to_file):
+    global_hist[0:5] = 0  #ignore no/nearby no rain
+    n_values_to_cover = global_hist.sum()*quantile
+    n_covered_values = 0
+
+    #ToDo: globales File speichern mit quantilen?
+    for i in range(len(global_hist)):
+        n_covered_values += global_hist[i]
+        if n_covered_values >= n_values_to_cover:
+            return global_edges[i+1] # right side of current bin
+    logger.error("this line should never be reached?!?, continue")
+    return global_edges[-1] # maximum of histogram
+
+
+def get_metadata_for_file(path_to_file, onlyMax=False):
     global counter_files
     file = os.path.basename(path_to_file)
     path = os.path.dirname(path_to_file)
 
     data, attrs = read_radolan(path + '/' + file)
-    data = np.ma.masked_equal(data, -9999)
-    current_min = 0
     current_max = data.max()
+    if onlyMax:
+        return current_max
+
+    hist, binedges = np.histogram(data, bins=500, range=(0,5))
+
     counter_files += 1
     logger.info("Computed metadata for file: " + path+'/'+file+" ("+str(counter_files)+'/'+str(total_files)+")")
-    return [file, current_min, current_max]
+
+    return file, hist, binedges, current_max
 
 
 def read_radolan(radfile):
@@ -81,8 +111,10 @@ def save_png_grayscale_8bit(image_data, filename, factor=1):
 
 # Array-Like, max of all data
 def normalize(data, absolute_max):
-    factor = float(255)/absolute_max
+    MAXVALUE = float(255)
+    factor = MAXVALUE/absolute_max
     data *= factor
+    data[data > MAXVALUE] = MAXVALUE
     return data
 
 
@@ -138,6 +170,7 @@ def update_metadata_file_multiple_entries(metadata_file_name, new_row_entries_li
 
 
 def clean_csv(filename):
+    #ToDo unused!
     os.rename(filename, filename + ".BAK")
 
     num_unique_lines = 0
@@ -164,15 +197,21 @@ def get_timestamp_for_bin_filename(bin_file_name):
     return timestamp
 
 
-def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1):
+# ToDo: remove unused parameters (metadatafile etc.)
+def main(in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1, maximum_value=None):
     global counter_files, total_files
     warnings.filterwarnings('ignore')
+
+    if factor is None:
+        factor = 1
+    quantile = float(quantile)
 
     # Path to DATA location (Change to match Crwaler)
     os.environ["WRADLIB_DATA"] = in_dir
 
-    # First pass: get min and max for all radolan files
-    if not no_metadata:
+
+    # First pass: get max value with quantile and probability distribution (if not given as parameter)
+    if maximum_value is None:
         already_parsed_files = query_files_with_metadata(metadata_file)
 
         files_to_be_parsed = []
@@ -192,22 +231,21 @@ def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=Fals
 
         logger.info("Files to parse: " + str(len(files_to_be_parsed)))
 
-        # Make cool generator for lazy evaluation!
-        generator = get_maximum_for_file_generator(files_to_be_parsed)
+        # get maximum value from histogram
+        maximum_value = get_maximum_for_file_generator(files_to_be_parsed, quantile=quantile)
+    else:
+        maximum_value = float(maximum_value)
 
-        # Write all metadata to file
-        for file, file_max in generator:
-            update_metadata_file_with_max(metadata_file, file, file_max)
 
-        clean_csv(metadata_file)  # Removes duplicate entries
-        logger.info("Cleaned metadata file: " + metadata_file)
-
-    # 2nd pass - save scaled images with generated metadata
     total_files = 0
     counter = 0
-    abs_min, abs_max = query_metadata_file(metadata_file)
-    logger.info("Minimum: {} / Maximum: {}".format(abs_min, abs_max))
+    abs_min = 0
+    abs_max = maximum_value #ToDo maximum value or given value by parameter
 
+    logger.info("Minimum: {} / Maximum: {}".format(abs_min, abs_max))
+    #ToDo: reduce prints in Step1 and 2
+    
+    # 2nd pass - save scaled images with generated metadata
     for subdir, dirs, files in os.walk(os.environ["WRADLIB_DATA"]):
         total_files += len(files)
         for file in files:
@@ -215,7 +253,7 @@ def main(in_dir, out_dir, metadata_file="radolan_metadata.csv", no_metadata=Fals
             if timestamp is None:   # not a binary file, maybe archive file or image found
                 continue
 
-            image_file_path = out_dir + '/' + "scaled_" + timestamp
+            image_file_path = os.path.join(out_dir, "scaled_" + timestamp)
             if '.png' in file:
                 logger.info("Skipping png (" + str(counter)+'/' + str(len(files)) + ")")
                 total_files -= 1
@@ -261,6 +299,12 @@ if __name__ == '__main__':
     parser.add_argument("-f", "--factor",
                         dest="factor",
                         help="Specify a factor to multiply with each data element.")
+    parser.add_argument("-q", "--quantile",
+                        dest="quantile",
+                        help="Specify a quantile to calc the max value")
+    parser.add_argument("-v", "--value",
+                        dest="value",
+                        help="Specify the maximum value for rainfall (this value will be scaled to 255 in the output image)")
 
     args = parser.parse_args()
     logger.info("Parsed arguments:")
@@ -269,6 +313,13 @@ if __name__ == '__main__':
     logger.info("DWD data directory: {}".format(str(in_dir)))
     logger.info("PNG image directory: {}".format(str(out_dir)))
     logger.info("Metadata file: {}".format(str(args.metadata_file)))
+
+    if(args.quantile is not None and is_number(args.quantile)):
+        logger.info("Quantile: {}".format(args.quantile))
+    else:
+        logger.info("using default quantile = 1.0 -> all Data will be used")
+        args.quantile = "1"
+
     if args.not_compute_metadata:
         logger.info("Not compute Metadata!")
     else:
@@ -294,7 +345,5 @@ if __name__ == '__main__':
         logger.error("Factor is not a valid number: {} !!! Aborting!!!".format(args.factor))
         sys.exit(-1)
 
-    if args.factor is None:
-        main(in_dir, out_dir, args.metadata_file, args.not_compute_metadata)
-    else:
-        main(in_dir, out_dir, args.metadata_file, args.not_compute_metadata, args.factor)
+    #in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1, maximum_value=None
+    main(in_dir, out_dir, args.quantile, args.metadata_file, args.not_compute_metadata, args.factor, args.value)
