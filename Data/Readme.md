@@ -11,15 +11,10 @@ Also a CSV file will be created with the min and max of each radar data file. So
 ## Usage
 The script must be run from command line and take at least two arguments: the directory with uncompressed radar data files ([DWD-Crawler Readme](https://github.com/thgnaedi/DeepRain/blob/master/DWD_Crawler/README.md)), and the directory where to save the PNG in.
 
-The name of the metadata file can be specified explicitly with parameter ```-m```, otherwise the file ```radolan_metadata.csv``` will be created in the current working directory. 
- 
-A factor can be provided to multiply the data with, normally it is 1. But the value 4 may help with training of the net.
-
 Argument    | Bedeutung
 ------------|--------
 -h          | Prints a help screen ith description nd command line options
 -i \<dir\>  | Directory with uncompressed radar data
 -o \<dir\>  | Directory where to save the PNG in
--m \<file\> | Metadata file
--c          | Convert only (skip first pass)
--f <number> | Factor, to multiply all data with
+-q          | Quantile for maximum rainfall in PNG (e.g. 0.99 -> 1% of rainfall will be clipped)
+-v          | Value (set the maximum value directly, skipping quantile calculation step)
