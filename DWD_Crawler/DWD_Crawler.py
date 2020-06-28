@@ -35,7 +35,7 @@ def uncompress_targzfile(tar_file_path, destination, method="r:gz"):
     :return:
     """
     if tarfile.is_tarfile(tar_file_path):
-        logger.info("Uncompressing tar.gz file: " + tar_file_path)
+        logger.info("Uncompressing archive file: " + tar_file_path)
         file = tarfile.open(tar_file_path, method)
         try:
             file.extractall(destination)
