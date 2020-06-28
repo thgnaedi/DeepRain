@@ -2,8 +2,6 @@ import argparse
 import os.path
 from ftplib import FTP
 import glob
-import gzip
-import shutil
 import tarfile
 import os
 import logging
@@ -47,12 +45,13 @@ def uncompress_targzfile(tar_file_path, destination, method="r:gz"):
         logger.error("Error uncompressing tar.gz file: " + tar_file_path)
 
 
-def uncompress_all(source_path, destination_path, archiveFormat = "*.tar.gz"):
+def uncompress_all(source_path, destination_path, archiveFormat = "*.tar.gz", remove=False):
     """
     extracts all archive Files in given directory
     :param source_path:         source dir containing archives
     :param destination_path:    target dir for extractes archives
     :param archiveFormat:       file ending (*.tar for 5 minute steps)
+    :param remove               if true archive will be removed when uncompress step finished
     :return:                    created subdirs
     """
     os.chdir(source_path)
@@ -69,6 +68,11 @@ def uncompress_all(source_path, destination_path, archiveFormat = "*.tar.gz"):
             subdirs.append(subdir)
         else:
             logger.error("unsupported format for uncompress_all found, nothing to do here!")
+
+        if remove:
+            logger.info("remove file {}".format(file))
+            os.remove(file)
+
     return subdirs
 
 
@@ -163,7 +167,7 @@ def main(download_dir="./", out_directory="./", download=True, unpack=True, minu
             subdirs = uncompress_all(download_dir, out_directory, archiveFormat="*.tar")
 
         for subdir in subdirs:  # uncompressed archives are still just a folder with archives ...
-            uncompress_all(subdir, subdir)  # ... uncompress those archives too
+            uncompress_all(subdir, subdir, remove=True)  # ... uncompress those archives too
             print("unpacked:", subdir)
 
     logger.info("Crawler finished!")
@@ -201,10 +205,8 @@ if __name__ == "__main__":
     logger.info("True" if args.downloadOnly else "False")
     logger.info("unpackOnly: ")
     logger.info("True" if args.unpackOnly else "False")
-    logger.info("hourly files: ")
-    logger.info("True" if not args.minutely else "False")
-    logger.info("5 minutely files: ")
-    logger.info("True" if args.minutely else "False")
+    logger.info("Files: ")
+    logger.info("Hourly" if not args.minutely else "5 minutely")
 
     logger.info("Download YEAR: " + ("ALL" if not args.year else str(args.year)))
 
