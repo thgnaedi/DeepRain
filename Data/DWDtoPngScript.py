@@ -42,7 +42,7 @@ def get_maximum_for_file(path_to_file):
     return get_metadata_for_file(path_to_file, onlyMax=True)
 
 
-def get_quantile_from_distribution(file_list, quantile=1):
+def get_quantile_from_distribution(file_list, quantile=1, nameHist=None):
     if quantile > 1:
         quantile = 1
     global_hist = None      # Histogram over all files
@@ -65,6 +65,10 @@ def get_quantile_from_distribution(file_list, quantile=1):
             logger.error("File corrupt: " + path_to_file + str(e))
 
     # collected all informations, now calc scale info:
+
+    if nameHist is not None:
+        logger.info("store Histogram in " + str(nameHist))
+        np.save(str(nameHist), global_hist)
 
     global_hist[0:5] = 0  #ignore no/nearby no rain
     n_values_to_cover = global_hist.sum()*quantile
@@ -132,7 +136,7 @@ def get_timestamp_for_bin_filename(bin_file_name):
 
 
 # ToDo: remove unused parameters (metadatafile etc.)
-def main(in_dir, out_dir, quantile, maximum_value=None):
+def main(in_dir, out_dir, quantile, maximum_value=None, nameHist=None):
     global counter_files, total_files
     warnings.filterwarnings('ignore')
 
@@ -160,7 +164,8 @@ def main(in_dir, out_dir, quantile, maximum_value=None):
         logger.info("Files to parse: " + str(len(files_to_be_parsed)))
 
         # get maximum value from histogram
-        maximum_value = get_quantile_from_distribution(files_to_be_parsed, quantile=quantile)
+        maximum_value = get_quantile_from_distribution(files_to_be_parsed, quantile=quantile, nameHist=nameHist)
+
     else:
         maximum_value = float(maximum_value)
 
@@ -171,6 +176,7 @@ def main(in_dir, out_dir, quantile, maximum_value=None):
     abs_max = maximum_value
 
     logger.info("Minimum: {} / Maximum: {}".format(abs_min, abs_max))
+
     counter_files = 0
 
     # 2nd pass - save scaled images with generated metadata
@@ -219,6 +225,9 @@ if __name__ == '__main__':
     parser.add_argument("-v", "--value",
                         dest="value",
                         help="Specify the maximum value for rainfall (this value will be scaled to 255 in the output image)")
+    parser.add_argument("-n", "--nameHist",
+                        dest="nameHist",
+                        help="Name for the file in wich the calculated histogram should be stored")
 
     args = parser.parse_args()
     logger.info("Parsed arguments:")
@@ -226,6 +235,8 @@ if __name__ == '__main__':
     out_dir = "./" if args.out_directory is None else args.out_directory
     logger.info("DWD data directory: {}".format(str(in_dir)))
     logger.info("PNG image directory: {}".format(str(out_dir)))
+    if(args.nameHist is not None and args.value is None):
+        logger.info("Store calculated histogram in"+str(args.nameHist))
 
     # Test if arguments are valid
     if(args.quantile is not None and is_number(args.quantile)):
@@ -241,4 +252,4 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     #in_dir, out_dir, quantile, metadata_file="radolan_metadata.csv", no_metadata=False, factor=1, maximum_value=None
-    main(in_dir, out_dir, args.quantile, args.value)
+    main(in_dir, out_dir, args.quantile, args.value, args.nameHist)
