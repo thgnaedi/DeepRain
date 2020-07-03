@@ -1,5 +1,5 @@
 # Data processing
-The radar data has to be converted to PNG files to be easily usable and further processed.
+The radar data has to be converted to PNG files to be easily usable and further processed. More background informations can be found at the [Wiki-page](https://github.com/thgnaedi/DeepRain/wiki/Convert-radardata-to-pngs)
 
 ## DWD to PNG
 The script ```DWDtoPNGScript.py``` converts the radar data from the DWD to PNG and spread the values to a range of 0 to 255 so that they can be saved as 8-bit PNGs.
