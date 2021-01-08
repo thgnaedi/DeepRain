@@ -5,7 +5,11 @@ import os
 import glob
 import pickle
 import sys
-import sample_bundle as sb
+
+try:    #commandline import
+    import sample_bundle as sb
+except: #IDE import with other cwd
+    import Data.sample_bundle as sb
 
 
 class Data_converter():
@@ -264,7 +268,19 @@ def list_to_set(imgList, n_input, n_output):
     return (x, y)
 
 
-def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False, vmax=None, invalid_value=-1, clip=False):
+def open_one_img(path, _subimg=None, _resize_shape=None, raiseError=False, show_result=False, silent=False, vmax=None, invalid_value=-1, clip=False) -> np.ndarray:
+    """
+    :param path:            path for the image to open
+    :param _subimg:         tuple to restrict the image area: tuple like ( (y,x-coordinate to start at), (width, height - to cut out subimage) ), can be None
+    :param _resize_shape:   shape to resize the selected subimage, can be None
+    :param raiseError:      should be set to True while testing areas to get Error messages, can be disabled later, default=False
+    :param show_result:     plots a figure if set to True
+    :param silent:          if set to True, no outputs will be printed
+    :param vmax:            optional clipping the image to vmax
+    :param invalid_value:   optional value for pixels without radar data
+    :param clip:            if set to True, values will be at least zero, no clipping for max value
+    :return:                image (numpy ndarray)
+    """
     img2D = open_2D_img(path, silent)
     if img2D is None:
         print("open_one_img failed for:", path)
@@ -314,12 +330,25 @@ def usage():
 
 
 if __name__ == '__main__':
-    path = "../Examples/scaled_1707251910.png"
-    img = open_2D_img(path)
-    plt.hist(img.flatten(),log=True,bins=250)
-    plt.show()
-    #path = "C:\\temp\\loeschen\\"
-    #dc = Data_converter(path=path, max_num_samples=2, n_data=2, n_label=1, start_img=None, subimg_startpos=(100, 200),
-    #                    subimg_shape=(100, 100), output_shape=50, silent=True, pre="scaled_raa01-yw2017.002_10000-", post="-dwd---bin.png")
-    #dc.save_object("einObjekt", "nur ein TestObjekt mit wenigen Samples")
-    #print("anzahl Daten, die gesammelt wurden:",dc.get_number_samples())
+    #add information to the samplebundle object, wich will be build and store now
+    filename = "samplebundleFilename"       # can also be a path (/path/to/filename) ending can be freely chosen
+    additionalInfo= "testing Samples"       # information can be displayed to identify the samplebundles
+    #select the start position and shape of your region in the dwd images (.pngs)
+    SUBIMG_TUPLE = ((820, 400), (200, 200)) #((y,x),(width,height)
+
+    path = "/[PATH TO IMAGES]/unpacked/"    #Path to the unpacked images (produced by the DWDtoPngScript.py)
+    max_num_samples = 1000                  # maximum number of created Samples
+    n_data = 5                              # number of timesteps (t) for inputdata of the network (x,y,t)
+    n_label = 1                             # number of timesteps (t) for outputdata (predicted timesteps)
+    subimg_startpos = SUBIMG_TUPLE[0]       # coordinate to select subimage. (0,0) is top left corner
+    subimg_shape = SUBIMG_TUPLE[1]          # size of the subimage
+    output_shape = 200                      # shape to resize the cropped image area (can also be tuple)
+
+    #create a dataConverter Object
+    dc = Data_converter(path, max_num_samples, n_data, n_label, None, subimg_startpos, subimg_shape,
+                            output_shape, pre="scaled_", post=".png", silent=True)
+    #print status
+    print("there were {} samples collected with your given settings from path {}".format(dc.get_number_samples(), path))
+    dc.save_object(filename, additionalInfo)
+
+    print("your File is now stored here: {}".format(filename))
